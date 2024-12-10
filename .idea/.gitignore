@@ -7,8 +7,13 @@
 /dataSources/
 /dataSources.local.xml
 
-.idea/
+*.iml
 *.class
 *.git
 *.xml
 *.ini
+*.bmpr
+.idea/
+
+
+../SAE_Java.bmpr
