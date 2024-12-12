@@ -1,20 +1,21 @@
 package org.javafxapp.sae_dev_app_project;
 
 import javafx.application.Application;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.javafxapp.sae_dev_app_project.ImportExport.Import;
+import org.javafxapp.sae_dev_app_project.ImportExport.CustomClassLoader;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 
 public class Main extends Application {
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws ClassNotFoundException {
 
         // TODO Initialisation des élément du graphe de scene
         GridPane grid = new GridPane();
@@ -49,6 +50,19 @@ public class Main extends Application {
         ModelClass model = new ModelClass("boubou");
         ModelClass model2 = new ModelClass("bobo");
 
+        // Spécifier le chemin des fichiers .class
+        String classPath = "/Users/adrien/Documents/Cours/IUT/S3/QDEV/TD1/Money/out/production/Money";
+
+        // Créer une instance du chargeur de classes
+        CustomClassLoader classLoader = new CustomClassLoader(classPath);
+
+        // Charger une classe par son nom complet
+        Class<?> loadedClass = classLoader.loadClass("Money");
+
+        ModelClass model3 = Import.getModelClass(loadedClass.getSimpleName());
+
+
+
         // On ajoute la vue au modèle pour qu'elle soit notifier du changement
         model.addObserver(graphicView);
 
@@ -58,6 +72,7 @@ public class Main extends Application {
         // On ajoute le modèle à la vue
         graphicView.addClass(model);
         graphicView.addClass(model2);
+        graphicView.addClass(model3);
         model.notifyObservers();
 
 
