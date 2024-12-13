@@ -1,4 +1,4 @@
-package org.javafxapp.sae_dev_app_project.ImportExport;
+package org.javafxapp.sae_dev_app_project.importExport;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -52,8 +52,10 @@ public class FileChooserHandler {
                 Class<?> loadedClass = customClassLoader.loadClass(className);
                 // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
                 ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
+                model.addObserver(graphicView);
                 graphicView.addClass(model);
                 model.notifyObservers();
+
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }

@@ -1,8 +1,8 @@
-package org.javafxapp.sae_dev_app_project.ImportExport;
+package org.javafxapp.sae_dev_app_project.importExport;
 
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
-import static org.javafxapp.sae_dev_app_project.ImportExport.FileManipulator.hasBeenLoaded;
+import static org.javafxapp.sae_dev_app_project.importExport.FileManipulator.hasBeenLoaded;
 
 public class Import {
 

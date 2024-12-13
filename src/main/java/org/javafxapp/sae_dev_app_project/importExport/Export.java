@@ -1,4 +1,4 @@
-package org.javafxapp.sae_dev_app_project.ImportExport;
+package org.javafxapp.sae_dev_app_project.importExport;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 
-import static org.javafxapp.sae_dev_app_project.ImportExport.FileManipulator.hasBeenLoaded;
+import static org.javafxapp.sae_dev_app_project.importExport.FileManipulator.hasBeenLoaded;
 
 public class Export {
 
