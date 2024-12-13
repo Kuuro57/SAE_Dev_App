@@ -4,9 +4,11 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.javafxapp.sae_dev_app_project.ImportExport.FileChooserHandler;
 import org.javafxapp.sae_dev_app_project.ImportExport.Import;
 import org.javafxapp.sae_dev_app_project.ImportExport.CustomClassLoader;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
@@ -60,11 +62,17 @@ public class Main extends Application {
         Class<?> loadedClass = classLoader.loadClass("Money");
 
         ModelClass model3 = Import.getModelClass(loadedClass.getSimpleName());
+        FileChooserHandler fileChooserHandler = new FileChooserHandler(graphicView);
+        Button b = new Button("Charger une classe");
+        b.setOnAction(e -> fileChooserHandler.openFileChooser(stage));
 
 
 
         // On ajoute la vue au modèle pour qu'elle soit notifier du changement
         model.addObserver(graphicView);
+        model2.addObserver(graphicView);
+        model3.addObserver(graphicView);
+
 
         // On ajoute les vues au Gridpane
         grid.add(graphicView, 1, 0);
@@ -73,10 +81,17 @@ public class Main extends Application {
         graphicView.addClass(model);
         graphicView.addClass(model2);
         graphicView.addClass(model3);
+        graphicView.getChildren().add(b);
         model.notifyObservers();
 
 
 
+
+        System.out.println(graphicView.getChildren());
+        System.out.println("qqqqqqq");
+        // afficher contenur de graphicView
+
+        System.out.println(graphicView.getChildren());
 
 
 
@@ -90,6 +105,9 @@ public class Main extends Application {
         stage.setTitle("PlantUM'Aide ©");
         stage.setScene(scene);
         stage.show();
+
+        System.out.println(graphicView.getChildren());
+
 
     }
 
