@@ -1,12 +1,11 @@
 package org.javafxapp.sae_dev_app_project.ImportExport;
 
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
-import static org.javafxapp.sae_dev_app_project.ImportExport.FileManipulator.hasBeenLoaded;
+import java.io.File;
 
 public class Import {
-
-
 
 
     /**
@@ -16,27 +15,47 @@ public class Import {
      */
     public static ModelClass getModelClass(String nomClasse) {
 
-        try {
-
-
-
-            Class<?> classe = null;
-            if (hasBeenLoaded(nomClasse) != null){
-                classe = hasBeenLoaded(nomClasse);
-            }
-            else{
-                classe = Class.forName(nomClasse);
-            }
-
-        }
-        catch (ClassNotFoundException e) {
-            System.out.println("La classe n'a pas été trouvée");
-        }
-
         // Modele de la classe renvoyée
+        return new ModelClass(nomClasse);
 
-        ModelClass model = new ModelClass(nomClasse);
-        return model;
+    }
+
+
+
+    public static boolean importClass(ViewAllClasses view) {
+
+        FileChooserHandler fileChooserHandler = new FileChooserHandler();
+        File file = fileChooserHandler.openFileChooser();
+
+        // Si un fichier a été choisi
+        if (file != null) {
+
+            // On récupère le chemin du fichier et le nom de la classe
+            String classPath = file.getParent();
+            String className = file.getName().replace(".class", "");
+
+            // On charge la classe
+            CustomClassLoader customClassLoader = new CustomClassLoader(classPath);
+
+            try {
+                // On charge la classe
+                Class<?> loadedClass = customClassLoader.loadClass(className);
+
+                // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
+                ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
+                model.addObserver(view);
+                view.addClass(model);
+
+                return true;
+
+            } catch (ClassNotFoundException e) {
+                return false;
+            }
+        }
+
+        else {
+            return false;
+        }
 
     }
 

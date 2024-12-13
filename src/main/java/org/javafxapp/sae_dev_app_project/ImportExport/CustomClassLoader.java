@@ -18,16 +18,16 @@ public class CustomClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
         try {
             // Convertir le nom de la classe en chemin de fichier
-            String classFile = classPath + File.separator + name.replace('.', File.separatorChar) + ".class";
+            String classFile = classPath + File.separator + name + ".class";
 
             // Lire les octets du fichier .class
             byte[] classBytes = Files.readAllBytes(Paths.get(classFile));
 
             // Définir la classe dans la JVM
-            Class<?> clazz = defineClass(name, classBytes, 0, classBytes.length);
+            Class<?> clazz = defineClass(null, classBytes, 0, classBytes.length);
             loadedClasses.add(clazz); // Ajouter la classe à la liste des classes chargées
 
             return clazz;
@@ -36,11 +36,24 @@ public class CustomClassLoader extends ClassLoader {
         }
     }
 
-    // Méthode pour récupérer les classes chargées
+
+
+    /**
+     * Méthode pour récupérer les classes chargées
+     * @return La liste des classes chargées
+     */
     public static Set<Class<?>> getLoadedClasses() {
         return loadedClasses;
     }
 
 
+    private String removeDirectory(String name) {
+
+        String[] split = name.split("/");
+        return split[split.length - 1];
+
     }
+
+
+}
 

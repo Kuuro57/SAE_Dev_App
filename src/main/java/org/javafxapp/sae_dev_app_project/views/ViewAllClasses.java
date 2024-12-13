@@ -1,7 +1,5 @@
 package org.javafxapp.sae_dev_app_project.views;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
@@ -59,6 +57,10 @@ public class ViewAllClasses extends Pane implements Observer {
             // On lui donne un nouvel id et on l'ajoute à la liste
             m.setId(this.getNewId());
             this.allClassesList.add(m);
+
+            // On notifie l'observeur que le modèle est ajouté à la liste
+            m.notifyObservers();
+
             return true;
 
         }
@@ -86,7 +88,7 @@ public class ViewAllClasses extends Pane implements Observer {
             // On l'ajoute sur le Pane
             this.getChildren().add(display);
 
-            // On incrémente les coordoonées pour éviter les chevauchements
+            // On incrémente les coordonnées pour éviter les chevauchements
             coo_x += 100;
             coo_y += 50;
         }

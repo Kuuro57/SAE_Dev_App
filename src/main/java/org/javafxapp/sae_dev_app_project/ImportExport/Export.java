@@ -1,10 +1,15 @@
 package org.javafxapp.sae_dev_app_project.ImportExport;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import javafx.scene.image.WritableImage;
+import javafx.stage.Stage;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
+
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+
+import javax.imageio.ImageIO;
 
 import static org.javafxapp.sae_dev_app_project.ImportExport.FileManipulator.hasBeenLoaded;
 
@@ -236,6 +241,47 @@ public class Export {
 
 
     /**
+     * Méthode qui exporte une capture d'écran de l'application au format PNG dans le répertoire path
+     * @param view Vue contenant toutes les classes
+     */
+    public static void exportInPNG(ViewAllClasses view) {
+
+        // Affichage d'un FileChooser pour que l'utilisateur choisisse le chemin et le nom du fichier
+        FileChooserHandler fileChooserHandler = new FileChooserHandler();
+        File file = fileChooserHandler.openRepositoryPathAndFileNameChooser();
+
+        // On prend un screenshot de l'application
+        WritableImage image = view.snapshot(null, null);
+
+        // Convertir WritableImage en BufferedImage
+        BufferedImage bufferedImage = new BufferedImage(
+                (int) image.getWidth(),
+                (int) image.getHeight(),
+                BufferedImage.TYPE_INT_ARGB
+        );
+
+        // Conversion du WritableImage en BufferedImage
+        for (int y = 0; y < (int) image.getHeight(); y++) {
+            for (int x = 0; x < (int) image.getWidth(); x++) {
+                int argb = image.getPixelReader().getArgb(x, y);
+                bufferedImage.setRGB(x, y, argb);
+            }
+        }
+
+        try {
+            // Enregistrer l'image au format PNG
+            ImageIO.write(bufferedImage, "png", file);
+        }
+        catch (IOException e) {
+            System.out.println("erreur");
+        }
+
+
+    }
+
+
+
+    /**
      * Méthode qui construit un fichier PlantUml à partir d'une classe Java
      * @param nomClasse Nom de la classe que l'on veut modéliser en PlantUml
      * @param nomFichierPlantUml Nom du fichier qui contiendra le code PlantUml
@@ -409,7 +455,7 @@ public class Export {
      * @param txt La chaîne à traiter
      * @return Le nom traité
      */
-    private static String removePackageName(String txt) {
+    public static String removePackageName(String txt) {
 
         // Si le text contient des "<>"
         if (txt.contains("<") && txt.contains(">")) {
@@ -538,10 +584,6 @@ public class Export {
      */
     private static String testForValidFileName(String nomFichier, String extension, String cheminDossier) {
 
-
-
-
-
         // On initialise le nouveau nom
         String nouveauNom = nomFichier;
 
@@ -570,8 +612,5 @@ public class Export {
         return nouveauNom;
 
     }
-
-
-
 
 }
