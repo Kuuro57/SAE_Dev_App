@@ -60,7 +60,14 @@ public class Main extends Application {
         grid.add(b, 0, 0);
 
         Button b2 = new Button("Importer une classe");
-        b2.setOnAction(actionEvent -> Import.importClass(graphicView));
+        b2.setOnAction(actionEvent -> {
+            try {
+                Import.importClass(graphicView);
+            }
+            catch (ClassNotFoundException e) {
+                displayError("Erreur lors de l'importation du fichier. Veuillez réessayer");
+            }
+        });
         grid.add(b2, 0, 1);
 
 
@@ -93,7 +100,29 @@ public class Main extends Application {
 
     }
 
+
+
+    /**
+     * Méthode qui lance l'application
+     */
     public static void main(String[] args) {
         launch();
     }
+
+
+
+    /**
+     * Méthode qui affiche une pop-up d'erreur avec le message en paramètre
+     * @param msg Message que l'on veut afficher
+     */
+    private static void displayError(String msg) {
+
+        // On affiche une alerte
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setContentText(msg);
+        alert.show();
+
+    }
+
 }

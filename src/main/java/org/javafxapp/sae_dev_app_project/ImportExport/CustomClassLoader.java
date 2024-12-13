@@ -47,13 +47,5 @@ public class CustomClassLoader extends ClassLoader {
     }
 
 
-    private String removeDirectory(String name) {
-
-        String[] split = name.split("/");
-        return split[split.length - 1];
-
-    }
-
-
 }
 

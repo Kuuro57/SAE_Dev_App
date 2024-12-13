@@ -22,7 +22,7 @@ public class Import {
 
 
 
-    public static boolean importClass(ViewAllClasses view) {
+    public static boolean importClass(ViewAllClasses view) throws ClassNotFoundException {
 
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
         File file = fileChooserHandler.openFileChooser();
@@ -37,23 +37,22 @@ public class Import {
             // On charge la classe
             CustomClassLoader customClassLoader = new CustomClassLoader(classPath);
 
-            try {
-                // On charge la classe
-                Class<?> loadedClass = customClassLoader.loadClass(className);
+            // On charge la classe
+            Class<?> loadedClass = customClassLoader.loadClass(className);
 
-                // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
-                ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
-                model.addObserver(view);
-                view.addClass(model);
+            // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
+            ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
+            model.addObserver(view);
+            view.addClass(model);
 
-                return true;
+            // On retourne true
+            return true;
 
-            } catch (ClassNotFoundException e) {
-                return false;
-            }
         }
 
+        // Sinon si le fichier est null
         else {
+            // On retourne false
             return false;
         }
 

@@ -47,7 +47,6 @@ public class FileChooserHandler {
         fileChooser.setTitle("Enregistrer le fichier PNG");
         FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("Fichiers PNG", "*.png");
         fileChooser.getExtensionFilters().add(pngFilter);
-        //fileChooser.setInitialDirectory(new File(""));
         fileChooser.setInitialFileName("image.png");
 
         // Affichage du FileChooser
