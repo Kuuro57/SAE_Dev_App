@@ -538,10 +538,7 @@ public class Export {
      */
     private static String testForValidFileName(String nomFichier, String extension, String cheminDossier) {
 
-
-
-
-
+        
         // On initialise le nouveau nom
         String nouveauNom = nomFichier;
 

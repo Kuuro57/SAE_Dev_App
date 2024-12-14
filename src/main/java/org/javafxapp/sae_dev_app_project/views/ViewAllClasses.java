@@ -65,7 +65,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Sinon on retourne false
         return false;
-
     }
 
 
@@ -90,7 +89,7 @@ public class ViewAllClasses extends Pane implements Observer {
             coo_x += 100;
             coo_y += 50;
         }
-
     }
+
 
 }

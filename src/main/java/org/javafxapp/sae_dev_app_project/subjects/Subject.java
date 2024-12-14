@@ -15,7 +15,6 @@ public interface Subject {
     public void addObserver(Observer o);
 
 
-
     /**
      * Méthode qui supprime un observeur du sujet
      * @param o Observeur que l'on veut supprimer
@@ -23,11 +22,9 @@ public interface Subject {
     public void removeObserver(Observer o);
 
 
-
     /**
      * Méthode qui notifie tout les observeurs que le sujet à changer
      */
     public void notifyObservers();
-
 
 }

@@ -25,16 +25,17 @@ public class Main extends Application {
         GridPane grid = new GridPane();
         ViewAllClasses graphicView = new ViewAllClasses();
 
-        //Creation MenuBar avec MenuBarHandler
+        // Création MenuBar avec MenuBarHandler
         MenuBarHandler mbh = new MenuBarHandler();
         MenuBar menuBar = mbh.createMenuBar();
 
-        //Ajout du menuBar en top, il doit occuper toute la largeur
+
+
+        // Ajout du menuBar en top, il doit occuper toute la largeur
         grid.add(menuBar, 0, 0);
+        GridPane.setColumnSpan(menuBar, 2);
 
         // Configuration du GridPane
-        grid.setGridLinesVisible(true);
-
         ColumnConstraints column1 = new ColumnConstraints();
         column1.setPercentWidth(20);
         ColumnConstraints column2 = new ColumnConstraints();
@@ -42,8 +43,12 @@ public class Main extends Application {
         grid.getColumnConstraints().addAll(column1, column2);
 
         RowConstraints row1 = new RowConstraints();
-        row1.setPercentHeight(100);
-        grid.getRowConstraints().addAll(row1);
+        //setter l'ahuteur de la première ligne pour s'adapter pile a la taille du menuBar
+        row1.setPercentHeight(5);
+        RowConstraints row2 = new RowConstraints();
+        row2.setPercentHeight(95);
+        grid.getRowConstraints().addAll(row1, row2);
+
 
         grid.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
         grid.setAlignment(Pos.CENTER);
@@ -51,15 +56,15 @@ public class Main extends Application {
         // Configuration de la vue
         graphicView.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         graphicView.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, new Insets(0, 0, 0, 0))));
+        graphicView.getStyleClass().add("grid-cell");
 
         // Initialisation des modèles
         ModelClass model = new ModelClass("boubou");
         ModelClass model2 = new ModelClass("bobo");
 
         FileChooserHandler fileChooserHandler = new FileChooserHandler(graphicView);
-        Button b = new Button("Charger une classe");
-        b.setOnAction(e -> fileChooserHandler.openFileChooser(stage));
-
+        // lier le menuItem importer a l'ouverture du fileChooser
+        menuBar.getMenus().get(0).getItems().get(3).setOnAction(e -> fileChooserHandler.openFileChooser(stage));
 
 
         // On ajoute la vue au modèle pour qu'elle soit notifier du changement
@@ -73,7 +78,6 @@ public class Main extends Application {
         // On ajoute le modèle à la vue
         graphicView.addClass(model);
         graphicView.addClass(model2);
-        graphicView.getChildren().add(b);
         model.notifyObservers();
 
 
