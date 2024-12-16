@@ -1,4 +1,4 @@
-package org.javafxapp.sae_dev_app_project.ImportExport;
+package org.javafxapp.sae_dev_app_project.importExport;
 
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;

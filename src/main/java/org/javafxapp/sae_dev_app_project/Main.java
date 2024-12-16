@@ -1,8 +1,6 @@
 package org.javafxapp.sae_dev_app_project;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,9 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import org.javafxapp.sae_dev_app_project.ImportExport.Export;
-import org.javafxapp.sae_dev_app_project.ImportExport.Import;
+
+import org.javafxapp.sae_dev_app_project.importExport.Export;
+import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 

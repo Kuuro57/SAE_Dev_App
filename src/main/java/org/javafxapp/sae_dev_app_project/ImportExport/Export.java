@@ -1,7 +1,6 @@
-package org.javafxapp.sae_dev_app_project.ImportExport;
+package org.javafxapp.sae_dev_app_project.importExport;
 
 import javafx.scene.image.WritableImage;
-import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.awt.image.BufferedImage;
@@ -11,7 +10,7 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
-import static org.javafxapp.sae_dev_app_project.ImportExport.FileManipulator.hasBeenLoaded;
+//import static org.javafxapp.sae_dev_app_project.importExport.FileManipulator.hasBeenLoaded;
 
 public class Export {
 
@@ -31,8 +30,8 @@ public class Export {
 
 
             Class<?> classe = null;
-            if (hasBeenLoaded(nomClasse) != null){
-                classe = hasBeenLoaded(nomClasse);
+            if (FileManipulator.hasBeenLoaded(nomClasse) != null){
+                classe = FileManipulator.hasBeenLoaded((nomClasse));
             }
             else{
                 classe = Class.forName(nomClasse);
@@ -126,8 +125,8 @@ public class Export {
             StringBuffer aff = new StringBuffer();
             // On récupère la classe sous forme d'un objet Class depuis son nom
             Class<?> classe = null;
-            if (hasBeenLoaded(nomClasse) != null){
-                classe = hasBeenLoaded(nomClasse);
+            if (FileManipulator.hasBeenLoaded((nomClasse)) != null){
+                classe = FileManipulator.hasBeenLoaded((nomClasse));
             }
             else{
                 classe = Class.forName(nomClasse);
@@ -295,8 +294,8 @@ public class Export {
             StringBuffer aff = new StringBuffer("@startuml\n");
             // On récupère la classe sous forme d'un objet Class depuis son nom
             Class<?> classe = null;
-            if (hasBeenLoaded(nomClasse) != null){
-                classe = hasBeenLoaded(nomClasse);
+            if (FileManipulator.hasBeenLoaded((nomClasse)) != null){
+                classe = FileManipulator.hasBeenLoaded((nomClasse));
             }
             else{
                 classe = Class.forName(nomClasse);
