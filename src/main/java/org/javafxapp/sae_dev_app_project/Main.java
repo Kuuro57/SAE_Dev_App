@@ -29,6 +29,7 @@ public class Main extends Application {
         MenuBarHandler mbh = new MenuBarHandler();
         MenuBar menuBar = mbh.createMenuBar();
 
+        //lier a l'action file chosser au sous menu importer un fichier qui est dans fichier
 
 
         // Ajout du menuBar en top, il doit occuper toute la largeur
@@ -61,11 +62,6 @@ public class Main extends Application {
         // Initialisation des modèles
         ModelClass model = new ModelClass("boubou");
         ModelClass model2 = new ModelClass("bobo");
-
-        FileChooserHandler fileChooserHandler = new FileChooserHandler(graphicView);
-        // lier le menuItem importer a l'ouverture du fileChooser
-        menuBar.getMenus().get(0).getItems().get(3).setOnAction(e -> fileChooserHandler.openFileChooser(stage));
-
 
         // On ajoute la vue au modèle pour qu'elle soit notifier du changement
         model.addObserver(graphicView);

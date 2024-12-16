@@ -4,11 +4,15 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import org.javafxapp.sae_dev_app_project.importExport.FileChooserHandler;
 
 public class MenuBarHandler {
 
 
+
     public MenuBar createMenuBar(){
+
+
         MenuBar menuBar = new MenuBar();
 
         Menu fileMenu = new Menu("Fichier");
@@ -21,13 +25,15 @@ public class MenuBarHandler {
         //options de la contextmenu du menu fichier, ouvrir, importer, exporter qui aura une sous menu et quitter
         addContextMenu(
                 fileMenu,
-                "Ouvrir",
-                "-", //separateur
-                "Importer depuis chemin",
-                "Exporter",
                 "-",
                 "Quitter");
 
+        Menu importerMenu = new Menu("Importer");
+        fileMenu.getItems().add(1, importerMenu);
+        addContextMenu(
+                importerMenu,
+                "Importer une classe",
+                "Importer un projet");
 
 
         //sous menu du menu fichier depuis exporter
@@ -88,6 +94,7 @@ public class MenuBarHandler {
             }
         }
     }
+
 
 
 }
