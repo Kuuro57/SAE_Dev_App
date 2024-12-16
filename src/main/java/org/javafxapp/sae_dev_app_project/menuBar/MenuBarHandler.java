@@ -1,98 +1,174 @@
 package org.javafxapp.sae_dev_app_project.menuBar;
 
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import org.javafxapp.sae_dev_app_project.importExport.FileChooserHandler;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
+import org.javafxapp.sae_dev_app_project.importExport.Import;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 public class MenuBarHandler {
 
 
 
-    public MenuBar createMenuBar(){
+    public MenuBar createMenuBar(Stage stage, ViewAllClasses view){
 
 
+        // Initialisation des menus principaux
         MenuBar menuBar = new MenuBar();
-
         Menu fileMenu = new Menu("Fichier");
         Menu editionMenu = new Menu("Edition");
         Menu showMenu = new Menu("Affichage");
         Menu helpMenu = new Menu("Aide");
 
+
+
+        // Initialisation des items du menu "Fichier>Importer"
+        Menu importMenu = new Menu("Importer");
+
+        MenuItem importClassItem = new MenuItem("Importer une classe");
+        importClassItem.setOnAction(actionEvent -> {
+            try {
+                Import.importClass(view);
+            }
+            catch (ClassNotFoundException e) {
+                displayError("Erreur lors de l'importation de la classe ! (Classe non trouvée)");
+            }
+        });
+
+        MenuItem importPackageItem = new MenuItem("Importer un projet");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem exitItem = new MenuItem("Quitter");
+        exitItem.setOnAction(actionEvent -> stage.close());
+
+
+        // Ajout des items au menu correspondant
+        importMenu.getItems().addAll(importClassItem, importPackageItem);
+
+
+
+
+        // Initialisation des items du menu "Fichier>Exporter"
+        Menu exportMenu = new Menu("Exporter");
+
+        MenuItem exportPNG = new MenuItem("Format PNG");
+        exportPNG.setOnAction(actionEvent -> Export.exportInPNG(view));
+
+        MenuItem exportPUMLCode = new MenuItem("Format code PlantUML");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem exportPUMLImage = new MenuItem("Format image PlantUML");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem exportJavaTemplate = new MenuItem("Format squelette Java");
+        // TODO Ajouter l'action correspondante !
+
+
+        // Ajout des items au menu correspondant
+        exportMenu.getItems().addAll(exportPNG, exportPUMLCode, exportPUMLImage, exportJavaTemplate);
+
+
+
+        // Initialisation des items du menu "Edition"
+        MenuItem addClassItem = new MenuItem("Créer une classe");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem createPackageItem = new MenuItem("Créer un package");
+        // TODO Ajouter l'action correspondante !
+
+
+
+        // Initialisation des items du menu "Edition>Ajouter"
+        Menu addMenu = new Menu("Ajouter");
+
+        MenuItem addDependenciesItem = new MenuItem("Dépendance");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem addAttributeItem = new MenuItem("Attribut");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem addMethodItem = new MenuItem("Méthode");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem addConstructorItem = new MenuItem("Constructeur");
+        // TODO Ajouter l'action correspondante !
+
+
+        // Ajout des items au menu correspondant
+        addMenu.getItems().addAll(addDependenciesItem, addAttributeItem, addMethodItem, addConstructorItem);
+
+
+
+        // Initialisation des items du menu "Edition>Modifier"
+        Menu modifyMenu = new Menu("Modifier");
+
+        MenuItem modifyAttributeItem = new MenuItem("Attribut");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem modifyMethodItem = new MenuItem("Méthode");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem modifyConstructorItem = new MenuItem("Constructeur");
+        // TODO Ajouter l'action correspondante !
+
+
+        // Ajout des items au menu correspondant
+        modifyMenu.getItems().addAll(modifyAttributeItem, modifyMethodItem, modifyConstructorItem);
+
+
+
+
+        // Initialisation des items du menu "Edition>Supprimer"
+        Menu removeMenu = new Menu("Modifier");
+
+        MenuItem removeAttributeItem = new MenuItem("Attribut");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem removeMethodItem = new MenuItem("Méthode");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem removeConstructorItem = new MenuItem("Constructeur");
+        // TODO Ajouter l'action correspondante !
+
+
+        // Ajout des items au menu correspondant
+        removeMenu.getItems().addAll(removeAttributeItem, removeMethodItem, removeConstructorItem);
+
+
+
+
+        // Initialisation des items du menu "Affichage"
+        MenuItem displayAttributesAllClassesItem = new MenuItem("Afficher les attributs de toutes les classes");
+        // TODO Ajouter l'action correspondante !
+
+        MenuItem displayMethodsAllClassesItem = new MenuItem("Afficher les méthodes de toutes les classes");
+        // TODO Ajouter l'action correspondante !
+
+
+
+
+
+        // Ajout des sous menus aux menus principaux
+        fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
+        editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
+        showMenu.getItems().addAll(displayAttributesAllClassesItem, displayMethodsAllClassesItem);
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
 
-        //options de la contextmenu du menu fichier, ouvrir, importer, exporter qui aura une sous menu et quitter
-        addContextMenu(
-                fileMenu,
-                "-",
-                "Quitter");
-
-        Menu importerMenu = new Menu("Importer");
-        fileMenu.getItems().add(1, importerMenu);
-        addContextMenu(
-                importerMenu,
-                "Importer une classe",
-                "Importer un projet");
-
-
-        //sous menu du menu fichier depuis exporter
-        Menu exporterMenu = new Menu("Exporter");
-        fileMenu.getItems().add(2, exporterMenu);
-        addContextMenu(
-                exporterMenu,
-                "Format PNG",
-                "Format PlantUML Code",
-                "Format PlantUML Image",
-                "Format Java Code");
-
-        addContextMenu(
-                editionMenu,
-                "Ajouter une classe",
-                "Ajouter des dépendances",
-                "Ajouter un attribut a une classe existante",
-                "Ajouter une methode a une classe existante",
-                "Ajouter un constructeur a une classe existante",
-                "-",
-                "-",
-                "Créer un package");
-        // sousmenu depuis supprimer une classe, afficher dans ce sous menu les classes de l'application
-        Menu supprimerClasseMenu = new Menu("Supprimer une classe");
-        editionMenu.getItems().add(6, supprimerClasseMenu);
-
-        addContextMenu(
-                showMenu,
-                "Afficher les attributs de toutes les classes",
-                "Afficher les méthodes de toutes les classes",
-                "-",
-                "-");
-        //sous menu depuis afficher les attributs de la classe, afficher dans ce sous menu les classes de l'application
-        Menu afficherAttributsMenu = new Menu("Afficher les attributs de la classe");
-        showMenu.getItems().add(3, afficherAttributsMenu);
-        Menu afficherMethodesMenu = new Menu("Afficher les méthodes de la classe");
-        showMenu.getItems().add(4, afficherMethodesMenu);
-        Menu masquerAttributsMenu = new Menu("Masquer les attributs de la classe");
-        showMenu.getItems().add(6, masquerAttributsMenu);
-        Menu masquerMethodesMenu = new Menu("Masquer les méthodes de la classe");
-        showMenu.getItems().add(7, masquerMethodesMenu);
-
+        // On retourne la menu bar
         return menuBar;
     }
 
+
+
     /**
-     * Ajoute des items à un menu
-     * @param menu Menu
-     * @param items Items
+     * Méthode qui affiche une pop up d'alerte lors d'une erreur
+     * @param msg Messaque que l'on veut afficher dans le pop up
      */
-    private void addContextMenu(Menu menu, String... items) {
-        for (String item : items) {
-            if (item.equals("-")) {
-                menu.getItems().add(new SeparatorMenuItem());
-            } else {
-                MenuItem menuItem = new MenuItem(item);
-                menu.getItems().add(menuItem);
-            }
-        }
+    private void displayError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setContentText(msg);
+        alert.show();
     }
 
 

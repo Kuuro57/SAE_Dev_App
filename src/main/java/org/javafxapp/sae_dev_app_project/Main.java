@@ -4,14 +4,11 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.javafxapp.sae_dev_app_project.importExport.FileChooserHandler;
-import org.javafxapp.sae_dev_app_project.importExport.Import;
-import org.javafxapp.sae_dev_app_project.importExport.CustomClassLoader;
+
 import org.javafxapp.sae_dev_app_project.menuBar.MenuBarHandler;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
@@ -19,20 +16,17 @@ import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 public class Main extends Application {
     @Override
-    public void start(Stage stage) throws ClassNotFoundException {
+    public void start(Stage stage) {
 
-        // TODO Initialisation des élément du graphe de scene
+        // Initialisation des élément du graphe de scene
         GridPane grid = new GridPane();
         ViewAllClasses graphicView = new ViewAllClasses();
+        MenuBar menuBar = new MenuBarHandler().createMenuBar(stage, graphicView);
 
-        // Création MenuBar avec MenuBarHandler
-        MenuBarHandler mbh = new MenuBarHandler();
-        MenuBar menuBar = mbh.createMenuBar();
-
-        //lier a l'action file chosser au sous menu importer un fichier qui est dans fichier
+        // TODO Lier les actions aux boutons
 
 
-        // Ajout du menuBar en top, il doit occuper toute la largeur
+        // Ajout de la menuBar en haut
         grid.add(menuBar, 0, 0);
         GridPane.setColumnSpan(menuBar, 2);
 
@@ -44,15 +38,14 @@ public class Main extends Application {
         grid.getColumnConstraints().addAll(column1, column2);
 
         RowConstraints row1 = new RowConstraints();
-        //setter l'ahuteur de la première ligne pour s'adapter pile a la taille du menuBar
         row1.setPercentHeight(5);
         RowConstraints row2 = new RowConstraints();
         row2.setPercentHeight(95);
         grid.getRowConstraints().addAll(row1, row2);
 
-
         grid.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
         grid.setAlignment(Pos.CENTER);
+
 
         // Configuration de la vue
         graphicView.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);

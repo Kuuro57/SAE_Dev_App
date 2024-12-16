@@ -273,6 +273,7 @@ public class Export {
         catch (IOException e) {
             System.out.println("erreur");
         }
+        catch (IllegalArgumentException ignored) {}
 
 
     }
