@@ -5,6 +5,7 @@ import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.io.File;
 
+
 public class Import {
 
 
@@ -14,16 +15,20 @@ public class Import {
      * @return Les informations de la classe
      */
     public static ModelClass getModelClass(String nomClasse) {
-
         // Modele de la classe renvoyée
         return new ModelClass(nomClasse);
-
     }
 
 
-
+    /**
+     * Méthode qui importe la classe dans le diagramme des classes
+     * @param view Vue qui comprend toutes les classes
+     * @return True si l'import s'est bien déroulé, false sinon
+     * @throws ClassNotFoundException Cas où la classe n'est pas trouvée
+     */
     public static boolean importClass(ViewAllClasses view) throws ClassNotFoundException {
 
+        // On demande à l'utilisateur de choisir un fichier .class
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
         File file = fileChooserHandler.openFileChooser();
 

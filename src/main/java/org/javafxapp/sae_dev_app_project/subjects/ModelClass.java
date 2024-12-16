@@ -20,7 +20,6 @@ public class ModelClass implements Subject {
     private ArrayList<Observer> observerList;
 
 
-
     /**
      * Constructeur qui prend en paramètre le nom de la classe
      * @param n Nom de la classe
@@ -30,7 +29,6 @@ public class ModelClass implements Subject {
         this.name = n;
         this.observerList = new ArrayList<>();
     }
-
 
 
     /**
@@ -52,7 +50,6 @@ public class ModelClass implements Subject {
     }
 
 
-
     @Override
     public void addObserver(Observer o) {
         if (!this.observerList.contains(o)) {
@@ -71,8 +68,6 @@ public class ModelClass implements Subject {
             o.update(this);
         }
     }
-
-
 
 
     // ### GETTER / SETTER ###

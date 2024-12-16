@@ -10,7 +10,6 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
-//import static org.javafxapp.sae_dev_app_project.importExport.FileManipulator.hasBeenLoaded;
 
 public class Export {
 
@@ -454,7 +453,7 @@ public class Export {
      * @param txt La chaîne à traiter
      * @return Le nom traité
      */
-    public static String removePackageName(String txt) {
+    private static String removePackageName(String txt) {
 
         // Si le text contient des "<>"
         if (txt.contains("<") && txt.contains(">")) {
