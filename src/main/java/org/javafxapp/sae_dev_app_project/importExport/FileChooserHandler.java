@@ -38,22 +38,49 @@ public class FileChooserHandler {
 
     /**
      * Méthode qui ouvre un pop-up permettant de choisir un dossier et un nom de fichier
-     * @return Une string représentant le chemin du dossier sélectionné
+     * @return Un objet de type File comprenant le chemin et le nom du fichier à enregistrer
      */
-    public File openRepositoryPathAndFileNameChooser() {
+    public File openRepositoryPathAndFileNameChooser(String exportType) {
 
-        // Initialisation du FileChooser
+        // Initialisation des variables utiles à la création du FileChooser
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Enregistrer le fichier PNG");
-        FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("Fichiers PNG", "*.png");
-        fileChooser.getExtensionFilters().add(pngFilter);
-        fileChooser.setInitialFileName("image.png");
+        String title;
+        String fileType;
+        String extension;
+        String defaultFileName;
+
+        // Switch des types d'exports souhaités assignés à un code spécifique
+        switch (exportType) {
+
+            // Cas où on exporte en Image PNG
+            case "png":
+                title = "Enregistrer le fichier PNG";
+                fileType = "Fichier PNG";
+                extension = "*.png";
+                defaultFileName = "image.png";
+                break;
+
+            // Cas où on exporte en code plantUml
+            case "codepuml":
+                title = "Enregistrer le fichier TXT";
+                fileType = "Fichier TXT";
+                extension = "*.txt";
+                defaultFileName = "code.txt";
+                break;
+
+            default:
+                return null;
+        }
+
+        // On initialise les informations du FileChooser
+        fileChooser.setTitle(title);
+        FileChooser.ExtensionFilter pumlFilter = new FileChooser.ExtensionFilter(fileType, extension);
+        fileChooser.getExtensionFilters().add(pumlFilter);
+        fileChooser.setInitialFileName(defaultFileName);
 
         // Affichage du FileChooser
         return fileChooser.showSaveDialog(null);
 
     }
-
-
 
 }

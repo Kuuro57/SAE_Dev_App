@@ -16,7 +16,6 @@ public class ViewAllClasses extends Pane implements Observer {
     private ArrayList<ModelClass> allClassesList;
 
 
-
     /**
      * Constructeur de la classe
      */
@@ -93,5 +92,12 @@ public class ViewAllClasses extends Pane implements Observer {
         }
     }
 
+
+
+    public ArrayList<ModelClass> getAllClasses() {
+
+        return this.allClassesList;
+
+    }
 
 }

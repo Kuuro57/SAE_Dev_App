@@ -74,5 +74,6 @@ public class ModelClass implements Subject {
     public int getId() { return id; }
     public void setId(int i) { this.id = i; }
 
+    public String getName() { return name; }
 
 }

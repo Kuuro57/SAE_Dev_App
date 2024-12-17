@@ -55,7 +55,7 @@ public class MenuBarHandler {
         exportPNG.setOnAction(actionEvent -> Export.exportInPNG(view));
 
         MenuItem exportPUMLCode = new MenuItem("Format code PlantUML");
-        // TODO Ajouter l'action correspondante !
+        exportPUMLCode.setOnAction(actionEvent -> Export.exportInPUml(view));
 
         MenuItem exportPUMLImage = new MenuItem("Format image PlantUML");
         // TODO Ajouter l'action correspondante !

@@ -1,6 +1,7 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
 import javafx.scene.image.WritableImage;
+import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.awt.image.BufferedImage;
@@ -246,7 +247,7 @@ public class Export {
 
         // Affichage d'un FileChooser pour que l'utilisateur choisisse le chemin et le nom du fichier
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
-        File file = fileChooserHandler.openRepositoryPathAndFileNameChooser();
+        File file = fileChooserHandler.openRepositoryPathAndFileNameChooser("png");
 
         // On prend un screenshot de l'application
         WritableImage image = view.snapshot(null, null);
@@ -281,120 +282,84 @@ public class Export {
 
 
     /**
-     * Méthode qui construit un fichier PlantUml à partir d'une classe Java
-     * @param nomClasse Nom de la classe que l'on veut modéliser en PlantUml
-     * @param nomFichierPlantUml Nom du fichier qui contiendra le code PlantUml
-     * @return String contenant le code PlantUml
+     * Méthode qui construit un fichier PlantUml à partir d'une liste de classes Java récupérée de la vue
      */
-    public static String exportInPUml(String nomClasse, String nomFichierPlantUml) {
+    public static void exportInPUml(ViewAllClasses view) {
+
+        // Affichage d'un FileChooser pour que l'utilisateur choisisse le chemin et le nom du fichier
+        FileChooserHandler fileChooserHandler = new FileChooserHandler();
+        File file = fileChooserHandler.openRepositoryPathAndFileNameChooser("codepuml");
+
+        String codepuml;
 
         try {
 
-            // Initialisation de l'affichage final
-            StringBuffer aff = new StringBuffer("@startuml\n");
-            // On récupère la classe sous forme d'un objet Class depuis son nom
-            Class<?> classe = null;
-            if (FileManipulator.hasBeenLoaded((nomClasse)) != null){
-                classe = FileManipulator.hasBeenLoaded((nomClasse));
-            }
-            else{
-                classe = Class.forName(nomClasse);
-            }
+            Writer writer = new FileWriter(file);
+            // Ouverture du fichier en mode écriture
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
 
-            // Si la classe est une interface
-            if (classe.isInterface()) {
-                // On déclare l'interface
-                aff.append("interface ").append(classe.getSimpleName()).append(" {");
-            }
-            // Sinon si la classe est abstraite
-            else if (Modifier.toString(classe.getModifiers()).contains("abstract")) {
-                // On déclare la classe abstraite
-                aff.append("abstract class ").append(classe.getSimpleName()).append(" {");
-            }
-            // Sinon
-            else {
-                // On déclare la classe
-                aff.append("class ").append(classe.getSimpleName()).append(" {");
-            }
+            // On ajoute le "@startuml"
+            bufferedWriter.write("@startuml");
 
-            // On récupère et affiche dans l'affichage les attributs de cette classe
-            for (Field att : classe.getDeclaredFields()) {
+            // Retour à la ligne
+            bufferedWriter.newLine();
 
-                // On retourne à la ligne
-                aff.append("\n\t");
+            // Boucle pour parcourir toutes les classes du diagramme dans la vue
+            for (int i = 0; i < view.getAllClasses().size(); i++) {
 
-                // On récupère les informations utilses
-                String access = convertPUmlAccess(att.getModifiers());
-                String typeAtt = removePackageName(att.getGenericType().getTypeName());
-                String nom = " " + att.getName();
+                // On récupère le code puml de la classe actuellement traitée dans la boucle
+                codepuml = getPUmlCode(view.getAllClasses().get(i));
 
-                // On affiche l'attribut
-                aff.append(access).append(typeAtt).append(nom);
+                // Ecriture du code puml récupéré de la classe
+                bufferedWriter.write(codepuml);
 
-            }
-
-            // On récupère et affiche le(s) constructeur(s) de cette classe
-            for (Constructor<?> constructeur : classe.getDeclaredConstructors()) {
-
-                aff.append("\n\t");
-
-                // On récupère les informations utilses
-                String access = convertPUmlAccess(constructeur.getModifiers());
-                String nom = removePackageName(constructeur.getName());
-                StringBuffer parametres = new StringBuffer("(");
-
-                // On récupère le type du/des paramètre(s) du constructeur
-                for (Parameter param : constructeur.getParameters()) {
-                    parametres.append(param.getType().getSimpleName()).append(", ");
-                }
-                // On enlève la dernière virgule
-                removeLastComa(parametres);
-                // On ajoute ")"
-                parametres.append(")");
-
-                // On affiche le constructeur
-                aff.append(access).append(nom).append(parametres);
-
-            }
-
-            // On récupère et affiche les méthodes de cette classe
-            for (Method methode : classe.getDeclaredMethods()) {
-
-                aff.append("\n\t");
-
-                // On récupère les informations utilses
-                String access = convertPUmlAccess(methode.getModifiers());
-                String nom = removePackageName(methode.getName());
-                StringBuffer parametres = new StringBuffer("(");
-                String typeRetour = removePackageName(methode.getReturnType().getTypeName());
-
-                // On récupère le type du/des paramètre(s) de la méthode
-                for (Parameter param : methode.getParameters()) {
-                    parametres.append(param.getType().getSimpleName()).append(", ");
-                }
-                // On enlève la dernière virgule
-                removeLastComa(parametres);
-                // On ajoute ")"
-                parametres.append(")");
-
-                // On affiche la méthode
-                aff.append(access).append(nom).append(parametres).append(" : ").append(typeRetour);
+                // Retour à la ligne
+                bufferedWriter.newLine();
 
             }
 
             // On ajoute le "@enduml"
-            aff.append("\n}\n@enduml");
+            bufferedWriter.write("@enduml");
 
-            // On insert le code généré dans un fichier
-            createPUmlFile(aff.toString(), nomFichierPlantUml);
+            // Fermeture du fichier
+            bufferedWriter.close();
 
-            // On retourne l'affichage final
-            return aff.toString();
-
+        } catch (IOException e){
+            System.out.println(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            return "La classe n'a pas été trouvée";
-        }
+
+    }
+
+
+    /**
+     * Méthode qui récupère le code plantuml balisé d'une classe à examiner
+     * @param modelClass La classe de type ModelClass que l'on veut traiter
+     * @return le code plantuml en String
+     */
+    private static String getPUmlCode(ModelClass modelClass){
+
+
+        String className = modelClass.getName();
+
+        // Initialisation de l'affichage final
+        StringBuffer aff = new StringBuffer();
+
+        // A MODIFIER APRES ITERATION //
+
+        // On affiche le type de classe
+        aff.append("class ");
+
+        // On affiche le nom de la classe
+        aff.append(className);
+
+        // Acolades
+        aff.append("{\n");
+        aff.append("}\n");
+
+        //----------------------------//
+
+        return aff.toString();
+
 
     }
 
@@ -442,10 +407,6 @@ public class Export {
         return res.toString();
 
     }
-
-
-
-
 
 
 
@@ -506,39 +467,6 @@ public class Export {
     }
 
 
-
-    /**
-     * Méthode qui créer un fichier au format PlantUML dans le dossier plantUmlFiles à la racine du projet
-     * @param code Lignes de code au format PlantUML à mettre dans le fichier
-     * @param nomFichier Nom du fichier qu'aura le nouveau fichier
-     */
-    private static void createPUmlFile(String code, String nomFichier) {
-
-        try {
-
-            // On test le nom du fichier pour ne pas avoir de doublons
-            nomFichier = testForValidFileName(nomFichier, ".puml", "plantUmlFiles/");
-
-            // On initialise de façon abstraite le fichier dans le répertoire /plantUmlFiles
-            // en ajoutant l'extension ".puml"
-            File fichier = new File("plantUmlFiles/" + nomFichier + ".puml");
-
-            // On ouvre le fichier et on y insert le code
-            FileWriter fichierEcriture = new FileWriter(fichier);
-            fichierEcriture.write(code);
-
-            // On ferme le fichier
-            fichierEcriture.close();
-
-        }
-        // Erreur IOException
-        catch (IOException e) {
-            System.out.println("Fichier non créé :\n" + e.getMessage());
-        }
-
-    }
-
-    // REFACTOR POSSIBLE AVEC LE CODE DE LA METHODE PRECEDENTE
 
     /**
      * Méthode qui créer un fichier au format Java dans le dossier plantUmlFiles à la racine du projet
