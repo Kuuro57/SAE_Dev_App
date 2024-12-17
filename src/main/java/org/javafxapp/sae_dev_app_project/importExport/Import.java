@@ -64,39 +64,44 @@ public class Import {
 
     }
 
-    /*
-    * méthode qui importe toutes les classes d'un package
-    *  @param view Vue qui comprend toutes les classes
-    * @return True si l'import s'est bien déroulé, false sinon
-    *
-    * */
 
+
+    /**
+     * Méthode qui importe toutes les classes d'un package
+     * @param view Vue qui comprend toutes les classes
+     * @return True si l'import s'est bien déroulé, false sinon
+     */
     public static boolean importPackage(ViewAllClasses view) throws ClassNotFoundException {
-        // On demande à l'utilisateur de choisir un fichier .class
+
+        // On demande à l'utilisateur de choisir un dossier où ce trouve les fichiers .class
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
         File file = fileChooserHandler.openPackageChooser();
-        // Si un fichier a été choisi
-        System.out.println(file);
+
+        // Si un dossier a été choisi
         if (file != null) {
-            // on récupère la liste des fichiers du package
+
+            // On récupère la liste des fichiers dans le dossier
             File[] files = file.listFiles();
-            // pour chaque fichier on importe la classe , boucle
+
+            // Pour chaque fichier on importe la classe
             for (File f : files) {
+
                 // On récupère le chemin du fichier et le nom de la classe
                 String classPath = f.getParent();
                 String className = f.getName().replace(".class", "");
 
-                // On charge la classe
+                // On charge la classe avec le CustomClassLoader
                 CustomClassLoader customClassLoader = new CustomClassLoader(classPath);
-
-                // On charge la classe
                 Class<?> loadedClass = customClassLoader.loadClass(className);
 
                 // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
                 ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
                 model.addObserver(view);
                 view.addClass(model);
+
             }
+
+            // On retourne true
             return true;
 
 
@@ -106,6 +111,7 @@ public class Import {
             // On retourne false
             return false;
         }
+        
     }
 
 
