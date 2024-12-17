@@ -82,6 +82,8 @@ public class Import {
 
             // On récupère la liste des fichiers dans le dossier
             File[] files = file.listFiles();
+            // ne garde que les fichiers .class en regardant l'extension
+            files = file.listFiles((dir, name) -> name.endsWith(".class"));
 
             // Pour chaque fichier on importe la classe
             for (File f : files) {
