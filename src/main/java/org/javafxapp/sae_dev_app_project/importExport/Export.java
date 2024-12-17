@@ -10,9 +10,11 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import javax.imageio.ImageIO;
-import javax.swing.text.View;
 
 
+/**
+ * Classe qui contient toutes les méthodes pour exporter le diagramme sous différents formats
+ */
 public class Export {
 
 
@@ -124,7 +126,7 @@ public class Export {
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
         File directory = fileChooserHandler.openRepositoryPath();
 
-        String codejava;
+        String codeJava;
 
         try {
 
@@ -142,10 +144,10 @@ public class Export {
                 BufferedWriter bufferedWriter = new BufferedWriter(writer);
 
                 // On récupère le code puml de la classe actuellement traitée dans la boucle
-                codejava = getJavaFrameCode(view.getAllClasses().get(i));
+                codeJava = getJavaFrameCode(view.getAllClasses().get(i));
 
                 // Ecriture du code puml récupéré de la classe
-                bufferedWriter.write(codejava);
+                bufferedWriter.write(codeJava);
 
                 // Fermeture du fichier
                 bufferedWriter.close();
@@ -160,26 +162,21 @@ public class Export {
     }
 
 
+
+    /**
+     * Méthode qui créé le squelette de la classe Java à partir d'un modèle
+     * @param modelClass Modèle d'une classe
+     * @return Un String contenant le squelette Java
+     */
     public static String getJavaFrameCode(ModelClass modelClass) {
 
         // Initialisation de l'affichage final
         StringBuffer aff = new StringBuffer();
 
-        String nomClasse = modelClass.getName();
+        // Intitué de la classe
+        aff.append("class " + modelClass.getName() + " {\n");
 
-        // Si la classe traitée est une Classe
-        aff.append("class ");
-
-        // On affiche le nom de la classe
-        aff.append(nomClasse);
-
-        // Première accolade
-        aff.append(" {");
-
-        // Vide pour le pattern
-        aff.append("\n");
-
-        // Dernière accolade
+        // On ferme la classe
         aff.append("}");
 
         return aff.toString();
@@ -187,8 +184,9 @@ public class Export {
     }
 
 
+
     /**
-     * Méthode qui exporte une capture d'écran de l'application au format PNG dans le répertoire path
+     * Méthode qui exporte une capture d'écran de l'application au format PNG
      * @param view Vue contenant toutes les classes
      */
     public static void exportInPNG(ViewAllClasses view) {
@@ -231,6 +229,7 @@ public class Export {
 
     /**
      * Méthode qui construit un fichier PlantUml à partir d'une liste de classes Java récupérée de la vue
+     * @param view Vue qui contient la liste de toutes les classes
      */
     public static void exportInPUml(ViewAllClasses view) {
 
@@ -279,10 +278,11 @@ public class Export {
     }
 
 
+
     /**
-     * Méthode qui récupère le code plantuml balisé d'une classe à examiner
+     * Méthode qui récupère le code plantuml balisé d'une classe
      * @param modelClass La classe de type ModelClass que l'on veut traiter
-     * @return le code plantuml en String
+     * @return Le code plantuml en String
      */
     private static String getPUmlCode(ModelClass modelClass){
 
@@ -314,7 +314,7 @@ public class Export {
 
 
     /**
-     * Méthode qui retourne le bon caractère pour représenter l'accès en UML (+, -, #, {abstract})
+     * Méthode qui retourne le bon caractère pour représenter l'accès en UML (+, -, #, {abstract}, {static})
      * @param accessInt Entier qui représente le type d'accès
      * @return Le bon caratère représentant l'accès
      */
@@ -411,80 +411,6 @@ public class Export {
             txt.deleteCharAt(index);
             txt.deleteCharAt(index);
         }
-
-    }
-
-
-
-    /**
-     * Méthode qui créer un fichier au format Java dans le dossier plantUmlFiles à la racine du projet
-     * @param code Lignes de code au format Java à mettre dans le fichier
-     * @param nomFichier Nom du fichier qu'aura le nouveau fichier
-     */
-    private static void createJavaFile(String code, String nomFichier) {
-
-        try {
-
-            // On test le nom du fichier pour ne pas avoir de doublons
-            nomFichier = testForValidFileName(nomFichier, ".java", "JavaFrame/");
-
-            // On initialise de façon abstraite le fichier dans le répertoire /plantUmlFiles
-            // en ajoutant l'extension ".puml"
-            File fichier = new File("JavaFrame/" + nomFichier + ".java");
-
-            // On ouvre le fichier et on y insert le code
-            FileWriter fichierEcriture = new FileWriter(fichier);
-            fichierEcriture.write(code);
-
-            // On ferme le fichier
-            fichierEcriture.close();
-
-        }
-        // Erreur IOException
-        catch (IOException e) {
-            System.out.println("Fichier non créé :\n" + e.getMessage());
-        }
-
-    }
-
-
-
-
-    /**
-     * Méthode qui remplace le nom du fichier donner pour qu'il n'y est pas de doublon dans le dossier donné
-     * @param nomFichier Nom du fichier à tester
-     * @param extension Extension du fichier
-     * @param cheminDossier Chemin du dossier dans lequel le nom du fichier est tester
-     * @return Un String contenant le nom du fichier traité (inchangé si le nom n'est pas présent dans le dossier)
-     */
-    private static String testForValidFileName(String nomFichier, String extension, String cheminDossier) {
-
-        // On initialise le nouveau nom
-        String nouveauNom = nomFichier;
-
-        // On récupère la liste des noms de tous les fichiers dans le dossier donné en paramètre
-        File dossier = new File(cheminDossier);
-        // vérifie que le dossier existe sinon on le créer
-        // cheminDossier
-        if (!dossier.exists()) {
-            dossier.mkdir();
-        }
-        ArrayList<String> listeNomFichiers =
-                new ArrayList<>(Arrays.asList(Objects.requireNonNull(dossier.list())));
-
-        // On initialise i à 1
-        int i = 1;
-        // On boucle temps que le nom du fichier (nom + extension) à tester existe déjà dans la liste
-        // des noms de fichiers
-        while (listeNomFichiers.contains(nouveauNom + extension)) {
-            // On change le nom du fichier test -> nomFichier(i)
-            nouveauNom = nomFichier + "(" + i + ")";
-            // On augmente i de 1
-            i++;
-        }
-
-        // On retourne le fichier avec le bon nom
-        return nouveauNom;
 
     }
 

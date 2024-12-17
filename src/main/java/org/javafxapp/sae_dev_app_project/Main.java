@@ -23,8 +23,6 @@ public class Main extends Application {
         ViewAllClasses graphicView = new ViewAllClasses();
         MenuBar menuBar = new MenuBarHandler().createMenuBar(stage, graphicView);
 
-        // TODO Lier les actions aux boutons
-
 
         // Ajout de la menuBar en haut
         grid.add(menuBar, 0, 0);
@@ -52,22 +50,9 @@ public class Main extends Application {
         graphicView.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, new Insets(0, 0, 0, 0))));
         graphicView.getStyleClass().add("grid-cell");
 
-        // Initialisation des modèles
-        ModelClass model = new ModelClass("boubou");
-        ModelClass model2 = new ModelClass("bobo");
-
-        // On ajoute la vue au modèle pour qu'elle soit notifier du changement
-        model.addObserver(graphicView);
-        model2.addObserver(graphicView);
-
 
         // On ajoute les vues au Gridpane
         grid.add(graphicView, 1, 1);
-
-        // On ajoute le modèle à la vue
-        graphicView.addClass(model);
-        graphicView.addClass(model2);
-        model.notifyObservers();
 
 
         // Initialisation de la scène et affichage de la page
