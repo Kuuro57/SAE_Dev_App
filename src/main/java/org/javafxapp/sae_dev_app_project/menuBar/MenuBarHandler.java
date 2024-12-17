@@ -61,7 +61,7 @@ public class MenuBarHandler {
         // TODO Ajouter l'action correspondante !
 
         MenuItem exportJavaTemplate = new MenuItem("Format squelette Java");
-        // TODO Ajouter l'action correspondante !
+        exportJavaTemplate.setOnAction(actionEvent -> Export.exportInJava(view));
 
 
         // Ajout des items au menu correspondant
@@ -119,7 +119,7 @@ public class MenuBarHandler {
 
 
         // Initialisation des items du menu "Edition>Supprimer"
-        Menu removeMenu = new Menu("Modifier");
+        Menu removeMenu = new Menu("Supprimer");
 
         MenuItem removeAttributeItem = new MenuItem("Attribut");
         // TODO Ajouter l'action correspondante !

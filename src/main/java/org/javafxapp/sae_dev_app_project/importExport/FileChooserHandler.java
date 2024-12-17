@@ -1,5 +1,6 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -36,6 +37,17 @@ public class FileChooserHandler {
 
 
 
+    public File openRepositoryPath(){
+
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Choisir un repertoire");
+        
+        return directoryChooser.showDialog(null);
+
+    }
+
+
+
     /**
      * Méthode qui ouvre un pop-up permettant de choisir un dossier et un nom de fichier
      * @return Un objet de type File comprenant le chemin et le nom du fichier à enregistrer
@@ -58,6 +70,7 @@ public class FileChooserHandler {
                 fileType = "Fichier PNG";
                 extension = "*.png";
                 defaultFileName = "image.png";
+                fileChooser.setInitialFileName(defaultFileName);
                 break;
 
             // Cas où on exporte en code plantUml
@@ -66,6 +79,14 @@ public class FileChooserHandler {
                 fileType = "Fichier TXT";
                 extension = "*.txt";
                 defaultFileName = "code.txt";
+                fileChooser.setInitialFileName(defaultFileName);
+                break;
+
+            // Cas où on exporte en squelette Java
+            case "java":
+                title = "Enregistrer le fichier .java";
+                fileType = "Fichier Java";
+                extension = "*.java";
                 break;
 
             default:
@@ -76,7 +97,6 @@ public class FileChooserHandler {
         fileChooser.setTitle(title);
         FileChooser.ExtensionFilter pumlFilter = new FileChooser.ExtensionFilter(fileType, extension);
         fileChooser.getExtensionFilters().add(pumlFilter);
-        fileChooser.setInitialFileName(defaultFileName);
 
         // Affichage du FileChooser
         return fileChooser.showSaveDialog(null);

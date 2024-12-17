@@ -10,6 +10,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.text.View;
 
 
 public class Export {
@@ -114,129 +115,76 @@ public class Export {
 
 
     /**
-     * Méthode qui renvoie le squelette d'une classe
-     * @param nomClasse Nom de la classe dont on veut le squelette
+     * Méthode qui exporte le squelette Java d'une ou plusieurs classes
+     * @param view Vue contenant les classes à traiter
      */
-    public static String exportInJava(String nomClasse) {
+    public static void exportInJava(ViewAllClasses view) {
+
+        // Affichage d'un FileChooser pour que l'utilisateur choisisse le chemin et le nom du fichier
+        FileChooserHandler fileChooserHandler = new FileChooserHandler();
+        File directory = fileChooserHandler.openRepositoryPath();
+
+        String codejava;
 
         try {
 
-            // Initialisation de l'affichage final
-            StringBuffer aff = new StringBuffer();
-            // On récupère la classe sous forme d'un objet Class depuis son nom
-            Class<?> classe = null;
-            if (FileManipulator.hasBeenLoaded((nomClasse)) != null){
-                classe = FileManipulator.hasBeenLoaded((nomClasse));
-            }
-            else{
-                classe = Class.forName(nomClasse);
-            }
+            // Boucle pour parcourir toutes les classes du diagramme dans la vue
+            for (int i = 0; i < view.getAllClasses().size(); i++) {
 
-            // On récupère et ajoute à l'affichage le type d'accessibilité de la classe
-            String nomTypeClasse = Modifier.toString(classe.getModifiers());
-            aff.append(nomTypeClasse);
+                String className = view.getAllClasses().get(i).getName(); // Supposons que `getName()` donne le nom de la classe
+                String fileName = className + ".java";
 
-            // On récupère et ajoute à l'affichage le type de fichier (classe (abstraite), interface)
-            if (classe.isInterface()) {
-                aff.append(" interface");
-            }
-            else {
-                aff.append(" class ");
-            }
+                File file = new File(directory, fileName);
 
-            // On ajoute à l'affichage le nom de la classe
-            aff.append(removePackageName(nomClasse));
+                Writer writer = new FileWriter(file);
 
-            // Si la classe implemente une interface (ou plusieurs)
-            if (classe.getInterfaces().length != 0) {
+                // Ouverture du fichier en mode écriture
+                BufferedWriter bufferedWriter = new BufferedWriter(writer);
 
-                aff.append(" implements ");
-                // On boucle sur les interfaces
-                for (Class<?> c : classe.getInterfaces()) {
-                    // On ajoute à l'affichage le nom de la classe + ", "
-                    aff.append(removePackageName(c.getName())).append(", ");
-                }
-                // On retire la dernière virgule
-                removeLastComa(aff);
+                // On récupère le code puml de la classe actuellement traitée dans la boucle
+                codejava = getJavaFrameCode(view.getAllClasses().get(i));
+
+                // Ecriture du code puml récupéré de la classe
+                bufferedWriter.write(codejava);
+
+                // Fermeture du fichier
+                bufferedWriter.close();
 
             }
 
-            // Si la classe a une classe mère
-            if (!(classe.getSuperclass() == null)) {
-                // Si la classe n'hérite pas de la classe Object
-                if (!(classe.getSuperclass().getName().equals("java.lang.Object"))) {
-                    // On ajoute " extends" + le nom de la classe
-                    aff.append(" extends ").append(classe.getSuperclass().getSimpleName());
-                }
-            }
-
-            // On ajoute le "{"
-            aff.append(" {\n");
-
-            // On récupère le(s) attribut(s) de la classe (accessibilité, type, nom) + ";"
-            for (Field att : classe.getDeclaredFields()) {
-                aff.append("\n");
-                String nomAccessAttribut = Modifier.toString(att.getModifiers());
-                String typeAttribut = removePackageName(att.getGenericType().getTypeName());
-                String nomAttribut = att.getName();
-
-                // On ajoute l'attribut à l'affichage
-                aff.append("\t").append(nomAccessAttribut).append(" ").append(typeAttribut).append(" ").append(nomAttribut).append(";");
-            }
-
-            aff.append("\n");
-
-            // On récupère le(s) constructeur(s) publique de la classe (public, nom, type de paramètre(s)) + "{}"
-            for (Constructor<?> constructeur : classe.getDeclaredConstructors()) {
-                aff.append("\n\tpublic ");
-                String nomConstructeur = removePackageName(constructeur.getName());
-                StringBuffer parametres = new StringBuffer("(");
-
-                // On boucle sur les paramètres du constructeur
-                for (Parameter param : constructeur.getParameters()) {
-                    String nomAtt = param.getName();
-                    parametres.append(param.getType().getSimpleName()).append(" ").append(nomAtt).append(", ");
-                }
-
-                // On retire la dernière virgule
-                removeLastComa(parametres);
-
-                // On ajoute le constructeur à l'affichage
-                aff.append(nomConstructeur).append(parametres).append(") {}");
-            }
-
-            // On récupères le(s) méthode(s) de la classe (accessibilité, type de retour, nom, paramètre(s)) + "{}"
-            for (Method methode : classe.getDeclaredMethods()) {
-                String access = Modifier.toString(methode.getModifiers());
-                String typeRetour = removePackageName(methode.getReturnType().getTypeName());
-                String nom = methode.getName();
-                StringBuffer parametres = new StringBuffer("(");
-
-                // On récupère tous les paramètres
-                for (Parameter param : methode.getParameters()) {
-                    String nomAtt = param.getName();
-                    parametres.append(param.getType().getSimpleName()).append(" ").append(nomAtt).append(", ");
-                }
-                // On retire la dernière virgule
-                removeLastComa(parametres);
-
-                // On ajoute la méthode à l'affichage
-                aff.append("\n\n\t").append(access).append(" ").append(typeRetour).append(" ").append(nom).append(parametres).append(") {}");
-            }
-
-
-            createJavaFile(aff.toString(), nomClasse);
-
-            // On retourne l'affichage
-            return aff.append("\n\n}").toString();
-
+        } catch (IOException e){
+            System.out.println(e.getMessage());
         }
-        catch (ClassNotFoundException e) {
-            return "Classe non trouvée";
-        }
+
 
     }
 
+
+    public static String getJavaFrameCode(ModelClass modelClass) {
+
+        // Initialisation de l'affichage final
+        StringBuffer aff = new StringBuffer();
+
+        String nomClasse = modelClass.getName();
+
+        // Si la classe traitée est une Classe
+        aff.append("class ");
+
+        // On affiche le nom de la classe
+        aff.append(nomClasse);
+
+        // Première accolade
+        aff.append(" {");
+
+        // Vide pour le pattern
+        aff.append("\n");
+
+        // Dernière accolade
+        aff.append("}");
+
+        return aff.toString();
+
+    }
 
 
     /**
@@ -352,7 +300,7 @@ public class Export {
         // On affiche le nom de la classe
         aff.append(className);
 
-        // Acolades
+        // Accolades
         aff.append("{\n");
         aff.append("}\n");
 
