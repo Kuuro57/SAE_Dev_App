@@ -35,6 +35,23 @@ public class FileChooserHandler {
 
     }
 
+    /**
+     * Méthode qui ouvre un FileChooser pour choisir un fichier .class
+     * @return Objet de type
+     */
+    public File openPackageChooser() {
+        // Création du FileChooser
+        DirectoryChooser packageChooser = new DirectoryChooser();
+
+        packageChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        // Titre de la fenêtre
+        packageChooser.setTitle("Choisir un package de fichie .class");
+        // recupération de la listes des fichiers
+        return packageChooser.showDialog(null);
+
+
+    }
 
 
     public File openRepositoryPath(){
