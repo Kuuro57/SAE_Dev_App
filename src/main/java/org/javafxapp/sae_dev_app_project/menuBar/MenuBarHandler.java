@@ -36,7 +36,14 @@ public class MenuBarHandler {
         });
 
         MenuItem importPackageItem = new MenuItem("Importer un projet");
-        // TODO Ajouter l'action correspondante !
+        importPackageItem.setOnAction(actionEvent -> {
+            try {
+                Import.importPackage(view);
+            }
+            catch (ClassNotFoundException e) {
+                displayError("Erreur lors de l'importation du package ! (Classe non trouvée)");
+            }
+        });
 
         MenuItem exitItem = new MenuItem("Quitter");
         exitItem.setOnAction(actionEvent -> stage.close());

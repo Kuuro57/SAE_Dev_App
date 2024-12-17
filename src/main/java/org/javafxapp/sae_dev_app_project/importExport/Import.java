@@ -1,5 +1,6 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
+import javafx.stage.DirectoryChooser;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
@@ -61,6 +62,50 @@ public class Import {
             return false;
         }
 
+    }
+
+    /*
+    * méthode qui importe toutes les classes d'un package
+    *  @param view Vue qui comprend toutes les classes
+    * @return True si l'import s'est bien déroulé, false sinon
+    *
+    * */
+
+    public static boolean importPackage(ViewAllClasses view) throws ClassNotFoundException {
+        // On demande à l'utilisateur de choisir un fichier .class
+        FileChooserHandler fileChooserHandler = new FileChooserHandler();
+        File file = fileChooserHandler.openPackageChooser();
+        // Si un fichier a été choisi
+        System.out.println(file);
+        if (file != null) {
+            // on récupère la liste des fichiers du package
+            File[] files = file.listFiles();
+            // pour chaque fichier on importe la classe , boucle
+            for (File f : files) {
+                // On récupère le chemin du fichier et le nom de la classe
+                String classPath = f.getParent();
+                String className = f.getName().replace(".class", "");
+
+                // On charge la classe
+                CustomClassLoader customClassLoader = new CustomClassLoader(classPath);
+
+                // On charge la classe
+                Class<?> loadedClass = customClassLoader.loadClass(className);
+
+                // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
+                ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
+                model.addObserver(view);
+                view.addClass(model);
+            }
+            return true;
+
+
+        }
+        // Sinon si le fichier est null
+        else {
+            // On retourne false
+            return false;
+        }
     }
 
 
