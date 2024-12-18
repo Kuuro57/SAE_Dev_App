@@ -1,10 +1,16 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
 import javafx.stage.DirectoryChooser;
+import org.javafxapp.sae_dev_app_project.classComponent.Methode;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 
 
 public class Import {
@@ -16,8 +22,36 @@ public class Import {
      * @return Les informations de la classe
      */
     public static ModelClass getModelClass(String nomClasse) {
+
+        ModelClass modelClass = new ModelClass(nomClasse);
+
+        try {
+
+            Class<?> cla = Class.forName(nomClasse);
+            System.out.println(cla.toString());
+
+            for (Method method : cla.getDeclaredMethods()) {
+
+                ArrayList<String> params = new ArrayList<>();
+
+                for (Parameter parameter : method.getParameters()) {
+
+                    params.add(parameter.getName());
+
+                }
+
+                Methode m = new Methode(Modifier.toString(method.getModifiers()), method.getName(), method.getReturnType().getTypeName(), params);
+
+                modelClass.getMethods().add(m);
+            }
+
+
+        } catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
         // Modele de la classe renvoyée
-        return new ModelClass(nomClasse);
+        return modelClass;
     }
 
 

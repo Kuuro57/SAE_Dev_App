@@ -4,10 +4,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
-import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.classComponent.Methode;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class ModelClass implements Subject {
     private ArrayList<Observer> observerList;
     // Attributs supplémentaires Itération 2
     private ArrayList<Attribute> attributes;
-    private ArrayList<Method> methods;
+    private ArrayList<Methode> methods;
     private ArrayList<ModelClass> inheritedClasses;
 
     public void setExtendedClass(ModelClass extendedClass) {
@@ -36,7 +38,7 @@ public class ModelClass implements Subject {
         return attributes;
     }
 
-    public ArrayList<Method> getMethods() {
+    public ArrayList<Methode> getMethods() {
         return methods;
     }
 
@@ -99,13 +101,46 @@ public class ModelClass implements Subject {
      */
     public VBox getDisplay() {
 
+        int width = 100;
+        int height = 100;
+
+        int nLigne = 25;
+
+        Text nomClasse = new Text(this.name);
+
         VBox v = new VBox();
         v.setAlignment(Pos.TOP_CENTER);
-        v.setPadding(new Insets(3, 3, 3,3));
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-        v.setMinSize(100, 100);
+        v.setMinSize(width, height);
         v.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
-        v.getChildren().add(new Text(this.name));
+        v.getChildren().add(nomClasse);
+
+
+        // Ajout de la ligne sous le nom de la classe
+        Line ligne = new Line();
+        ligne.setStartX(0);
+        ligne.setEndX(width);
+
+        v.getChildren().add(ligne);
+
+        Rectangle r = new Rectangle(width, 25);
+        r.setFill(Color.WHITE);
+        v.getChildren().add(r);
+
+        // Ajout de la ligne sous les attributs
+        Line ligne2 = new Line();
+        ligne2.setStartX(0);
+        ligne2.setEndX(width);
+
+        v.getChildren().add(ligne2);
+
+        // Ajout des méthodes à afficher
+        for (int i = 0; i < this.getMethods().size(); i++) {
+
+            Text nomMethod = new Text(this.getMethods().get(i).getName());
+            v.getChildren().add(nomMethod);
+
+        }
 
         return v;
 
@@ -157,7 +192,7 @@ public class ModelClass implements Subject {
         // On boucle sur les méthodes si il y en a
         if (this.methods != null) {
             str += "Méthodes de la classe : \n";
-            for (Method m : this.methods) {
+            for (Methode m : this.methods) {
                 str += m.toString() + "\n";
             }
         }

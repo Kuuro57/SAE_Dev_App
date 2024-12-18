@@ -2,15 +2,17 @@ package org.javafxapp.sae_dev_app_project.classComponent;
 
 import javafx.scene.layout.HBox;
 
+import java.util.ArrayList;
+
 
 /**
  * Classe qui représente une méthode d'une classe
  */
-public class Method extends ClassComponent {
+public class Methode extends ClassComponent {
 
     // Attributs
     private String returnType; // Type de retour de la méthode
-    private String parameters; // Liste des paramètres de la méthode
+    private ArrayList<String> parameters; // Liste des paramètres de la méthode
 
 
 
@@ -21,7 +23,7 @@ public class Method extends ClassComponent {
      * @param returnType Type de retour de la méthode
      * @param parameters Liste des paramètres de la méthode
      */
-    public Method(String modifier, String name, String returnType, String parameters) {
+    public Methode(String modifier, String name, String returnType, ArrayList<String> parameters) {
         this.modifier = modifier;
         this.name = name;
         this.returnType = returnType;
@@ -41,13 +43,13 @@ public class Method extends ClassComponent {
      * ### GETTERS ###
      */
     public String getReturnType() { return returnType; }
-    public String getParameters() { return parameters; }
+    public ArrayList<String> getParameters() { return parameters; }
 
 
 
     @Override
     public String toString() {
-        return modifier + " " + returnType + " " + name + "(" + parameters + ")";
+        return modifier + " " + returnType + " " + name + "(" + parameters.toString() + ")";
     }
 
 }
