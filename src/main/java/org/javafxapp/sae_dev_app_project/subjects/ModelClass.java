@@ -10,6 +10,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 /**
@@ -107,6 +108,10 @@ public class ModelClass implements Subject {
         v.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         v.getChildren().add(new Text(this.name));
 
+        for (Attribute a : this.attributes) {
+            v.getChildren().add(a.getDisplay());
+        }
+
         return v;
 
     }
@@ -173,8 +178,46 @@ public class ModelClass implements Subject {
             str += "Classe mère de la classe : " + this.extendedClass.getName() + "\n";
         }
         return str;
+    }
 
+    /**
+     * Méthode qui retourne le bon caractère pour représenter l'accès en UML (+, -, #, {abstract})
+     * @param access Il represente le type d'accès
+     * @return Le bon caractère représentant l'accès
+     */
+    public static String convertModifier(String access) {
+        StringBuffer res = new StringBuffer();
 
+        // Si l'attribut (ou la méthode) est private
+        if (access.contains("private")) {
+            // On commence par "- "
+            res.append("- ");
+        }
+        // Sinon si l'attribut (ou la méthode) est protected
+        else if (access.contains("protected")) {
+            // On commence par "# "
+            res.append("# ");
+        }
+        // Sinon
+        else {
+            // On commence par "+ "
+            res.append("+ ");
+        }
+
+        // Si l'attribut (ou la méthode) est static
+        if (access.contains("static")) {
+            // On ajoute "{static} "
+            res.append("{static} ");
+        }
+
+        // Si la méthode est abstract
+        if (access.contains("abstract")) {
+            // On ajoute "{abstract} "
+            res.append("{abstract} ");
+        }
+
+        // On retourne le résultat
+        return res.toString();
     }
 
 }
