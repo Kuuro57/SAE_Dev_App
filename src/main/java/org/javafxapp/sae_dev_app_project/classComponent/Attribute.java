@@ -27,7 +27,7 @@ public class Attribute extends ClassComponent {
      * @param name Nom de l'attribut
      * @param type Type de l'attribut
      */
-    public Attribute(String modifier, String name, String type) {
+    public Attribute(String modifier, String type, String name) {
         this.modifier = modifier;
         this.name = name;
         this.type = type;
@@ -45,7 +45,7 @@ public class Attribute extends ClassComponent {
         hBox.getChildren().add(modifierText);
 
         // Ajout du nom
-        Text nameText = new Text(FileManipulator.removePackageName(name));
+        Text nameText = new Text(name);
         hBox.getChildren().add(nameText);
 
         // Ajout du type

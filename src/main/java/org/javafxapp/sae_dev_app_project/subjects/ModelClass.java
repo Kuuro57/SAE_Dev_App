@@ -23,6 +23,7 @@ public class ModelClass implements Subject {
     private int id; // Id de la classe
     private String name; // Nom de la classe
     private ArrayList<Observer> observerList;
+
     // Attributs supplémentaires Itération 2
     private ArrayList<Attribute> attributes;
     private ArrayList<Method> methods;
@@ -117,24 +118,30 @@ public class ModelClass implements Subject {
         v.getChildren().add(nomClasse);
 
         // VBOX des méthodes
-        VBox vbox = new VBox();
-        vbox.setAlignment(Pos.BASELINE_LEFT);
-        vbox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
-        vbox.setMinSize(100, 25);
-        vbox.setPadding(new Insets(0, 3, 10, 3));
+        VBox vAttributs = new VBox();
+        vAttributs.setAlignment(Pos.BASELINE_LEFT);
+        vAttributs.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
+        vAttributs.setPadding(new Insets(0, 3, 10, 3));
+
+        // VBOX des méthodes
+        VBox vMethods = new VBox();
+        vMethods.setAlignment(Pos.BASELINE_LEFT);
+        vMethods.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
+        vMethods.setPadding(new Insets(0, 3, 10, 3));
+
+        // Ajout des attributs à afficher
+        for (Attribute a : this.attributes) {
+            vAttributs.getChildren().add(a.getDisplay());
+        }
+
+        v.getChildren().add(vAttributs);
 
         // Ajout des méthodes à afficher
         for (Method m : this.methods) {
-
-            vbox.getChildren().add(m.getDisplay());
-
+            vMethods.getChildren().add(m.getDisplay());
         }
 
-        v.getChildren().add(vbox);
-
-        for (Attribute a : this.attributes) {
-            v.getChildren().add(a.getDisplay());
-        }
+        v.getChildren().add(vMethods);
 
         return v;
 
@@ -188,7 +195,7 @@ public class ModelClass implements Subject {
     public String getName() { return name; }
 
 
-    /*
+    /**
     * Méthode toString qui affiche toutes les informations de la classe
     * @return String qui contient toutes les informations de la classe
     */

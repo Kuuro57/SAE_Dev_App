@@ -2,6 +2,7 @@ package org.javafxapp.sae_dev_app_project.importExport;
 
 import javafx.scene.image.WritableImage;
 import javafx.scene.text.Text;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
@@ -176,10 +177,32 @@ public class Export {
         // Intitué de la classe
         aff.append("class " + modelClass.getName() + " {\n");
 
+        // --------------------------- ATTRIBUTS -------------------------------- //
+        for (Attribute a : modelClass.getAttributes()){
+
+            String modifiers = "";
+
+            if(!a.getModifier().isEmpty()) {
+
+                modifiers = a.getModifier() + " ";
+
+            }
+
+            aff.append("\n");
+
+            aff.append("    " + modifiers + FileManipulator.removePackageName(a.getType()) + " " + a.getName() + ";\n");
+
+        }
+
+        aff.append("\n");
+
+        // --------------------------- METHODES -------------------------------- //
+
         // Parcours de toutes les méthodes de la classe
         for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()){
 
             aff.append("\n");
+
             // Ajout de l'en-tête de la méthode
             aff.append("    " + m.getModifier() + " " + FileManipulator.removePackageName(m.getReturnType()) + " " + m.getName() + "(");
 
@@ -280,6 +303,9 @@ public class Export {
                 // On récupère le code puml de la classe actuellement traitée dans la boucle
                 codepuml = getPUmlCode(view.getAllClasses().get(i));
 
+                // Retour à la ligne
+                bufferedWriter.newLine();
+
                 // Ecriture du code puml récupéré de la classe
                 bufferedWriter.write(codepuml);
 
@@ -326,8 +352,41 @@ public class Export {
         // Accolades
         aff.append("{\n");
 
+
+        // ----------------------------- ATTRIBUTS ------------------------------- //
+
+        String modifiers = "";
+
+        // Parcours de toutes les méthodes
+        for (Attribute a : modelClass.getAttributes()) {
+
+            // Si l'attribut a des modifiers
+            if (!a.getModifier().isEmpty()) {
+
+                modifiers = FileManipulator.convertModifier(a.getModifier());
+
+            // S'il n'en a pas
+            } else {
+
+                modifiers = "# "; // Protected
+
+            }
+
+            // On affiche la méthode sur le diagramme de classe
+            String nomMethod = new String(" " + modifiers + a.getName() + " : " + FileManipulator.removePackageName(a.getType()));
+
+            aff.append(nomMethod + "\n");
+
+        }
+
+
+        // ----------------------------- METHODES ------------------------------- //
+
+        aff.append("\n");
+
         String parametres = "";
 
+        // Parcours de toutes les méthodes
         for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()) {
 
             // Si la méthode requiert des paramètres
@@ -338,15 +397,13 @@ public class Export {
             }
 
             // On affiche la méthode sur le diagramme de classe
-            String nomMethod = new String(FileManipulator.convertModifier(m.getModifier()) + m.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(m.getReturnType()));
+            String nomMethod = new String(" " + FileManipulator.convertModifier(m.getModifier()) + m.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(m.getReturnType()));
 
             aff.append(nomMethod + "\n");
 
         }
 
         aff.append("}\n");
-
-        //----------------------------//
 
         return aff.toString();
 

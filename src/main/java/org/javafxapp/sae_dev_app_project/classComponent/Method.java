@@ -43,12 +43,12 @@ public class Method extends ClassComponent {
         // Si la méthode requiert des paramètres
         if (!this.getParameters().isEmpty()) {
 
-            parametres = ModelClass.displayParams(this.getParameters());
+            parametres = ModelClass.displayParams(parameters);
 
         }
 
         // On affiche la méthode sur le diagramme de classe
-        Text nomMethod = new Text(FileManipulator.convertModifier(this.getModifier()) + this.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(this.getReturnType()));
+        Text nomMethod = new Text(FileManipulator.convertModifier(modifier) + name + "(" + parametres + ") : " + FileManipulator.removePackageName(returnType));
 
         hBox.getChildren().add(nomMethod);
 
