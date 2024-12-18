@@ -72,32 +72,42 @@ public class ViewAllClasses extends Pane implements Observer {
     @Override
     public void update(Subject s) {
 
-        // On initialise les coordonnées de la vbox à (0, 0)
-        int coo_x = 0;
-        int coo_y = 0;
-
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
             // On récupère l'affichage de la classe
             VBox display = m.getDisplay();
             // On lui donnes les coordonnées
-            display.setLayoutX(coo_x);
-            display.setLayoutY(coo_y);
+            display.setLayoutX(m.getX());
+            display.setLayoutY(m.getY());
             // On l'ajoute sur le Pane
             this.getChildren().add(display);
-
-            // On incrémente les coordonnées pour éviter les chevauchements
-            coo_x += 100;
-            coo_y += 50;
         }
+
+    }
+
+
+
+    /**
+     * Méthode qui affiche sur le diagramme les dépendances de la classe
+     * @param m Classe dont on veut afficher les dépendances
+     */
+    private void DisplayDependancies(ModelClass m) {
+
+        // On récupère les coordonnées x et y de la classe
+
+        // On boucle sur les classes héritées de cette classe
+
+            // On récupère les coordonnées x et y de la classe héritée
+
+            //
+
     }
 
 
 
-    public ArrayList<ModelClass> getAllClasses() {
-
-        return this.allClassesList;
-
-    }
+    /*
+     * ### GETTERS ###
+     */
+    public ArrayList<ModelClass> getAllClasses() { return this.allClassesList; }
 
 }
