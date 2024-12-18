@@ -1,16 +1,18 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
-import javafx.stage.DirectoryChooser;
-import org.javafxapp.sae_dev_app_project.classComponent.Methode;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
+import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
+import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.io.File;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+
+import static org.javafxapp.sae_dev_app_project.importExport.FileManipulator.hasBeenLoaded;
 
 
 public class Import {
@@ -21,37 +23,97 @@ public class Import {
      * @param nomClasse Nom de la classe dont on veut les informations
      * @return Les informations de la classe
      */
-    public static ModelClass getModelClass(String nomClasse) {
-
-        ModelClass modelClass = new ModelClass(nomClasse);
+    public static ModelClass getModelClass(String nomClasse, String path) {
+        // modele de la classe à retourner
+        ModelClass modelClasse = new ModelClass(nomClasse);
 
         try {
+            Class<?> classe = null;
+            if (hasBeenLoaded(nomClasse) != null){
+                classe = hasBeenLoaded(nomClasse);
+            }
+            else{
+                System.out.println(nomClasse);
+                // utilisation du custom class loader avec le path spécifié
+                CustomClassLoader cl = new CustomClassLoader(path);
+                classe = cl.findClass(nomClasse);
+            }
+            // ajout liste
+            for (Class<?> c : classe.getInterfaces()) {
 
-            Class<?> cla = Class.forName(nomClasse);
-            System.out.println(cla.toString());
-
-            for (Method method : cla.getDeclaredMethods()) {
-
-                ArrayList<String> params = new ArrayList<>();
-
-                for (Parameter parameter : method.getParameters()) {
-
-                    params.add(parameter.getName());
-
+                // Si la classe a une classe mère, extends
+                if (!(classe.getSuperclass() == null)){
+                    // si la classe mère est une classe abstraite
+                    if (Modifier.isAbstract(classe.getSuperclass().getModifiers())){
+                        // On construit le modèle de la classe mère
+                        ModelClass modelClasseMere = Import.getModelClass(classe.getSuperclass().getSimpleName(),path);
+                        // On ajoute la classe mère comme classe mère de la classe
+                        modelClasse.setExtendedClass(modelClasseMere);
+                    }
                 }
-
-                Methode m = new Methode(Modifier.toString(method.getModifiers()), method.getName(), method.getReturnType().getTypeName(), params);
-
-                modelClass.getMethods().add(m);
             }
 
 
-        } catch (ClassNotFoundException e) {
-            System.out.println(e.getMessage());
+
+            // liste des interfaces implémentées
+            for (Class<?> c : classe.getInterfaces()) {
+                // On construit le modèle de l'interface
+                ModelClass modelInterface = Import.getModelClass(c.getSimpleName(),path);
+                // On ajoute l'interface à la liste des interfaces
+                modelClasse.getInheritedClasses().add(modelInterface);
+            }
+
+
+            // On récupère les attributs de cette classe
+            for (Field att : classe.getDeclaredFields()) {
+                // On ajoute l'accessibilité de l'attribut (private, protected, public)
+                int numModif = att.getModifiers();
+                String nomModif = Modifier.toString(numModif);
+                Attribute attribute = new Attribute(nomModif, att.getGenericType().getTypeName(), att.getName());
+
+                // On ajoute l'attribut à la liste des attributs
+                modelClasse.getAttributes().add(attribute);
+
+            }
+
+            // On récupère le(s) constructeur(s) de cette classe
+            for (java.lang.reflect.Constructor<?> constructeur : classe.getDeclaredConstructors()) {
+                        // on construit l'onjet constructor
+                        Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), constructeur.getName());
+                        // on ajoute le constructeur à la liste des constructeurs
+                        modelClasse.getConstructors().add(constructor);
+            }
+
+
+            // On récupère les méthodes de cette classe
+            for (java.lang.reflect.Method methode : classe.getDeclaredMethods()) {
+                // On affiche l'accessibilité de la méthode
+                int numModif = methode.getModifiers();
+                String nomModif = Modifier.toString(numModif);
+                for (Parameter p : methode.getParameters()) {
+
+
+                    // on construit l'objet method
+                    Method method = new Method(nomModif, methode.getName(), methode.getReturnType().getTypeName());
+                    // On ajoute la méthode à la liste des méthodes
+                    modelClasse.getMethods().add(method);
+                }
+
+            }
+
+
+
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println("La classe " + nomClasse + " n'a pas été trouvée");
             e.printStackTrace();
         }
+        // Debug affichage des informations de la classe
+        System.out.println(modelClasse.toString());
+
+
         // Modele de la classe renvoyée
-        return modelClass;
+        return modelClasse;
     }
 
 
@@ -81,7 +143,7 @@ public class Import {
             Class<?> loadedClass = customClassLoader.loadClass(className);
 
             // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
-            ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
+            ModelClass model = Import.getModelClass(loadedClass.getSimpleName(), classPath);
             model.addObserver(view);
             view.addClass(model);
 
@@ -131,7 +193,7 @@ public class Import {
                 Class<?> loadedClass = customClassLoader.loadClass(className);
 
                 // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
-                ModelClass model = Import.getModelClass(loadedClass.getSimpleName());
+                ModelClass model = Import.getModelClass(loadedClass.getSimpleName(), classPath);
                 model.addObserver(view);
                 view.addClass(model);
 
