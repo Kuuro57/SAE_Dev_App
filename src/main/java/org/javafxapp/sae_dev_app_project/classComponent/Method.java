@@ -16,6 +16,13 @@ public class Method extends ClassComponent {
         this.parameters = new ArrayList<>();
     }
 
+    public Method(String modifier, String name, ArrayList<Parameter> parameters, String returnType) {
+        this.modifier = modifier;
+        this.name = name;
+        this.returnType = returnType;
+        this.parameters = parameters;
+    }
+
     public String getReturnType() {
         return returnType;
     }

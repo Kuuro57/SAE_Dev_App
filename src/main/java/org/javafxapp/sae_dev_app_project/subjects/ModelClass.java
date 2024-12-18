@@ -9,9 +9,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
-import org.javafxapp.sae_dev_app_project.classComponent.Methode;
+import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
+import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
+import javax.print.DocFlavor;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
 /**
@@ -25,7 +29,7 @@ public class ModelClass implements Subject {
     private ArrayList<Observer> observerList;
     // Attributs supplémentaires Itération 2
     private ArrayList<Attribute> attributes;
-    private ArrayList<Methode> methods;
+    private ArrayList<Method> methods;
     private ArrayList<ModelClass> inheritedClasses;
 
     public void setExtendedClass(ModelClass extendedClass) {
@@ -38,7 +42,7 @@ public class ModelClass implements Subject {
         return attributes;
     }
 
-    public ArrayList<Methode> getMethods() {
+    public ArrayList<Method> getMethods() {
         return methods;
     }
 
@@ -108,6 +112,7 @@ public class ModelClass implements Subject {
 
         Text nomClasse = new Text(this.name);
 
+        // VBOX de case classe
         VBox v = new VBox();
         v.setAlignment(Pos.TOP_CENTER);
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
@@ -115,37 +120,58 @@ public class ModelClass implements Subject {
         v.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         v.getChildren().add(nomClasse);
 
-
-        // Ajout de la ligne sous le nom de la classe
-        Line ligne = new Line();
-        ligne.setStartX(0);
-        ligne.setEndX(width);
-
-        v.getChildren().add(ligne);
-
-        Rectangle r = new Rectangle(width, 25);
-        r.setFill(Color.WHITE);
-        v.getChildren().add(r);
-
-        // Ajout de la ligne sous les attributs
-        Line ligne2 = new Line();
-        ligne2.setStartX(0);
-        ligne2.setEndX(width);
-
-        v.getChildren().add(ligne2);
+        // VBOX des méthodes
+        VBox vbox = new VBox();
+        vbox.setAlignment(Pos.BASELINE_LEFT);
+        vbox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
+        vbox.setMinSize(100, 25);
+        vbox.setPadding(new Insets(0, 3, 10, 3));
 
         // Ajout des méthodes à afficher
         for (int i = 0; i < this.getMethods().size(); i++) {
 
-            Text nomMethod = new Text(this.getMethods().get(i).getName());
-            v.getChildren().add(nomMethod);
+            Method actual = this.getMethods().get(i);
+            String parametres = "";
+
+            // Si la méthode requiert des paramètres
+            if (!actual.getParameters().isEmpty()) {
+
+                parametres = displayParams(actual.getParameters());
+
+            }
+
+            // On affiche la méthode sur le diagramme de classe
+            Text nomMethod = new Text(FileManipulator.convertModifier(actual.getModifier()) + actual.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(actual.getReturnType()));
+            vbox.getChildren().add(nomMethod);
 
         }
+
+        v.getChildren().add(vbox);
 
         return v;
 
     }
 
+    /**
+     * Méthode de traitement de la liste de paramètres d'une méthode pour changer l'affichage
+     * @param listParams Liste des paramètres à traiter
+     * @return L'affichage souhaité pour les paramètres des méthodes
+     */
+    private String displayParams(ArrayList<Parameter> listParams){
+
+        StringBuffer res = new StringBuffer();
+
+        for(Parameter p : listParams){
+
+            res.append(p.getName() + " : " + FileManipulator.removePackageName(p.getType().toString()) + ", ");
+
+        }
+
+        FileManipulator.removeLastComa(res);
+
+        return res.toString();
+
+    }
 
    @Override
     public void addObserver(Observer o) {
@@ -192,7 +218,7 @@ public class ModelClass implements Subject {
         // On boucle sur les méthodes si il y en a
         if (this.methods != null) {
             str += "Méthodes de la classe : \n";
-            for (Methode m : this.methods) {
+            for (Method m : this.methods) {
                 str += m.toString() + "\n";
             }
         }

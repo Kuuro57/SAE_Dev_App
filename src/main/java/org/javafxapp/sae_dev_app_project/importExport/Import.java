@@ -33,7 +33,6 @@ public class Import {
                 classe = hasBeenLoaded(nomClasse);
             }
             else{
-                System.out.println(nomClasse);
                 // utilisation du custom class loader avec le path spécifié
                 CustomClassLoader cl = new CustomClassLoader(path);
                 classe = cl.findClass(nomClasse);
@@ -89,15 +88,21 @@ public class Import {
             for (java.lang.reflect.Method methode : classe.getDeclaredMethods()) {
                 // On affiche l'accessibilité de la méthode
                 int numModif = methode.getModifiers();
+
                 String nomModif = Modifier.toString(numModif);
+
+                ArrayList<Parameter> listParams = new ArrayList<>();
+
                 for (Parameter p : methode.getParameters()) {
 
+                    listParams.add(p);
 
-                    // on construit l'objet method
-                    Method method = new Method(nomModif, methode.getName(), methode.getReturnType().getTypeName());
-                    // On ajoute la méthode à la liste des méthodes
-                    modelClasse.getMethods().add(method);
                 }
+
+                // on construit l'objet method
+                Method method = new Method(nomModif, methode.getName(), listParams, methode.getReturnType().getTypeName());
+                // On ajoute la méthode à la liste des méthodes
+                modelClasse.getMethods().add(method);
 
             }
 
@@ -108,8 +113,6 @@ public class Import {
             System.out.println("La classe " + nomClasse + " n'a pas été trouvée");
             e.printStackTrace();
         }
-        // Debug affichage des informations de la classe
-        System.out.println(modelClasse.toString());
 
 
         // Modele de la classe renvoyée
