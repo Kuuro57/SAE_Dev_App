@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class ViewAllClasses extends Pane implements Observer {
 
     // Attributs
-    private ArrayList<ModelClass> allClassesList;
+    private ArrayList<ModelClass> allClassesList; // Liste qui contient toutes les classes sur le diagramme
 
 
     /**

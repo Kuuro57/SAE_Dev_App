@@ -20,39 +20,15 @@ public class ModelClass implements Subject {
     // Attributs
     private int id; // Id de la classe
     private String name; // Nom de la classe
-    private ArrayList<Observer> observerList;
-    // Attributs supplémentaires Itération 2
-    private ArrayList<Attribute> attributes;
-    private ArrayList<Method> methods;
-    private ArrayList<ModelClass> inheritedClasses;
+    private int x; // Coordonnée x de l'affichage de la classe sur le diagramme
+    private int y; // Coordonnée y de l'affichage de la classe sur le diagramme
+    private ArrayList<Observer> observerList; // Liste qui contient tous les observeurs liés au modèle
+    private ArrayList<Attribute> attributes; // Liste des attribues de la classe
+    private ArrayList<Method> methods; // Liste des méthodes de la classe
+    private ArrayList<Constructor> constructors; // Liste des constructeurs de la classe
+    private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
+    private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
 
-    public void setExtendedClass(ModelClass extendedClass) {
-        this.extendedClass = extendedClass;
-    }
-
-    private ModelClass extendedClass;
-
-    public ArrayList<Attribute> getAttributes() {
-        return attributes;
-    }
-
-    public ArrayList<Method> getMethods() {
-        return methods;
-    }
-
-    public ArrayList<ModelClass> getInheritedClasses() {
-        return inheritedClasses;
-    }
-
-    public ModelClass getExtendedClass() {
-        return extendedClass;
-    }
-
-    public ArrayList<Constructor> getConstructors() {
-        return constructors;
-    }
-
-    private ArrayList<Constructor> constructors;
 
 
     /**
@@ -62,35 +38,16 @@ public class ModelClass implements Subject {
     public ModelClass(String n) {
         this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
         this.name = n;
+        this.x = 0;
+        this.y = 0;
         this.observerList = new ArrayList<>();
         this.attributes = new ArrayList<>();
         this.methods = new ArrayList<>();
         this.inheritedClasses = new ArrayList<>();
         this.extendedClass = null;
         this.constructors = new ArrayList<>();
-
     }
 
-    /**
-     * Constructeur qui prend en paramètre le nom de la classe et tous les attributs de la classe
-     * @param n Nom de la classe
-     * @param e Classe mère
-     *
-     */
-
-    public ModelClass(String n, ModelClass e) {
-        this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
-        this.name = n;
-        this.observerList = new ArrayList<>();
-        this.attributes = new ArrayList<>();
-        this.methods = new ArrayList<>();
-        this.inheritedClasses = new ArrayList<>();
-        this.extendedClass = e;
-        this.constructors = new ArrayList<>();
-
-
-
-    }
 
 
     /**
@@ -110,6 +67,7 @@ public class ModelClass implements Subject {
         return v;
 
     }
+
 
 
    @Override
@@ -132,18 +90,38 @@ public class ModelClass implements Subject {
     }
 
 
-    // ### GETTER / SETTER ###
-    public int getId() { return id; }
-    public void setId(int i) { this.id = i; }
-
-    public String getName() { return name; }
-
 
     /*
-    * Méthode toString qui affiche toutes les informations de la classe
-    * @return String qui contient toutes les informations de la classe
-    */
+     * ### GETTERS / SETTER ###
+     */
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public ArrayList<Attribute> getAttributes() {
+        return attributes;
+    }
+    public ArrayList<Method> getMethods() {
+        return methods;
+    }
+    public ArrayList<ModelClass> getInheritedClasses() {
+        return inheritedClasses;
+    }
+    public ModelClass getExtendedClass() {
+        return extendedClass;
+    }
+    public ArrayList<Constructor> getConstructors() {
+        return constructors;
+    }
+    public void setId(int i) { this.id = i; }
+    public void setExtendedClass(ModelClass extendedClass) {
+        this.extendedClass = extendedClass;
+    }
 
+
+
+    /**
+     * Méthode toString qui affiche toutes les informations de la classe
+     * @return String qui contient toutes les informations de la classe
+     */
     public String toString(){
         String str = "Nom de la classe : " + this.name + "\n";
         str += "Id de la classe : " + this.id + "\n";
@@ -174,7 +152,7 @@ public class ModelClass implements Subject {
         }
         return str;
 
-
     }
+
 
 }
