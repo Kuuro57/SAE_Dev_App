@@ -1,10 +1,13 @@
 package org.javafxapp.sae_dev_app_project.classComponent;
 
+import javafx.scene.DirectionalLight;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.awt.*;
+import java.io.File;
 import java.lang.reflect.Modifier;
 
 
@@ -36,18 +39,17 @@ public class Attribute extends ClassComponent {
     public HBox getDisplay() {
         // Création de la HBox
         HBox hBox = new HBox();
-        hBox.setSpacing(10);
 
         // Ajout du type d'accès
-        Text modifierText = new Text(ModelClass.convertModifier(modifier));
+        Text modifierText = new Text(FileManipulator.convertModifier(modifier));
         hBox.getChildren().add(modifierText);
 
         // Ajout du nom
-        Text nameText = new Text(name);
+        Text nameText = new Text(FileManipulator.removePackageName(name));
         hBox.getChildren().add(nameText);
 
         // Ajout du type
-        Text typeText = new Text(" : " + type);
+        Text typeText = new Text(" : " + FileManipulator.removePackageName(type));
         hBox.getChildren().add(typeText);
 
         return hBox;
@@ -67,7 +69,7 @@ public class Attribute extends ClassComponent {
     @Override
     public String toString() {
         // modifier depuis ModelClass
-        return ModelClass.convertModifier(modifier) + " " + name + " : " + type;
+        return FileManipulator.convertModifier(getModifier()) + " " + FileManipulator.removePackageName(getName()) + " : " + FileManipulator.removePackageName(getType());
     }
 
 }
