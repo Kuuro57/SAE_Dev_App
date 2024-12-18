@@ -128,21 +128,9 @@ public class ModelClass implements Subject {
         vbox.setPadding(new Insets(0, 3, 10, 3));
 
         // Ajout des méthodes à afficher
-        for (int i = 0; i < this.getMethods().size(); i++) {
+        for (Method m : this.methods) {
 
-            Method actual = this.getMethods().get(i);
-            String parametres = "";
-
-            // Si la méthode requiert des paramètres
-            if (!actual.getParameters().isEmpty()) {
-
-                parametres = displayParams(actual.getParameters());
-
-            }
-
-            // On affiche la méthode sur le diagramme de classe
-            Text nomMethod = new Text(FileManipulator.convertModifier(actual.getModifier()) + actual.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(actual.getReturnType()));
-            vbox.getChildren().add(nomMethod);
+            vbox.getChildren().add(m.getDisplay());
 
         }
 
@@ -157,7 +145,7 @@ public class ModelClass implements Subject {
      * @param listParams Liste des paramètres à traiter
      * @return L'affichage souhaité pour les paramètres des méthodes
      */
-    private String displayParams(ArrayList<Parameter> listParams){
+    public static String displayParams(ArrayList<Parameter> listParams){
 
         StringBuffer res = new StringBuffer();
 

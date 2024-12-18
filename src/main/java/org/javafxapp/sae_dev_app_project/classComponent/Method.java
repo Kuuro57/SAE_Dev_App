@@ -1,6 +1,9 @@
 package org.javafxapp.sae_dev_app_project.classComponent;
 
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
+import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -32,12 +35,30 @@ public class Method extends ClassComponent {
     }
 
     @Override
+    public HBox getDisplay(){
+
+        String parametres = "";
+        HBox hBox = new HBox();
+
+        // Si la méthode requiert des paramètres
+        if (!this.getParameters().isEmpty()) {
+
+            parametres = ModelClass.displayParams(this.getParameters());
+
+        }
+
+        // On affiche la méthode sur le diagramme de classe
+        Text nomMethod = new Text(FileManipulator.convertModifier(this.getModifier()) + this.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(this.getReturnType()));
+
+        hBox.getChildren().add(nomMethod);
+
+        return hBox;
+
+    }
+
+    @Override
     public String toString() {
         return modifier + " " + returnType + " " + name + "(" + parameters.toString() + ")";
     }
 
-    @Override
-    public HBox getDisplay() {
-        return null;
-    }
 }
