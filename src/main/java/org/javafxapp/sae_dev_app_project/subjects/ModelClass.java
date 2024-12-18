@@ -4,17 +4,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
-import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
-import javax.print.DocFlavor;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
@@ -136,6 +132,10 @@ public class ModelClass implements Subject {
 
         v.getChildren().add(vbox);
 
+        for (Attribute a : this.attributes) {
+            v.getChildren().add(a.getDisplay());
+        }
+
         return v;
 
     }
@@ -222,8 +222,6 @@ public class ModelClass implements Subject {
             str += "Classe mère de la classe : " + this.extendedClass.getName() + "\n";
         }
         return str;
-
-
     }
 
 }
