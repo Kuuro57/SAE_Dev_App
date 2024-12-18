@@ -20,6 +20,10 @@ public class CustomClassLoader extends ClassLoader {
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         try {
+            // enlève le package
+            String[] tmp = name.split("\\.");
+            name = tmp[tmp.length - 1]; // Récupérer le nom de la classe
+
             // Convertir le nom de la classe en chemin de fichier
             String classFile = classPath + File.separator + name + ".class";
 
