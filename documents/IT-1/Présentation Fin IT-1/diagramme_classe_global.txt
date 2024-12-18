@@ -24,7 +24,7 @@ class CustomClassLoader {
 
 class Export {
   - getPUmlCode(ModelClass): String
-  - {static} getJavaFrameCode(ModelClass): String
+  - getJavaFrameCode(ModelClass): String
   + {static} exportInPNG(ViewAllClasses): void
   + {static} exportInJava(ViewAllClasses): void
   + {static} exportInPUml(ViewAllClasses): void
