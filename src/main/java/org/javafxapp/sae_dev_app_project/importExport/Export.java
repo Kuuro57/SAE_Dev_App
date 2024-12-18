@@ -1,13 +1,13 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
 import javafx.scene.image.WritableImage;
+import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.*;
 
 import javax.imageio.ImageIO;
 
@@ -100,7 +100,7 @@ public class Export {
                 }
                 affichage.append(")");
 
-                // On récupère le type de renvoie de la méthode
+                // On récupère le type de renvoi de la méthode
                 affichage.append(" : ").append(methode.getReturnType());
             }
 
@@ -176,8 +176,31 @@ public class Export {
         // Intitué de la classe
         aff.append("class " + modelClass.getName() + " {\n");
 
+        // Parcours de toutes les méthodes de la classe
+        for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()){
+
+            aff.append("\n");
+            // Ajout de l'en-tête de la méthode
+            aff.append(m.getModifier() + " " + FileManipulator.removePackageName(m.getReturnType()) + " " + m.getName() + "(");
+
+            // Parcours des paramètres des méthodes
+            for (Parameter param : m.getParameters()) {
+
+                // Ajout des paramètres
+                aff.append(FileManipulator.removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(", ");
+
+            }
+
+            FileManipulator.removeLastComa(aff);
+
+            aff.append("){ ");
+            aff.append("}\n");
+
+        }
+
         // On ferme la classe
-        aff.append("}");
+        aff.append("\n}");
 
         return aff.toString();
 
@@ -302,6 +325,25 @@ public class Export {
 
         // Accolades
         aff.append("{\n");
+
+        String parametres = "";
+
+        for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()) {
+
+            // Si la méthode requiert des paramètres
+            if (!m.getParameters().isEmpty()) {
+
+                parametres = ModelClass.displayParams(m.getParameters());
+
+            }
+
+            // On affiche la méthode sur le diagramme de classe
+            String nomMethod = new String(FileManipulator.convertModifier(m.getModifier()) + m.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(m.getReturnType()));
+
+            aff.append(nomMethod + "\n");
+
+        }
+
         aff.append("}\n");
 
         //----------------------------//

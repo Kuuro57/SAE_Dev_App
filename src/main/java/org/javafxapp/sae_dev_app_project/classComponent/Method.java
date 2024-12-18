@@ -37,8 +37,8 @@ public class Method extends ClassComponent {
     @Override
     public HBox getDisplay(){
 
-        String parametres = "";
         HBox hBox = new HBox();
+        String parametres = "";
 
         // Si la méthode requiert des paramètres
         if (!this.getParameters().isEmpty()) {
