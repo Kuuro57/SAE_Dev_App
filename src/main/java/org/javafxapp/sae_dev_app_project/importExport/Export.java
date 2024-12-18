@@ -181,7 +181,7 @@ public class Export {
 
             aff.append("\n");
             // Ajout de l'en-tête de la méthode
-            aff.append(m.getModifier() + " " + FileManipulator.removePackageName(m.getReturnType()) + " " + m.getName() + "(");
+            aff.append("    " + m.getModifier() + " " + FileManipulator.removePackageName(m.getReturnType()) + " " + m.getName() + "(");
 
             // Parcours des paramètres des méthodes
             for (Parameter param : m.getParameters()) {
