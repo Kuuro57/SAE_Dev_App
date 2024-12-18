@@ -5,6 +5,9 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
+import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
+import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
 import java.util.ArrayList;
@@ -18,6 +21,38 @@ public class ModelClass implements Subject {
     private int id; // Id de la classe
     private String name; // Nom de la classe
     private ArrayList<Observer> observerList;
+    // Attributs supplémentaires Itération 2
+    private ArrayList<Attribute> attributes;
+    private ArrayList<Method> methods;
+    private ArrayList<ModelClass> inheritedClasses;
+
+    public void setExtendedClass(ModelClass extendedClass) {
+        this.extendedClass = extendedClass;
+    }
+
+    private ModelClass extendedClass;
+
+    public ArrayList<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public ArrayList<Method> getMethods() {
+        return methods;
+    }
+
+    public ArrayList<ModelClass> getInheritedClasses() {
+        return inheritedClasses;
+    }
+
+    public ModelClass getExtendedClass() {
+        return extendedClass;
+    }
+
+    public ArrayList<Constructor> getConstructors() {
+        return constructors;
+    }
+
+    private ArrayList<Constructor> constructors;
 
 
     /**
@@ -28,6 +63,33 @@ public class ModelClass implements Subject {
         this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
         this.name = n;
         this.observerList = new ArrayList<>();
+        this.attributes = new ArrayList<>();
+        this.methods = new ArrayList<>();
+        this.inheritedClasses = new ArrayList<>();
+        this.extendedClass = null;
+        this.constructors = new ArrayList<>();
+
+    }
+
+    /**
+     * Constructeur qui prend en paramètre le nom de la classe et tous les attributs de la classe
+     * @param n Nom de la classe
+     * @param e Classe mère
+     *
+     */
+
+    public ModelClass(String n, ModelClass e) {
+        this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
+        this.name = n;
+        this.observerList = new ArrayList<>();
+        this.attributes = new ArrayList<>();
+        this.methods = new ArrayList<>();
+        this.inheritedClasses = new ArrayList<>();
+        this.extendedClass = e;
+        this.constructors = new ArrayList<>();
+
+
+
     }
 
 
@@ -50,7 +112,7 @@ public class ModelClass implements Subject {
     }
 
 
-    @Override
+   @Override
     public void addObserver(Observer o) {
         if (!this.observerList.contains(o)) {
             this.observerList.add(o);
@@ -75,5 +137,44 @@ public class ModelClass implements Subject {
     public void setId(int i) { this.id = i; }
 
     public String getName() { return name; }
+
+
+    /*
+    * Méthode toString qui affiche toutes les informations de la classe
+    * @return String qui contient toutes les informations de la classe
+    */
+
+    public String toString(){
+        String str = "Nom de la classe : " + this.name + "\n";
+        str += "Id de la classe : " + this.id + "\n";
+        str += "Attributs de la classe : \n";
+        // On boucle sur les attributs si il y en a
+        if (this.attributes != null) {
+            for (Attribute a : this.attributes) {
+                str += a.toString() + "\n";
+            }
+        }
+        // On boucle sur les méthodes si il y en a
+        if (this.methods != null) {
+            str += "Méthodes de la classe : \n";
+            for (Method m : this.methods) {
+                str += m.toString() + "\n";
+            }
+        }
+        // On boucle sur les classes mères si il y en a
+        if (this.inheritedClasses != null) {
+            str += "Classes mères de la classe : \n";
+            for (ModelClass m : this.inheritedClasses) {
+                str += m.getName() + "\n";
+            }
+        }
+        // On affiche la classe mère si il y en a une
+        if (this.extendedClass != null) {
+            str += "Classe mère de la classe : " + this.extendedClass.getName() + "\n";
+        }
+        return str;
+
+
+    }
 
 }
