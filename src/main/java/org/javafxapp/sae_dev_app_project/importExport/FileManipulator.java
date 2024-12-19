@@ -54,10 +54,14 @@ public class FileManipulator {
             // On commence par "# "
             res.append("# ");
         }
+        // Sinon si l'attribut est public
+        else if (access.contains("public")) {
+            res.append("+ ");
+        }
         // Sinon
         else {
             // On commence par "+ "
-            res.append("+ ");
+            res.append("# ");
         }
 
         // Si l'attribut (ou la méthode) est static

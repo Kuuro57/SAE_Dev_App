@@ -2,6 +2,7 @@ package org.javafxapp.sae_dev_app_project.subjects;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -112,8 +113,10 @@ public class ModelClass implements Subject {
 
         int nLigne = 25;
 
+        //Image icon = new Image("");
+
         // Nom de la classe et Type de classe (abstract, interface, class)
-        Text nomClasse = new Text(this.type + "\n" + this.name);
+        Text nomClasse = new Text(this.type + " " + this.name);
         // VBOX de case classe
         VBox v = new VBox();
         v.setAlignment(Pos.TOP_CENTER);
