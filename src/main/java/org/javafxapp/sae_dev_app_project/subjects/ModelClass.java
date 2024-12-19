@@ -13,6 +13,7 @@ import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
@@ -111,8 +112,17 @@ public class ModelClass implements Subject {
 
         //Image icon = setIcon();
 
+        ArrayList<String> modifs = this.hashType();
+        String modifierClass;
+
+        if (modifs.get(1) == null){
+            modifierClass = modifs.get(2);
+        } else {
+            modifierClass = "<" + modifs.get(1) + "> " +modifs.get(2);
+        }
+
         // Nom de la classe et Type de classe (abstract, interface, class)
-        Text nomClasse = new Text(this.type + " " + this.name);
+        Text nomClasse = new Text(modifierClass + " " + this.name);
         // VBOX de case classe
         VBox v = new VBox();
         v.setAlignment(Pos.TOP_CENTER);
@@ -246,6 +256,10 @@ public class ModelClass implements Subject {
         this.type = type;
     }
 
+    public String getType() {
+        return type;
+    }
+
 
 
     // Méthode qui crée l'icon correcpondant au type de classe
@@ -265,5 +279,32 @@ public class ModelClass implements Subject {
 
     }
 
+    // Décomposition du type de classe récupéré à l'import
+    public ArrayList<String> hashType(){
+
+        String[] res = this.type.split(" ");
+        ArrayList<String> list = new ArrayList<>();
+
+        // S'il y a 3 modifier exemple:'public abstract class'
+        if(res.length == 3){
+            list.add(res[0]);
+            list.add(res[1]);
+            list.add(res[2]);
+        }
+        // S'il y en a 2 exemple : 'public interface'
+        else if(res.length == 2){
+            list.add(res[0]);
+            list.add(null);
+            list.add(res[1]);
+        }
+        // S'il n'y en a qu'un exemple : 'class'
+        else if(res.length == 1){
+            list.add(null);
+            list.add(null);
+            list.add(res[0]);
+        }
+
+        return list;
+    }
 
 }

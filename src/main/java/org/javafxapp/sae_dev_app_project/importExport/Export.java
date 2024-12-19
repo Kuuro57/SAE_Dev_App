@@ -9,6 +9,7 @@ import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.*;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -182,7 +183,7 @@ public class Export {
 
         String implement = "";
 
-        if (modelClass.getInheritedClasses() != null) {
+        if (!modelClass.getInheritedClasses().isEmpty()) {
 
             implement = "implements ";
 
@@ -195,7 +196,7 @@ public class Export {
         }
 
         // Intitué de la classe
-        aff.append("class " + modelClass.getName() + extend + " " + implement);
+        aff.append(modelClass.getType() + " " + modelClass.getName() + extend + " " + implement);
 
         aff.append("{\n");
 
@@ -389,10 +390,14 @@ public class Export {
         // Initialisation de l'affichage final
         StringBuffer aff = new StringBuffer();
 
-        // A MODIFIER APRES ITERATION //
+        ArrayList<String> modifierClass = modelClass.hashType();
+
+        if (modifierClass.get(1) != null){
+            aff.append(modifierClass.get(1) + " ");
+        }
 
         // On affiche le type de classe
-        aff.append("class ");
+        aff.append(modifierClass.get(2) + " ");
 
         // On affiche le nom de la classe
         aff.append(className);
@@ -429,8 +434,6 @@ public class Export {
 
         // ----------------------------- CONSTRUCTEUR ------------------------------- //
 
-        aff.append("\n");
-
         for (org.javafxapp.sae_dev_app_project.classComponent.Constructor c : modelClass.getConstructors()) {
 
             String parametres = "";
@@ -448,8 +451,6 @@ public class Export {
         }
 
         // ----------------------------- METHODES ------------------------------- //
-
-        aff.append("\n");
 
         // Parcours de toutes les méthodes
         for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()) {

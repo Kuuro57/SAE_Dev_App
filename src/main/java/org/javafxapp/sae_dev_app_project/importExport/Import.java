@@ -45,15 +45,35 @@ public class Import {
             // décode le type de la classe
             switch (numModifClass) {
                 case 1537:
-                    type ="Interface";
+                    type ="public interface";
+                    modelClasse.setType(type);
+                    break;
+                case 1026:
+                    type ="private abstract class";
                     modelClasse.setType(type);
                     break;
                 case 1025:
-                    type ="Abstract";
+                    type ="public abstract class";
+                    modelClasse.setType(type);
+                    break;
+                case 1028:
+                    type ="protected abstract class";
+                    modelClasse.setType(type);
+                    break;
+                case 4:
+                    type ="protected class";
+                    modelClasse.setType(type);
+                    break;
+                case 2:
+                    type ="private class";
+                    modelClasse.setType(type);
+                    break;
+                case 1:
+                    type ="public class";
                     modelClasse.setType(type);
                     break;
                 default:
-                    type = "Class";
+                    type = "class";
                     modelClasse.setType(type);
                     break;
             }
