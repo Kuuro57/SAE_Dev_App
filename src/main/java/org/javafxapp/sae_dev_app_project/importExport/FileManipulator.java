@@ -1,5 +1,7 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
+import javafx.scene.image.Image;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;

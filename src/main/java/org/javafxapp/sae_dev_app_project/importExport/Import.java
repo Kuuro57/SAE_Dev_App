@@ -45,15 +45,11 @@ public class Import {
             // décode le type de la classe
             switch (numModifClass) {
                 case 1025:
-                    type ="<<Interface>>";
-                    modelClasse.setType(type);
-                    break;
-                case 1024:
-                    type = "Class";
+                    type ="Interface";
                     modelClasse.setType(type);
                     break;
                 case 1026:
-                    type =" <<Abstract>> Class";
+                    type ="Abstract";
                     modelClasse.setType(type);
                     break;
                 default:

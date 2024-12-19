@@ -113,7 +113,7 @@ public class ModelClass implements Subject {
 
         int nLigne = 25;
 
-        //Image icon = new Image("");
+        //Image icon = setIcon();
 
         // Nom de la classe et Type de classe (abstract, interface, class)
         Text nomClasse = new Text(this.type + " " + this.name);
@@ -248,4 +248,25 @@ public class ModelClass implements Subject {
     public void setType(String type) {
         this.type = type;
     }
+
+
+
+    // Méthode qui crée l'icon correcpondant au type de classe
+    private Image setIcon() {
+
+        switch(this.type){
+
+            case "Interface":
+                return new Image("../../icons/interface_icon.png");
+
+            case "Abstract":
+                return new Image("../../icons/abstract_icon.png");
+
+            default:
+                return new Image("../../icons/class_icon.png");
+        }
+
+    }
+
+
 }

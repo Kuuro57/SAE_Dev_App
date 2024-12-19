@@ -196,6 +196,31 @@ public class Export {
 
         aff.append("\n");
 
+        // --------------------------- CONSTRUCTEUR -------------------------------- //
+
+        for (org.javafxapp.sae_dev_app_project.classComponent.Constructor c : modelClass.getConstructors()){
+
+            aff.append("\n");
+
+            aff.append("    " + c.getModifier() + " " + c.getName() + "(");
+
+            // Parcours des paramètres des méthodes
+            for (Parameter param : c.getParameters()) {
+
+                // Ajout des paramètres
+                aff.append(FileManipulator.removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(", ");
+
+            }
+
+            FileManipulator.removeLastComa(aff);
+
+            aff.append("){ ");
+            aff.append("}\n");
+
+        }
+
+
         // --------------------------- METHODES -------------------------------- //
 
         // Parcours de toutes les méthodes de la classe
@@ -221,6 +246,7 @@ public class Export {
             aff.append("}\n");
 
         }
+
 
         // On ferme la classe
         aff.append("\n}");
@@ -379,6 +405,25 @@ public class Export {
 
         }
 
+        // ----------------------------- CONSTRUCTEUR ------------------------------- //
+
+        aff.append("\n");
+
+        for (org.javafxapp.sae_dev_app_project.classComponent.Constructor c : modelClass.getConstructors()) {
+
+            String parametres = "";
+
+            if (!c.getParameters().isEmpty()) {
+
+                parametres = ModelClass.displayParams(c.getParameters());
+
+            }
+
+            String nomConstruct = new String(" " + FileManipulator.convertModifier(c.getModifier()) + c.getName() + "(" + parametres + ")");
+
+            aff.append(nomConstruct + "\n");
+
+        }
 
         // ----------------------------- METHODES ------------------------------- //
 
