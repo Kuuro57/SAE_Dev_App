@@ -12,13 +12,6 @@ public class Method extends ClassComponent {
     private String returnType;
     private ArrayList<Parameter> parameters;
 
-    public Method(String modifier, String name, String returnType) {
-        this.modifier = modifier;
-        this.name = name;
-        this.returnType = returnType;
-        this.parameters = new ArrayList<>();
-    }
-
     public Method(String modifier, String name, ArrayList<Parameter> parameters, String returnType) {
         this.modifier = modifier;
         this.name = name;
@@ -35,7 +28,7 @@ public class Method extends ClassComponent {
     }
 
     @Override
-    public HBox getDisplay(){
+    public HBox getDisplay() {
 
         HBox hBox = new HBox();
         String parametres = "";

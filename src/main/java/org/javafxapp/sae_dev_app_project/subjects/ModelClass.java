@@ -158,7 +158,7 @@ public class ModelClass implements Subject {
 
         for(Parameter p : listParams){
 
-            res.append(p.getName() + " : " + FileManipulator.removePackageName(p.getType().toString()) + ", ");
+            res.append(p.getName() + " : " + FileManipulator.removePackageName(p.getType().getTypeName()) + ", ");
 
         }
 
