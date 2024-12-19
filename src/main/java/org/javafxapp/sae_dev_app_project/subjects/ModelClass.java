@@ -1,7 +1,9 @@
 package org.javafxapp.sae_dev_app_project.subjects;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -9,6 +11,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.views.Observer;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.util.ArrayList;
 
@@ -18,7 +21,8 @@ import java.util.ArrayList;
 public class ModelClass implements Subject {
 
     // Attributs
-    private int id; // Id de la classe
+    private static int LAST_ID = -1; // Nombre de classes sur le diagramme (qui représente aussi le plus grand ID)
+    private int id;
     private String name; // Nom de la classe
     private int x; // Coordonnée x de l'affichage de la classe sur le diagramme
     private int y; // Coordonnée y de l'affichage de la classe sur le diagramme
@@ -28,6 +32,7 @@ public class ModelClass implements Subject {
     private ArrayList<Constructor> constructors; // Liste des constructeurs de la classe
     private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
     private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
+    private boolean isSelected = false;
 
 
 
@@ -51,18 +56,32 @@ public class ModelClass implements Subject {
 
 
     /**
+     * Méthode qui permet de donner un nouvel id à une classe
+     * @return Le nouvel id
+     */
+    public static int getNewId() {
+        ModelClass.LAST_ID += 1;
+        return ModelClass.LAST_ID;
+    }
+
+
+
+    /**
      * Méthode qui créé l'affichage de la classe
      * @return Objet de type VBox représentant une classe graphiquement
      */
     public VBox getDisplay() {
 
+        // Initialisation de la VBox et de son visuel
         VBox v = new VBox();
+        v.setId(String.valueOf(this.id));
         v.setAlignment(Pos.TOP_CENTER);
         v.setPadding(new Insets(3, 3, 3,3));
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
         v.setMinSize(100, 100);
         v.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         v.getChildren().add(new Text(this.name));
+
 
         return v;
 
@@ -85,7 +104,7 @@ public class ModelClass implements Subject {
     @Override
     public void notifyObservers() {
         for (Observer o : this.observerList) {
-            o.update(this);
+            o.update();
         }
     }
 
@@ -109,6 +128,7 @@ public class ModelClass implements Subject {
     public ArrayList<ModelClass> getInheritedClasses() {
         return inheritedClasses;
     }
+    public void setInheritedClasses(ArrayList<ModelClass> l) { inheritedClasses = l; }
     public ModelClass getExtendedClass() {
         return extendedClass;
     }
@@ -120,16 +140,17 @@ public class ModelClass implements Subject {
         this.extendedClass = extendedClass;
     }
 
-
+    public boolean isSelected() { return isSelected; }
+    public void toogleIsSelected() { this.isSelected = !this.isSelected; }
 
     /**
      * Méthode toString qui affiche toutes les informations de la classe
      * @return String qui contient toutes les informations de la classe
      */
     public String toString(){
-        String str = "Nom de la classe : " + this.name + "\n";
-        str += "Id de la classe : " + this.id + "\n";
-        str += "Attributs de la classe : \n";
+        String str = "Nom : " + this.name + "\n";
+        str += "Id : " + this.id + "\n";
+        str += "Attributs : \n";
         // On boucle sur les attributs si il y en a
         if (this.attributes != null) {
             for (Attribute a : this.attributes) {
@@ -138,21 +159,21 @@ public class ModelClass implements Subject {
         }
         // On boucle sur les méthodes si il y en a
         if (this.methods != null) {
-            str += "Méthodes de la classe : \n";
+            str += "Méthodes : \n";
             for (Method m : this.methods) {
                 str += m.toString() + "\n";
             }
         }
         // On boucle sur les classes mères si il y en a
         if (this.inheritedClasses != null) {
-            str += "Classes mères de la classe : \n";
+            str += "Implémentations : \n";
             for (ModelClass m : this.inheritedClasses) {
                 str += m.getName() + "\n";
             }
         }
         // On affiche la classe mère si il y en a une
         if (this.extendedClass != null) {
-            str += "Classe mère de la classe : " + this.extendedClass.getName() + "\n";
+            str += "Classe mère : " + this.extendedClass.getName() + "\n";
         }
         return str;
 

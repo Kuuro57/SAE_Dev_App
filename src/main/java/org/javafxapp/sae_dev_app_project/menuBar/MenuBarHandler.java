@@ -6,6 +6,9 @@ import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 public class MenuBarHandler {
 
 
@@ -30,7 +33,7 @@ public class MenuBarHandler {
             try {
                 Import.importClass(view);
             }
-            catch (ClassNotFoundException e) {
+            catch (Exception e) {
                 displayError("Erreur lors de l'importation de la classe ! (Classe non trouvée)");
             }
         });
@@ -40,7 +43,7 @@ public class MenuBarHandler {
             try {
                 Import.importPackage(view);
             }
-            catch (ClassNotFoundException e) {
+            catch (Exception e) {
                 displayError("Erreur lors de l'importation du package ! (Classe non trouvée)");
             }
         });

@@ -1,18 +1,12 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
-import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
-import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
-import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
-import static org.javafxapp.sae_dev_app_project.importExport.FileManipulator.hasBeenLoaded;
+import java.util.Arrays;
 
 
 public class Import {
@@ -23,107 +17,84 @@ public class Import {
      * @param nomClasse Nom de la classe dont on veut les informations
      * @return Les informations de la classe
      */
-    public static ModelClass getModelClass(String nomClasse, String path) {
-        // modele de la classe à retourner
-        ModelClass modelClasse = new ModelClass(nomClasse);
+    public static ModelClass getModelClass(ViewAllClasses view, String nomClasse) {
 
-        try {
-            Class<?> classe = null;
-            if (hasBeenLoaded(nomClasse) != null){
-                classe = hasBeenLoaded(nomClasse);
-            }
-            else{
-                System.out.println(nomClasse);
-                // utilisation du custom class loader avec le path spécifié
-                CustomClassLoader cl = new CustomClassLoader(path);
-                classe = cl.findClass(nomClasse);
-            }
-            // ajout liste
-            for (Class<?> c : classe.getInterfaces()) {
+        // Initialisation du potentiel même id
+        int sameId = -1;
 
-                // Si la classe a une classe mère, extends
-                if (!(classe.getSuperclass() == null)){
-                    // si la classe mère est une classe abstraite
-                    if (Modifier.isAbstract(classe.getSuperclass().getModifiers())){
-                        // On construit le modèle de la classe mère
-                        ModelClass modelClasseMere = Import.getModelClass(classe.getSuperclass().getSimpleName(),path);
-                        // On ajoute la classe mère comme classe mère de la classe
-                        modelClasse.setExtendedClass(modelClasseMere);
-                    }
+        // Si la classe est déjà chargée
+        if (SingleClassLoader.hasBeenLoaded(nomClasse)) {
+            // On récupère l'id de la classe déjà chargée
+            for (ModelClass m : view.getAllClasses()) {
+                if (m.getName().equals(nomClasse)) {
+                    sameId = m.getId();
+                    break;
                 }
             }
-
-
-
-            // liste des interfaces implémentées
-            for (Class<?> c : classe.getInterfaces()) {
-                // On construit le modèle de l'interface
-                ModelClass modelInterface = Import.getModelClass(c.getSimpleName(),path);
-                // On ajoute l'interface à la liste des interfaces
-                modelClasse.getInheritedClasses().add(modelInterface);
-            }
-
-
-            // On récupère les attributs de cette classe
-            for (Field att : classe.getDeclaredFields()) {
-                // On ajoute l'accessibilité de l'attribut (private, protected, public)
-                int numModif = att.getModifiers();
-                String nomModif = Modifier.toString(numModif);
-                Attribute attribute = new Attribute(nomModif, att.getGenericType().getTypeName(), att.getName());
-
-                // On ajoute l'attribut à la liste des attributs
-                modelClasse.getAttributes().add(attribute);
-
-            }
-
-            // On récupère le(s) constructeur(s) de cette classe
-            for (java.lang.reflect.Constructor<?> constructeur : classe.getDeclaredConstructors()) {
-                        // on construit l'onjet constructor
-                        Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), constructeur.getName());
-                        // on ajoute le constructeur à la liste des constructeurs
-                        modelClasse.getConstructors().add(constructor);
-            }
-
-
-            // On récupère les méthodes de cette classe
-            for (java.lang.reflect.Method methode : classe.getDeclaredMethods()) {
-                // On affiche l'accessibilité de la méthode
-                int numModif = methode.getModifiers();
-                String nomModif = Modifier.toString(numModif);
-                for (Parameter p : methode.getParameters()) {
-
-
-                    // on construit l'objet method
-                    Method method = new Method(nomModif, methode.getName(), methode.getReturnType().getTypeName());
-                    // On ajoute la méthode à la liste des méthodes
-                    modelClasse.getMethods().add(method);
-                }
-
-            }
-
-
-
         }
-        catch (ClassNotFoundException e) {
-            System.out.println("La classe " + nomClasse + " n'a pas été trouvée");
-            e.printStackTrace();
+
+
+        // On récupère l'objet Class depuis le nom de la classe
+        Class<?> clas = SingleClassLoader.getClassForName(nomClasse);
+
+        // Si la classe n'existe pas
+        if (clas == null) {
+            // On retourne null
+            return null;
         }
-        // Debug affichage des informations de la classe
-        System.out.println(modelClasse.toString());
+
+        // On initialise le modèle de la classe et on lui donne un nouvel ID
+        ModelClass model = new ModelClass(clas.getSimpleName());
 
 
-        // Modele de la classe renvoyée
-        return modelClasse;
+        if (sameId != -1) {
+            model.setId(sameId);
+        }
+        else {
+            model.setId(ModelClass.getNewId());
+        }
+
+
+
+
+        // Si la classe hérite d'une classe
+        if (clas.getSuperclass() != null) {
+            // Si cette classe est déjà chargée
+            if (SingleClassLoader.hasBeenLoaded(clas.getSuperclass().getSimpleName())) {
+                // On ajoute à la classe la classe héritée
+                model.setExtendedClass(Import.getModelClass(view, clas.getSuperclass().getSimpleName()));
+            }
+        }
+
+
+        // On boucle sur les implémentations de la classe
+        ArrayList<ModelClass> newListInterface = new ArrayList<>();
+        for (Class<?> c : clas.getInterfaces()) {
+            // Si la classe est déjà chargée
+            if (SingleClassLoader.hasBeenLoaded(c.getSimpleName())) {
+                // On ajoute à la liste des implémentations du modèle la classe
+                newListInterface.add(Import.getModelClass(view, c.getSimpleName()));
+            }
+        }
+        // On ajoute au modèle les implémentations
+        model.setInheritedClasses(newListInterface);
+
+
+
+        // On retourne le model de la classe
+        return model;
+
     }
+
 
 
     /**
      * Méthode qui importe la classe dans le diagramme des classes
      * @param view Vue qui comprend toutes les classes
-     * @return True si l'import s'est bien déroulé, false sinon
-     * @throws ClassNotFoundException Cas où la classe n'est pas trouvée
+     * @throws FileNotFoundException Cas où la classe n'est pas trouvée
      */
-    public static boolean importClass(ViewAllClasses view) throws ClassNotFoundException {
+    public static void importClass(ViewAllClasses view) throws Exception {
+
 
         // On demande à l'utilisateur de choisir un fichier .class
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
@@ -132,31 +103,24 @@ public class Import {
         // Si un fichier a été choisi
         if (file != null) {
 
-            // On récupère le chemin du fichier et le nom de la classe
-            String classPath = file.getParent();
-            String className = file.getName().replace(".class", "");
+            File rootPath = new File(file.getParent());
 
             // On charge la classe
-            CustomClassLoader customClassLoader = new CustomClassLoader(classPath);
+            SingleClassLoader singleClassLoader = new SingleClassLoader();
+            Class<?> clas = singleClassLoader.loadClassFromFile(file, rootPath);
 
-            // On charge la classe
-            Class<?> loadedClass = customClassLoader.loadClass(className);
-
-            // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
-            ModelClass model = Import.getModelClass(loadedClass.getSimpleName(), classPath);
+            // On créé le modèle et on l'ajoute à la vue graphique
+            ModelClass model = Import.getModelClass(view, clas.getSimpleName());
             model.addObserver(view);
             view.addClass(model);
 
-            // On retourne true
-            return true;
-
         }
 
-        // Sinon si le fichier est null
         else {
-            // On retourne false
-            return false;
+            throw new FileNotFoundException("Fichier non choisi");
         }
+
+
 
     }
 
@@ -165,9 +129,9 @@ public class Import {
     /**
      * Méthode qui importe toutes les classes d'un package
      * @param view Vue qui comprend toutes les classes
-     * @return True si l'import s'est bien déroulé, false sinon
      */
-    public static boolean importPackage(ViewAllClasses view) throws ClassNotFoundException {
+    public static void importPackage(ViewAllClasses view) throws Exception {
+
 
         // On demande à l'utilisateur de choisir un dossier où ce trouve les fichiers .class
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
@@ -176,40 +140,36 @@ public class Import {
         // Si un dossier a été choisi
         if (file != null) {
 
-            // On récupère la liste des fichiers dans le dossier
-            File[] files = file.listFiles();
-            // ne garde que les fichiers .class en regardant l'extension
-            files = file.listFiles((dir, name) -> name.endsWith(".class"));
+            // On récupère la liste des fichiers dans le dossier en ne gardant que les fichiers .class en regardant l'extension
+            File[] files = file.listFiles((dir, name) -> name.endsWith(".class"));
+            File rootPath = file.getAbsoluteFile();
+
+            System.out.println(Arrays.toString(files));
+            System.out.println(rootPath.getAbsolutePath());
+            System.out.println(files[0].getAbsolutePath());
+            System.out.println("-------------");
+
+            // Initialisation du ClassLoader
+            SingleClassLoader singleClassLoader = new SingleClassLoader();
 
             // Pour chaque fichier on importe la classe
             for (File f : files) {
 
-                // On récupère le chemin du fichier et le nom de la classe
-                String classPath = f.getParent();
-                String className = f.getName().replace(".class", "");
-
                 // On charge la classe avec le CustomClassLoader
-                CustomClassLoader customClassLoader = new CustomClassLoader(classPath);
-                Class<?> loadedClass = customClassLoader.loadClass(className);
+                Class<?> clas = singleClassLoader.loadClassFromFile(f, rootPath);
 
                 // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
-                ModelClass model = Import.getModelClass(loadedClass.getSimpleName(), classPath);
+                ModelClass model = Import.getModelClass(view, clas.getSimpleName());
                 model.addObserver(view);
                 view.addClass(model);
 
             }
 
-            // On retourne true
-            return true;
-
-
         }
-        // Sinon si le fichier est null
         else {
-            // On retourne false
-            return false;
+            throw new FileNotFoundException("Dossier non choisi");
         }
-        
+
     }
 
 
