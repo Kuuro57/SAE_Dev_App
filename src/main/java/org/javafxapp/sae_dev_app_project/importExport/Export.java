@@ -174,8 +174,30 @@ public class Export {
         // Initialisation de l'affichage final
         StringBuffer aff = new StringBuffer();
 
+        String extend = "";
+
+        if (modelClass.getExtendedClass() != null) {
+            extend = " extends " + FileManipulator.removePackageName(modelClass.getExtendedClass().getName());
+        }
+
+        String implement = "";
+
+        if (modelClass.getInheritedClasses() != null) {
+
+            implement = "implements ";
+
+            for (ModelClass mc : modelClass.getInheritedClasses()) {
+
+                implement = implement + mc.getName() + " ";
+
+            }
+
+        }
+
         // Intitué de la classe
-        aff.append("class " + modelClass.getName() + " {\n");
+        aff.append("class " + modelClass.getName() + extend + " " + implement);
+
+        aff.append("{\n");
 
         // --------------------------- ATTRIBUTS -------------------------------- //
         for (Attribute a : modelClass.getAttributes()){

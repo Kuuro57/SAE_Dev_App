@@ -30,15 +30,13 @@ public class ModelClass implements Subject {
     private ArrayList<Attribute> attributes;
     private ArrayList<Method> methods;
     private ArrayList<ModelClass> inheritedClasses;
-
+    private ModelClass extendedClass;
 
     private String type;
 
     public void setExtendedClass(ModelClass extendedClass) {
         this.extendedClass = extendedClass;
     }
-
-    private ModelClass extendedClass;
 
     public ArrayList<Attribute> getAttributes() {
         return attributes;
@@ -109,9 +107,6 @@ public class ModelClass implements Subject {
      */
     public VBox getDisplay() {
 
-        int width = 100;
-        int height = 100;
-
         int nLigne = 25;
 
         //Image icon = setIcon();
@@ -122,20 +117,21 @@ public class ModelClass implements Subject {
         VBox v = new VBox();
         v.setAlignment(Pos.TOP_CENTER);
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-        v.setMinSize(width, height);
-        v.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
+        v.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, new CornerRadii(3), new Insets(0, 0, 0, 0))));
         v.getChildren().add(nomClasse);
 
         // VBOX des méthodes
         VBox vAttributs = new VBox();
         vAttributs.setAlignment(Pos.BASELINE_LEFT);
-        vAttributs.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
+        vAttributs.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 0, 0))));
+        vAttributs.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         vAttributs.setPadding(new Insets(0, 3, 10, 3));
 
         // VBOX des méthodes
         VBox vMethods = new VBox();
         vMethods.setAlignment(Pos.BASELINE_LEFT);
-        vMethods.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
+        vMethods.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 0, 0))));
+        vMethods.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         vMethods.setPadding(new Insets(0, 3, 10, 3));
 
         // Ajout des attributs à afficher
