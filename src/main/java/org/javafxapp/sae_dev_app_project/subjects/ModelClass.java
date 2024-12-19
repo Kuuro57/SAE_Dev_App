@@ -29,6 +29,9 @@ public class ModelClass implements Subject {
     private ArrayList<Method> methods;
     private ArrayList<ModelClass> inheritedClasses;
 
+
+    private String type;
+
     public void setExtendedClass(ModelClass extendedClass) {
         this.extendedClass = extendedClass;
     }
@@ -71,6 +74,7 @@ public class ModelClass implements Subject {
         this.inheritedClasses = new ArrayList<>();
         this.extendedClass = null;
         this.constructors = new ArrayList<>();
+        this.type = "";
 
     }
 
@@ -90,6 +94,7 @@ public class ModelClass implements Subject {
         this.inheritedClasses = new ArrayList<>();
         this.extendedClass = e;
         this.constructors = new ArrayList<>();
+        this.type = "";
 
 
 
@@ -107,8 +112,8 @@ public class ModelClass implements Subject {
 
         int nLigne = 25;
 
-        Text nomClasse = new Text(this.name);
-
+        // Nom de la classe et Type de classe (abstract, interface, class)
+        Text nomClasse = new Text(this.type + "\n" + this.name);
         // VBOX de case classe
         VBox v = new VBox();
         v.setAlignment(Pos.TOP_CENTER);
@@ -132,6 +137,11 @@ public class ModelClass implements Subject {
         // Ajout des attributs à afficher
         for (Attribute a : this.attributes) {
             vAttributs.getChildren().add(a.getDisplay());
+        }
+
+        // Ajout des constructeurs à afficher
+        for (Constructor c : this.constructors) {
+            vMethods.getChildren().add(c.getDisplay());
         }
 
         v.getChildren().add(vAttributs);
@@ -231,4 +241,8 @@ public class ModelClass implements Subject {
         return str;
     }
 
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

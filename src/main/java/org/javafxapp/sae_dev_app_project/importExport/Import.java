@@ -37,6 +37,31 @@ public class Import {
                 CustomClassLoader cl = new CustomClassLoader(path);
                 classe = cl.findClass(nomClasse);
             }
+
+            // Type de la classe (abstract, interface, class)
+            int numModifClass = classe.getModifiers();
+            String type = "";
+
+            // décode le type de la classe
+            switch (numModifClass) {
+                case 1025:
+                    type ="<<Interface>>";
+                    modelClasse.setType(type);
+                    break;
+                case 1024:
+                    type = "Class";
+                    modelClasse.setType(type);
+                    break;
+                case 1026:
+                    type =" <<Abstract>> Class";
+                    modelClasse.setType(type);
+                    break;
+                default:
+                    type = "Class";
+                    modelClasse.setType(type);
+                    break;
+            }
+
             // ajout liste
             for (Class<?> c : classe.getInterfaces()) {
 
