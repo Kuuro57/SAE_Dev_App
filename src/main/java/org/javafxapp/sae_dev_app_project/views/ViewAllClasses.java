@@ -140,7 +140,7 @@ public class ViewAllClasses extends Pane implements Observer {
         // On boucle sur les classes présentes
         for (ModelClass m : this.allClassesList) {
             // On récupère un nouveau modèle
-            ModelClass newM = Import.getModelClass(this, m.getName(), true);
+            ModelClass newM = Import.getModelClass(this, m.getName());
 
             // On récupère son ancien ID et ses anciennes coordonnées
             newM.setId(m.getId());
