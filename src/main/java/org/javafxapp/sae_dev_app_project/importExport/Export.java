@@ -1,13 +1,15 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
 import javafx.scene.image.WritableImage;
+import javafx.scene.text.Text;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -100,7 +102,7 @@ public class Export {
                 }
                 affichage.append(")");
 
-                // On récupère le type de renvoie de la méthode
+                // On récupère le type de renvoi de la méthode
                 affichage.append(" : ").append(methode.getReturnType());
             }
 
@@ -168,16 +170,109 @@ public class Export {
      * @param modelClass Modèle d'une classe
      * @return Un String contenant le squelette Java
      */
-    public static String getJavaFrameCode(ModelClass modelClass) {
+    private static String getJavaFrameCode(ModelClass modelClass) {
 
         // Initialisation de l'affichage final
         StringBuffer aff = new StringBuffer();
 
+        String extend = "";
+
+        if (modelClass.getExtendedClass() != null) {
+            extend = " extends " + FileManipulator.removePackageName(modelClass.getExtendedClass().getName());
+        }
+
+        String implement = "";
+
+        if (!modelClass.getInheritedClasses().isEmpty()) {
+
+            implement = "implements ";
+
+            for (ModelClass mc : modelClass.getInheritedClasses()) {
+
+                implement = implement + mc.getName() + " ";
+
+            }
+
+        }
+
         // Intitué de la classe
-        aff.append("class " + modelClass.getName() + " {\n");
+        aff.append(modelClass.getType() + " " + modelClass.getName() + extend + " " + implement);
+
+        aff.append("{\n");
+
+        // --------------------------- ATTRIBUTS -------------------------------- //
+        for (Attribute a : modelClass.getAttributes()){
+
+            String modifiers = "";
+
+            if(!a.getModifier().isEmpty()) {
+
+                modifiers = a.getModifier() + " ";
+
+            }
+
+            aff.append("\n");
+
+            aff.append("    " + modifiers + FileManipulator.removePackageName(a.getType()) + " " + a.getName() + ";\n");
+
+        }
+
+        aff.append("\n");
+
+        // --------------------------- CONSTRUCTEUR -------------------------------- //
+
+        for (org.javafxapp.sae_dev_app_project.classComponent.Constructor c : modelClass.getConstructors()){
+
+            aff.append("\n");
+
+            aff.append("    " + c.getModifier() + " " + c.getName() + "(");
+
+            // Parcours des paramètres des méthodes
+            for (Parameter param : c.getParameters()) {
+
+                // Ajout des paramètres
+                aff.append(FileManipulator.removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(", ");
+
+            }
+
+            FileManipulator.removeLastComa(aff);
+
+            aff.append("){ ");
+            aff.append("}\n");
+
+        }
+
+
+        // --------------------------- METHODES -------------------------------- //
+
+        // Parcours de toutes les méthodes de la classe
+        for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()){
+
+            aff.append("\n");
+
+            // Ajout de l'en-tête de la méthode
+            aff.append("    " + m.getModifier() + " " + FileManipulator.removePackageName(m.getReturnType()) + " " + m.getName() + "(");
+
+            // Parcours des paramètres des méthodes
+            for (Parameter param : m.getParameters()) {
+
+                // Ajout des paramètres
+                aff.append(FileManipulator.removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(", ");
+
+            }
+
+            FileManipulator.removeLastComa(aff);
+
+            aff.append("){ ");
+            aff.append("}\n");
+
+        }
+
 
         // On ferme la classe
-        aff.append("}");
+        aff.append("\n}");
 
         return aff.toString();
 
@@ -257,6 +352,9 @@ public class Export {
                 // On récupère le code puml de la classe actuellement traitée dans la boucle
                 codepuml = getPUmlCode(view.getAllClasses().get(i));
 
+                // Retour à la ligne
+                bufferedWriter.newLine();
+
                 // Ecriture du code puml récupéré de la classe
                 bufferedWriter.write(codepuml);
 
@@ -292,125 +390,91 @@ public class Export {
         // Initialisation de l'affichage final
         StringBuffer aff = new StringBuffer();
 
-        // A MODIFIER APRES ITERATION //
+        ArrayList<String> modifierClass = modelClass.hashType();
+
+        if (modifierClass.get(1) != null){
+            aff.append(modifierClass.get(1) + " ");
+        }
 
         // On affiche le type de classe
-        aff.append("class ");
+        aff.append(modifierClass.get(2) + " ");
 
         // On affiche le nom de la classe
         aff.append(className);
 
         // Accolades
         aff.append("{\n");
-        aff.append("}\n");
 
-        //----------------------------//
+
+        // ----------------------------- ATTRIBUTS ------------------------------- //
+
+        String modifiers = "";
+
+        // Parcours de toutes les méthodes
+        for (Attribute a : modelClass.getAttributes()) {
+
+            // Si l'attribut a des modifiers
+            if (!a.getModifier().isEmpty()) {
+
+                modifiers = FileManipulator.convertModifier(a.getModifier());
+
+            // S'il n'en a pas
+            } else {
+
+                modifiers = "# "; // Protected
+
+            }
+
+            // On affiche la méthode sur le diagramme de classe
+            String nomMethod = new String(" " + modifiers + a.getName() + " : " + FileManipulator.removePackageName(a.getType()));
+
+            aff.append(nomMethod + "\n");
+
+        }
+
+        // ----------------------------- CONSTRUCTEUR ------------------------------- //
+
+        for (org.javafxapp.sae_dev_app_project.classComponent.Constructor c : modelClass.getConstructors()) {
+
+            String parametres = "";
+
+            if (!c.getParameters().isEmpty()) {
+
+                parametres = ModelClass.displayParams(c.getParameters());
+
+            }
+
+            String nomConstruct = new String(" " + FileManipulator.convertModifier(c.getModifier()) + c.getName() + "(" + parametres + ")");
+
+            aff.append(nomConstruct + "\n");
+
+        }
+
+        // ----------------------------- METHODES ------------------------------- //
+
+        // Parcours de toutes les méthodes
+        for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()) {
+
+            String parametres = "";
+
+            // Si la méthode requiert des paramètres
+            if (!m.getParameters().isEmpty()) {
+
+                parametres = ModelClass.displayParams(m.getParameters());
+
+            }
+
+            // On affiche la méthode sur le diagramme de classe
+            String nomMethod = new String(" " + FileManipulator.convertModifier(m.getModifier()) + m.getName() + "(" + parametres + ") : " + FileManipulator.removePackageName(m.getReturnType()));
+
+            aff.append(nomMethod + "\n");
+
+        }
+
+        aff.append("}\n");
 
         return aff.toString();
 
-
-    }
-
-
-
-    /**
-     * Méthode qui retourne le bon caractère pour représenter l'accès en UML (+, -, #, {abstract}, {static})
-     * @param accessInt Entier qui représente le type d'accès
-     * @return Le bon caratère représentant l'accès
-     */
-    private static String convertPUmlAccess(int accessInt) {
-
-        String access = Modifier.toString(accessInt);
-        StringBuffer res = new StringBuffer();
-
-        // Si l'attribut (ou la méthode) est private
-        if (access.contains("private")) {
-            // On commence par "- "
-            res.append("- ");
-        }
-        // Sinon si l'attribut (ou la méthode) est protected
-        else if (access.contains("protected")) {
-            // On commence par "# "
-            res.append("# ");
-        }
-        // Sinon
-        else {
-            // On commence par "+ "
-            res.append("+ ");
-        }
-
-        // Si l'attribut (ou la méthode) est static
-        if (access.contains("static")) {
-            // On ajoute "{static} "
-            res.append("{static} ");
-        }
-
-        // Si la méthode est abstract
-        if (access.contains("abstract")) {
-            // On ajoute "{abstract} "
-            res.append("{abstract} ");
-        }
-
-        // On retourne le résultat
-        return res.toString();
-
-    }
-
-
-
-    /**
-     * Méthode qui retire le package du nom
-     * @param txt La chaîne à traiter
-     * @return Le nom traité
-     */
-    private static String removePackageName(String txt) {
-
-        // Si le text contient des "<>"
-        if (txt.contains("<") && txt.contains(">")) {
-            // On récupère la classe principale
-            String classePrincipale = txt.substring(0, txt.indexOf("<"));
-
-            // On récupère la classe entre "<>"
-            int indexDeb = txt.indexOf("<");
-            int indexFin = txt.indexOf(">");
-            String classeUtilisee = txt.substring(indexDeb, indexFin);
-
-            // On récupère le nom seul de la classe principale
-            String[] res1 = classePrincipale.split("\\.");
-            classePrincipale = res1[res1.length - 1];
-
-            // On récupère le nom seul de la classe entre "<>"
-            String[] res2 = classeUtilisee.split("\\.");
-            classeUtilisee = res2[res2.length - 1];
-
-            // On retourne le nom simple de la classe principale et de la classe utilisée
-            return classePrincipale + "<" + classeUtilisee + ">";
-        }
-        // Sinon
-        else {
-            // On retourne le nom seul de la classe
-            String[] res = txt.split("\\.");
-            return res[res.length - 1];
-        }
-
-    }
-
-
-
-    /**
-     * Méthode qui retire la dernière virgule d'une chaîne de caractère (et l'espace qui suit)
-     * @param txt La chaîne à traiter
-     */
-    private static void removeLastComa(StringBuffer txt) {
-
-        // Si le texte contient une virgule
-        if (txt.toString().contains(",")) {
-            // On récupère l'index là où se trouve la dernière virgule
-            int index = txt.lastIndexOf(",");
-            // On supprime cette virgule et l'espace qui suit
-            txt.deleteCharAt(index);
-            txt.deleteCharAt(index);
-        }
 
     }
 
