@@ -1,14 +1,8 @@
 package org.javafxapp.sae_dev_app_project.classComponent;
 
-import javafx.scene.DirectionalLight;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
-import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
-
-import java.awt.*;
-import java.io.File;
-import java.lang.reflect.Modifier;
 
 
 /**
@@ -18,8 +12,6 @@ public class Attribute extends ClassComponent {
 
     // Attributs
     private String type; // Type de l'attribut
-
-
 
     /**
      * Constructeur de la classe
@@ -34,7 +26,10 @@ public class Attribute extends ClassComponent {
     }
 
 
-
+    /**
+     * Méthode qui retourne l'affichage de l'attribut dans l'interface, on a le modifier, le nom et le type
+     * @return L'affichage de l'attribut dans l'interface
+     */
     @Override
     public HBox getDisplay() {
         // Création de la HBox
@@ -49,15 +44,11 @@ public class Attribute extends ClassComponent {
         hBox.getChildren().add(nameText);
 
         // Ajout du type
-        Text typeText = new Text(" : " + FileManipulator.removePackageName(type));
+        Text typeText = new Text(" : " + FileManipulator.removePackageName(type)); // remove package name pour enlever le nom des packages a chaque fois
         hBox.getChildren().add(typeText);
 
         return hBox;
-
-
     }
-
-
 
     /*
      * ### GETTERS ###
