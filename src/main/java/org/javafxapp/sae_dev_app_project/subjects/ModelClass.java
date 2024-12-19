@@ -12,6 +12,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
+import java.io.InputStream;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
@@ -257,13 +258,13 @@ public class ModelClass implements Subject {
         switch(this.type){
 
             case "Interface":
-                return new Image("../../icons/interface_icon.png");
+                return new Image("");
 
             case "Abstract":
-                return new Image("../../icons/abstract_icon.png");
+                return new Image("");
 
             default:
-                return new Image("../../icons/class_icon.png");
+                return new Image("");
         }
 
     }
