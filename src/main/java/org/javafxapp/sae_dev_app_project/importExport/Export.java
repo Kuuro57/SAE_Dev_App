@@ -384,10 +384,10 @@ public class Export {
 
         aff.append("\n");
 
-        String parametres = "";
-
         // Parcours de toutes les méthodes
         for (org.javafxapp.sae_dev_app_project.classComponent.Method m : modelClass.getMethods()) {
+
+            String parametres = "";
 
             // Si la méthode requiert des paramètres
             if (!m.getParameters().isEmpty()) {
