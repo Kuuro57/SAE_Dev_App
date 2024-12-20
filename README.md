@@ -9,3 +9,8 @@ Membres du groupe :
 - BELALIA BENDJAFAR Amin (AminoBela) amin.belalia-bendjafar6@etu.univ-lorraine.fr
 - DE WASCH Clément (ClemDW) dewasch2u@etu.univ-lorraine.fr
 - MANGIN Adrien (AdrienMGN) adrien.mangin3@etu.univ-lorraine.fr
+
+noah.allart9@etu.univ-lorraine.fr
+amin.belalia-bendjafar6@etu.univ-lorraine.fr
+dewasch2u@etu.univ-lorraine.fr
+adrien.mangin3@etu.univ-lorraine.fr

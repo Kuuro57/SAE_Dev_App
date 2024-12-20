@@ -26,12 +26,10 @@ public class FileChooserHandler {
     public File openFileChooser() {
         // Création du FileChooser
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         // Ajout d'un filtre pour les fichiers .class
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers Class", "*.class"));
         // Titre de la fenêtre
         fileChooser.setTitle("Choisir un fichier .class");
-
         // Affichage de la fenêtre
         return fileChooser.showOpenDialog(null);
 
@@ -48,7 +46,7 @@ public class FileChooserHandler {
         packageChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
         // Titre de la fenêtre
-        packageChooser.setTitle("Choisir un package de fichier .class");
+        packageChooser.setTitle("Choisir un package de fichie .class");
         // recupération de la listes des fichiers
         return packageChooser.showDialog(null);
 

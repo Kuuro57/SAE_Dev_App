@@ -21,6 +21,104 @@ public class Export {
 
 
     /**
+     * Méthode qui récupère et met en forme toutes les informations d'une classe
+     * @param nomClasse Nom de la classe dont on veut les informations
+     * @return Les informations de la classe
+     */
+    public static String getClassInfo(String nomClasse) {
+
+        try {
+
+            // Initialisation de l'affichage final
+            StringBuffer affichage = new StringBuffer("Nom de la classe : ").append(nomClasse);
+            // On récupère la classe sous forme d'un objet Class depuis son nom
+
+
+            Class<?> classe = null;
+            if (FileManipulator.hasBeenLoaded(nomClasse) != null){
+                classe = FileManipulator.hasBeenLoaded((nomClasse));
+            }
+            else{
+                classe = Class.forName(nomClasse);
+            }
+
+
+            // On récupère les classes que cette classe implémente
+            affichage.append("\n\nInterface(s) :");
+            for (Class<?> c : classe.getInterfaces()) {
+                affichage.append("\n - ").append(c.getName());
+            }
+
+            // Si la classe a une classe mère
+            if (!(classe.getSuperclass() == null)){
+                // On récupère la classe mère de cette classe
+                affichage.append("\nClasse mère : ").append(classe.getSuperclass().getName());
+            }
+
+            // On récupère les attributs de cette classe
+            affichage.append("\n\nAttribut(s) :");
+            for (Field att : classe.getDeclaredFields()) {
+                // On ajoute l'accessibilité de l'attribut (private, protected, public)
+                int numModif = att.getModifiers();
+                String nomModif = Modifier.toString(numModif);
+                affichage.append("\n - ").append(nomModif);
+
+                // On ajoute le type de l'attribut
+                affichage.append(" ").append(att.getGenericType().getTypeName());
+
+                // On ajoute son nom
+                affichage.append(" ").append(att.getName());
+            }
+
+            // On récupère le(s) constructeur(s) de cette classe
+            affichage.append("\n\nConstructeur(s) publique(s) :");
+            for (Constructor<?> constructeur : classe.getDeclaredConstructors()) {
+                // On affiche le nom du constructeur
+                affichage.append("\n - ").append(constructeur.getName());
+
+                // On affiche le type de ses paramètres
+                affichage.append("(");
+                for (Parameter param : constructeur.getParameters()) {
+                    affichage.append(param.getType().getTypeName()).append(",");
+                }
+                affichage.append(")");
+            }
+
+            // On récupère les méthodes de cette classe
+            affichage.append("\n\nMéthodes :");
+            for (Method methode : classe.getDeclaredMethods()) {
+                // On affiche l'accessibilité de la méthode
+                int numModif = methode.getModifiers();
+                String nomModif = Modifier.toString(numModif);
+                affichage.append("\n - ").append(nomModif);
+
+                // On affiche le nom de la méthode
+                affichage.append(" ").append(methode.getName());
+
+                // On affiche le type de son/ses paramètre(s)
+                affichage.append("(");
+                for (Parameter param : methode.getParameters()) {
+                    affichage.append(param.getType().getTypeName()).append(",");
+                }
+                affichage.append(")");
+
+                // On récupère le type de renvoi de la méthode
+                affichage.append(" : ").append(methode.getReturnType());
+            }
+
+            // On retourne l'affichage
+            return affichage.toString();
+
+        }
+        catch (ClassNotFoundException e) {
+            return "La classe n'a pas été trouvée";
+        }
+
+    }
+
+
+
+    /**
      * Méthode qui exporte le squelette Java d'une ou plusieurs classes
      * @param view Vue contenant les classes à traiter
      */
