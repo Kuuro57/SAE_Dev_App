@@ -2,7 +2,7 @@ package org.javafxapp.sae_dev_app_project.classComponent;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.lang.reflect.Parameter;
@@ -64,7 +64,7 @@ public class Constructor extends ClassComponent {
         }
 
         // On affiche la méthode sur le diagramme de classe
-        Text nomConstructeur = new Text(FileManipulator.convertModifier(modifier) + name + "(" + parametres + ")");
+        Text nomConstructeur = new Text(Export.convertModifier(modifier) + name + "(" + parametres + ")");
 
         hBox.getChildren().add(nomConstructeur);
 

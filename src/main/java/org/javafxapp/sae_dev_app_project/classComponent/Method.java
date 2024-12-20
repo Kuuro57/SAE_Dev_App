@@ -2,15 +2,19 @@ package org.javafxapp.sae_dev_app_project.classComponent;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
 public class Method extends ClassComponent {
+
+    // Attributs
     private String returnType;
     private ArrayList<Parameter> parameters;
+
+
 
     public Method(String modifier, String name, ArrayList<Parameter> parameters, String returnType) {
         this.modifier = modifier;
@@ -19,13 +23,16 @@ public class Method extends ClassComponent {
         this.parameters = parameters;
     }
 
+
+
     public String getReturnType() {
         return returnType;
     }
-
     public ArrayList<Parameter> getParameters() {
         return parameters;
     }
+
+
 
     @Override
     public HBox getDisplay() {
@@ -35,16 +42,13 @@ public class Method extends ClassComponent {
 
         // Si la méthode requiert des paramètres
         if (!this.getParameters().isEmpty()) {
-
             parametres = ModelClass.displayParams(parameters);
-
         }
 
         // On affiche la méthode sur le diagramme de classe
-        Text nomMethod = new Text(FileManipulator.convertModifier(modifier) + name + "(" + parametres + ") : " + FileManipulator.removePackageName(returnType));
+        Text nomMethod = new Text(Export.convertModifier(modifier) + name + "(" + parametres + ") : " + Export.removePackageName(returnType));
 
         hBox.getChildren().add(nomMethod);
-
         return hBox;
 
     }

@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
@@ -28,9 +29,9 @@ public class ViewAllClasses extends Pane implements Observer {
     }
 
 
-
     /**
      * Méthode qui ajoute une classe à la liste des classes représentées graphiquement
+     *
      * @param m Objet de type ModelClass que l'on veut ajouter à la liste
      * @return True si la classe à bien été ajoutée, false sinon
      */
@@ -67,8 +68,6 @@ public class ViewAllClasses extends Pane implements Observer {
         // On recharge toutes les classes
         this.reloadAllClasses();
 
-        // On affiche les dépendances (qui seront derrière les classes)
-        this.displayDependancies();
 
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
@@ -110,6 +109,9 @@ public class ViewAllClasses extends Pane implements Observer {
                 model.setX(coo_x);
                 model.setY(coo_y);
 
+                // On met à jour les dépendances de cette classe
+                this.displayDependancies(m);
+
                 // On met à jour la vue du diagramme
                 this.update();
 
@@ -124,12 +126,15 @@ public class ViewAllClasses extends Pane implements Observer {
 
             // On l'ajoute sur le Pane
             this.getChildren().add(display);
+
         }
 
 
+        // Une fois que toutes les VBox sont chargées et mises sur dans le GridPane, on affiche les dépendances
+        this.displayAllDependancies();
+
 
     }
-
 
 
     /**
@@ -156,38 +161,80 @@ public class ViewAllClasses extends Pane implements Observer {
 
 
 
-
     /**
      * Méthode qui affiche sur le diagramme les dépendances de toutes les classes
      */
-    private void displayDependancies() {
-
+    private void displayAllDependancies() {
         // On boucle sur les classes
         for (ModelClass m : this.allClassesList) {
-            // On récupère les coordonnées x et y de la classe
-            int coo_x = m.getX();
-            int coo_y = m.getY();
-
-            // On boucle sur les classes implémentées par cette classe
-            for (ModelClass m_interface : m.getInheritedClasses()) {
-                // On trace une ligne entre les deux classes
-                Line line = new Line(coo_x, coo_y, m_interface.getX(), m_interface.getY());
-                this.getChildren().add(line);
-            }
-
-            // Si la classe hérite d'une classe
-            ModelClass m_herit = m.getExtendedClass();
-            if (m_herit != null) {
-
-                m_herit = this.allClassesList.get(m_herit.getId());
-
-                System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
-
-                // On trace une ligne entre les deux classes
-                Line line = new Line(coo_x, coo_y, m_herit.getX(), m_herit.getY());
-                this.getChildren().add(line);
-            }
+            this.displayDependancies(m);
         }
+    }
+
+
+
+    /**
+     * Méthode qui affiche graphiquement les dépendances d'une classe
+     * @param m Classe dont on veut afficher les dépendances
+     */
+    private void displayDependancies(ModelClass m) {
+
+        // On supprime toutes les dépendances
+        this.getChildren().removeIf(n -> (n instanceof Line || n instanceof Polygon) && n.getId().equals(String.valueOf(m.getId())));
+
+        // On récupère les coordonnées x et y de la classe
+        int coo_x = m.getX();
+        int coo_y = m.getY();
+
+        // On boucle sur les classes implémentées par cette classe
+        for (ModelClass m_interface : m.getInheritedClasses()) {
+            // On trace une ligne entre les deux classes
+            this.drawArrow(m, coo_x, coo_y, m_interface.getX(), m_interface.getY());
+        }
+
+        // Si la classe hérite d'une classe
+        ModelClass m_herit = m.getExtendedClass();
+        if (m_herit != null) {
+
+            m_herit = this.allClassesList.get(m_herit.getId());
+
+            System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
+
+            // On trace une ligne entre les deux classes
+            this.drawArrow(m, coo_x, coo_y, m_herit.getX(), m_herit.getY());
+        }
+    }
+
+
+
+    /**
+     * Méthode qui déssine une flèche en fonction du type de flèche choisi
+     * @param m Model de la classe qui créé la flèche
+     * @param x1 Coordonnée x du début de la flèche
+     * @param y1 Coordonnée y du début de la flèche
+     * @param x2 Coordonnée x de la fin de la flèche
+     * @param y2 Coordonnée y de la fin de la flèche
+     */
+    private void drawArrow(ModelClass m, int x1, int y1, int x2, int y2) {
+
+        // Ligne de la flèche
+        Line line = new Line(x1, y1, x2, y2);
+        line.setId(String.valueOf(m.getId()));
+        line.setStroke(Color.BLACK);
+        line.setStrokeWidth(2);
+
+        // Pointe de la flèche
+        Polygon arrowHead = new Polygon();
+        arrowHead.setId(String.valueOf(m.getId()));
+        arrowHead.getPoints().addAll(
+                (double) x2, (double) y2,  // Pointe de la flèche
+                (double) x2 - 15, (double) y2 - 10,  // Coin supérieur
+                (double) x2 + 15, (double) y2 + 10   // Coin inférieur
+        );
+        arrowHead.setFill(Color.BLACK);
+
+        // On dessine la flèche
+        this.getChildren().addAll(line, arrowHead);
 
     }
 
@@ -196,6 +243,9 @@ public class ViewAllClasses extends Pane implements Observer {
     /*
      * ### GETTERS ###
      */
-    public ArrayList<ModelClass> getAllClasses() { return this.allClassesList; }
-
+    public ArrayList<ModelClass> getAllClasses () {
+        return this.allClassesList;
+    }
 }
+
+

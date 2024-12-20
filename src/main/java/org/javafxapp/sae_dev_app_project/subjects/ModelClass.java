@@ -1,9 +1,7 @@
 package org.javafxapp.sae_dev_app_project.subjects;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -11,12 +9,9 @@ import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
-import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.views.Observer;
-import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
@@ -27,7 +22,7 @@ public class ModelClass implements Subject {
 
     // Attributs
     private static int LAST_ID = -1; // Nombre de classes sur le diagramme (qui représente aussi le plus grand ID)
-    private int id;
+    private int id; // Id de la classe
     private String name; // Nom de la classe
     private int x; // Coordonnée x de l'affichage de la classe sur le diagramme
     private int y; // Coordonnée y de l'affichage de la classe sur le diagramme
@@ -37,35 +32,8 @@ public class ModelClass implements Subject {
     private ArrayList<Constructor> constructors; // Liste des constructeurs de la classe
     private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
     private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
-    private boolean isSelected = false;
-    private ArrayList<Observer> observerList;
-    private String type;
-
-    public void setExtendedClass(ModelClass extendedClass) {
-        this.extendedClass = extendedClass;
-    }
-
-    public ArrayList<Attribute> getAttributes() {
-        return attributes;
-    }
-
-    public ArrayList<Method> getMethods() {
-        return methods;
-    }
-
-    public ArrayList<ModelClass> getInheritedClasses() {
-        return inheritedClasses;
-    }
-
-    public ModelClass getExtendedClass() {
-        return extendedClass;
-    }
-
-    public ArrayList<Constructor> getConstructors() {
-        return constructors;
-    }
-
-    private ArrayList<Constructor> constructors;
+    private boolean isSelected = false; // Booleen qui indique si la classe est selectionnée pour le déplacement
+    private String type; // Type de la classe
 
 
     /**
@@ -108,7 +76,7 @@ public class ModelClass implements Subject {
     public VBox getDisplay() {
 
         // Initialisation de la VBox et de son visuel
-        int nLigne = 25;
+        VBox v = new VBox();
 
         //Image icon = setIcon();
 
@@ -124,7 +92,6 @@ public class ModelClass implements Subject {
         // Nom de la classe et Type de classe (abstract, interface, class)
         Text nomClasse = new Text(modifierClass + " " + this.name);
         // VBOX de case classe
-        VBox v = new VBox();
         v.setId(String.valueOf(this.id));
         v.setAlignment(Pos.TOP_CENTER);
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
@@ -164,7 +131,6 @@ public class ModelClass implements Subject {
 
         v.getChildren().add(vMethods);
 
-
         return v;
 
     }
@@ -179,13 +145,10 @@ public class ModelClass implements Subject {
         StringBuffer res = new StringBuffer();
 
         for(Parameter p : listParams){
-
-            res.append(p.getName() + " : " + FileManipulator.removePackageName(p.getType().getTypeName()) + ", ");
-
+            res.append(p.getName() + " : " + Export.removePackageName(p.getType().getTypeName()) + ", ");
         }
 
-        FileManipulator.removeLastComa(res);
-
+        Export.removeLastComa(res);
         return res.toString();
 
     }
