@@ -28,8 +28,8 @@ public class SingleClassLoader {
         // Initialisation des variables
         boolean isCharged = false;
         Class<?> clas = null;
-        String[] tmp = rootDirectory.getAbsolutePath().split("\\\\");
-        String[] tmp2 = file.getAbsolutePath().split("\\\\");
+        String[] tmp = rootDirectory.getAbsolutePath().split(File.separator);
+        String[] tmp2 = file.getAbsolutePath().split(File.separator);
         String nameClass = tmp2[tmp2.length - 1];
 
 
