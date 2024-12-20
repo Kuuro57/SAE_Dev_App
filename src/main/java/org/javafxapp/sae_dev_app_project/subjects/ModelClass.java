@@ -9,11 +9,9 @@ import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
-import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
@@ -23,43 +21,19 @@ import java.util.ArrayList;
 public class ModelClass implements Subject {
 
     // Attributs
+    private static int LAST_ID = -1; // Nombre de classes sur le diagramme (qui représente aussi le plus grand ID)
     private int id; // Id de la classe
     private String name; // Nom de la classe
-    private ArrayList<Observer> observerList;
-
-    // Attributs supplémentaires Itération 2
-    private ArrayList<Attribute> attributes;
-    private ArrayList<Method> methods;
-    private ArrayList<ModelClass> inheritedClasses;
-    private ModelClass extendedClass;
-
-    private String type;
-
-    public void setExtendedClass(ModelClass extendedClass) {
-        this.extendedClass = extendedClass;
-    }
-
-    public ArrayList<Attribute> getAttributes() {
-        return attributes;
-    }
-
-    public ArrayList<Method> getMethods() {
-        return methods;
-    }
-
-    public ArrayList<ModelClass> getInheritedClasses() {
-        return inheritedClasses;
-    }
-
-    public ModelClass getExtendedClass() {
-        return extendedClass;
-    }
-
-    public ArrayList<Constructor> getConstructors() {
-        return constructors;
-    }
-
-    private ArrayList<Constructor> constructors;
+    private int x; // Coordonnée x de l'affichage de la classe sur le diagramme
+    private int y; // Coordonnée y de l'affichage de la classe sur le diagramme
+    private ArrayList<Observer> observerList; // Liste qui contient tous les observeurs liés au modèle
+    private ArrayList<Attribute> attributes; // Liste des attribues de la classe
+    private ArrayList<Method> methods; // Liste des méthodes de la classe
+    private ArrayList<Constructor> constructors; // Liste des constructeurs de la classe
+    private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
+    private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
+    private boolean isSelected = false; // Booleen qui indique si la classe est selectionnée pour le déplacement
+    private String type; // Type de la classe
 
 
     /**
@@ -69,6 +43,8 @@ public class ModelClass implements Subject {
     public ModelClass(String n) {
         this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
         this.name = n;
+        this.x = 0;
+        this.y = 0;
         this.observerList = new ArrayList<>();
         this.attributes = new ArrayList<>();
         this.methods = new ArrayList<>();
@@ -76,30 +52,21 @@ public class ModelClass implements Subject {
         this.extendedClass = null;
         this.constructors = new ArrayList<>();
         this.type = "";
-
     }
+
+
+
+
 
     /**
-     * Constructeur qui prend en paramètre le nom de la classe et tous les attributs de la classe
-     * @param n Nom de la classe
-     * @param e Classe mère
-     *
+     * Méthode qui permet de donner un nouvel id à une classe
+     * @return Le nouvel id
      */
-
-    public ModelClass(String n, ModelClass e) {
-        this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
-        this.name = n;
-        this.observerList = new ArrayList<>();
-        this.attributes = new ArrayList<>();
-        this.methods = new ArrayList<>();
-        this.inheritedClasses = new ArrayList<>();
-        this.extendedClass = e;
-        this.constructors = new ArrayList<>();
-        this.type = "";
-
-
-
+    public static int getNewId() {
+        ModelClass.LAST_ID += 1;
+        return ModelClass.LAST_ID;
     }
+
 
 
     /**
@@ -108,7 +75,8 @@ public class ModelClass implements Subject {
      */
     public VBox getDisplay() {
 
-        int nLigne = 25;
+        // Initialisation de la VBox et de son visuel
+        VBox v = new VBox();
 
         //Image icon = setIcon();
 
@@ -124,7 +92,7 @@ public class ModelClass implements Subject {
         // Nom de la classe et Type de classe (abstract, interface, class)
         Text nomClasse = new Text(modifierClass + " " + this.name);
         // VBOX de case classe
-        VBox v = new VBox();
+        v.setId(String.valueOf(this.id));
         v.setAlignment(Pos.TOP_CENTER);
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
         v.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, new CornerRadii(3), new Insets(0, 0, 0, 0))));
@@ -177,16 +145,14 @@ public class ModelClass implements Subject {
         StringBuffer res = new StringBuffer();
 
         for(Parameter p : listParams){
-
-            res.append(p.getName() + " : " + FileManipulator.removePackageName(p.getType().getTypeName()) + ", ");
-
+            res.append(p.getName() + " : " + Export.removePackageName(p.getType().getTypeName()) + ", ");
         }
 
-        FileManipulator.removeLastComa(res);
-
+        Export.removeLastComa(res);
         return res.toString();
 
     }
+
 
    @Override
     public void addObserver(Observer o) {
@@ -203,27 +169,53 @@ public class ModelClass implements Subject {
     @Override
     public void notifyObservers() {
         for (Observer o : this.observerList) {
-            o.update(this);
+            o.update();
         }
     }
 
 
-    // ### GETTER / SETTER ###
+
+    /*
+     * ### GETTERS / SETTER ###
+     */
     public int getId() { return id; }
-    public void setId(int i) { this.id = i; }
-
     public String getName() { return name; }
+    public int getX() {return x;}
+    public int getY() {return y;}
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+    public ArrayList<Attribute> getAttributes() {
+        return attributes;
+    }
+    public ArrayList<Method> getMethods() {
+        return methods;
+    }
+    public ArrayList<ModelClass> getInheritedClasses() {
+        return inheritedClasses;
+    }
+    public void setInheritedClasses(ArrayList<ModelClass> l) { inheritedClasses = l; }
+    public ModelClass getExtendedClass() {
+        return extendedClass;
+    }
+    public ArrayList<Constructor> getConstructors() {
+        return constructors;
+    }
+    public void setId(int i) { this.id = i; }
+    public void setExtendedClass(ModelClass extendedClass) {
+        this.extendedClass = extendedClass;
+    }
 
+    public boolean isSelected() { return isSelected; }
+    public void toogleIsSelected() { this.isSelected = !this.isSelected; }
 
     /**
-    * Méthode toString qui affiche toutes les informations de la classe
-    * @return String qui contient toutes les informations de la classe
-    */
-
+     * Méthode toString qui affiche toutes les informations de la classe
+     * @return String qui contient toutes les informations de la classe
+     */
     public String toString(){
-        String str = "Nom de la classe : " + this.name + "\n";
-        str += "Id de la classe : " + this.id + "\n";
-        str += "Attributs de la classe : \n";
+        String str = "Nom : " + this.name + "\n";
+        str += "Id : " + this.id + "\n";
+        str += "Attributs : \n";
         // On boucle sur les attributs si il y en a
         if (this.attributes != null) {
             for (Attribute a : this.attributes) {
@@ -232,21 +224,21 @@ public class ModelClass implements Subject {
         }
         // On boucle sur les méthodes si il y en a
         if (this.methods != null) {
-            str += "Méthodes de la classe : \n";
+            str += "Méthodes : \n";
             for (Method m : this.methods) {
                 str += m.toString() + "\n";
             }
         }
         // On boucle sur les classes mères si il y en a
         if (this.inheritedClasses != null) {
-            str += "Classes mères de la classe : \n";
+            str += "Implémentations : \n";
             for (ModelClass m : this.inheritedClasses) {
                 str += m.getName() + "\n";
             }
         }
         // On affiche la classe mère si il y en a une
         if (this.extendedClass != null) {
-            str += "Classe mère de la classe : " + this.extendedClass.getName() + "\n";
+            str += "Classe mère : " + this.extendedClass.getName() + "\n";
         }
         return str;
     }
@@ -306,5 +298,6 @@ public class ModelClass implements Subject {
 
         return list;
     }
+
 
 }
