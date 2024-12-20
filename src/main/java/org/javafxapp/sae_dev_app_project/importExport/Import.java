@@ -113,7 +113,7 @@ public class Import {
         // On boucle sur les interfaces de cette classe
         for (Class<?> c : clas.getInterfaces()) {
             // Si la classe est déjà chargée
-            if (SingleClassLoader.hasBeenLoaded(clas.getSuperclass().getSimpleName())) {
+            if (SingleClassLoader.hasBeenLoaded(c.getSimpleName())) {
                 // On construit le modèle de l'interface
                 ModelClass modelInterface = Import.getModelClass(view, c.getSimpleName());
                 // On ajoute l'interface à la liste des interfaces

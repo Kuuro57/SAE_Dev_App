@@ -188,6 +188,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // On boucle sur les classes implémentées par cette classe
         for (ModelClass m_interface : m.getInheritedClasses()) {
+            m_interface = this.allClassesList.get(m_interface.getId());
             // On trace une ligne entre les deux classes
             this.drawArrow(m, coo_x, coo_y, m_interface.getX(), m_interface.getY());
         }
@@ -223,13 +224,28 @@ public class ViewAllClasses extends Pane implements Observer {
         line.setStroke(Color.BLACK);
         line.setStrokeWidth(2);
 
+        /// Longueur et largeur de la pointe
+        double arrowLength = 15;
+        double arrowWidth = 10;
+
+        // Calcul de l'angle de la ligne
+        double angle = Math.atan2(y2 - y1, x2 - x1);
+
+        // Calcul des coordonnées des coins de la pointe
+        double sin = Math.sin(angle);
+        double cos = Math.cos(angle);
+        double x3 = x2 - arrowLength * cos + arrowWidth * sin;
+        double y3 = y2 - arrowLength * sin - arrowWidth * cos;
+        double x4 = x2 - arrowLength * cos - arrowWidth * sin;
+        double y4 = y2 - arrowLength * sin + arrowWidth * cos;
+
         // Pointe de la flèche
         Polygon arrowHead = new Polygon();
         arrowHead.setId(String.valueOf(m.getId()));
         arrowHead.getPoints().addAll(
-                (double) x2, (double) y2,  // Pointe de la flèche
-                (double) x2 - 15, (double) y2 - 10,  // Coin supérieur
-                (double) x2 + 15, (double) y2 + 10   // Coin inférieur
+                (double) x2, (double) y2, // Pointe de la flèche
+                x3, y3, // Coin 1
+                x4, y4  // Coin 2
         );
         arrowHead.setFill(Color.BLACK);
 
