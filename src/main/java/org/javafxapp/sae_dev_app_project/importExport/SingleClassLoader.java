@@ -1,7 +1,9 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -21,9 +23,8 @@ public class SingleClassLoader {
      * @param file Fichier .class à charger
      * @param rootDirectory Répertoire racine des packages (dossier de base pour déterminer le package)
      * @return L'objet Class correspondant
-     * @throws IOException Si une erreur de lecture survient
      */
-    public Class<?> loadClassFromFile(File file, File rootDirectory) throws Exception {
+    public Class<?> loadClassFromFile(File file, File rootDirectory) throws FileNotFoundException {
 
         // Initialisation des variables
         boolean isCharged = false;
@@ -66,7 +67,7 @@ public class SingleClassLoader {
                 isCharged = true;
 
             }
-            catch (ClassNotFoundException | NoClassDefFoundError ignored) {}
+            catch (ClassNotFoundException | NoClassDefFoundError | MalformedURLException ignored) {}
 
 
             // Si la classe est chargée, on renvoie l'objet Class
@@ -78,7 +79,7 @@ public class SingleClassLoader {
 
         }
 
-        throw new ClassNotFoundException("Le fichier est invalide");
+        throw new FileNotFoundException("Impossible de charger la classe");
 
 
     }

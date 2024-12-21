@@ -82,7 +82,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
                 // On sélectionne ce modèle
                 display.setBackground(new Background(new BackgroundFill(Color.RED, null, new Insets(0, 0, 0, 0))));
-                m.toogleIsSelected();
 
             });
 
@@ -93,7 +92,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
                 // On désélectionne ce modèle
                 display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
-                model.toogleIsSelected();
 
                 // On récupère les coordonnées vis à vis de toute la page (pas seulement de la vue)
                 Node parent = display.getParent();
@@ -119,10 +117,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
 
             System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") | id : " + m.getId());
-
-            // On lui donnes les coordonnées
-            display.setLayoutX(m.getX());
-            display.setLayoutY(m.getY());
 
             // On l'ajoute sur le Pane
             this.getChildren().add(display);
@@ -179,18 +173,14 @@ public class ViewAllClasses extends Pane implements Observer {
      */
     private void displayDependancies(ModelClass m) {
 
-        // On supprime toutes les dépendances
+        // On supprime toutes les dépendances du model
         this.getChildren().removeIf(n -> (n instanceof Line || n instanceof Polygon) && n.getId().equals(String.valueOf(m.getId())));
-
-        // On récupère les coordonnées x et y de la classe
-        int coo_x = m.getX();
-        int coo_y = m.getY();
 
         // On boucle sur les classes implémentées par cette classe
         for (ModelClass m_interface : m.getInheritedClasses()) {
             m_interface = this.allClassesList.get(m_interface.getId());
             // On trace une ligne entre les deux classes
-            this.drawArrow(m, coo_x, coo_y, m_interface.getX(), m_interface.getY());
+            this.drawArrow(m, m_interface);
         }
 
         // Si la classe hérite d'une classe
@@ -202,7 +192,7 @@ public class ViewAllClasses extends Pane implements Observer {
             System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
 
             // On trace une ligne entre les deux classes
-            this.drawArrow(m, coo_x, coo_y, m_herit.getX(), m_herit.getY());
+            this.drawArrow(m, m_herit);
         }
     }
 
@@ -210,13 +200,17 @@ public class ViewAllClasses extends Pane implements Observer {
 
     /**
      * Méthode qui déssine une flèche en fonction du type de flèche choisi
-     * @param m Model de la classe qui créé la flèche
-     * @param x1 Coordonnée x du début de la flèche
-     * @param y1 Coordonnée y du début de la flèche
-     * @param x2 Coordonnée x de la fin de la flèche
-     * @param y2 Coordonnée y de la fin de la flèche
+     * @param m Model de la classe où va partir la flèche
+     * @param m2 Model de la classe où va arriver la flèche
      */
-    private void drawArrow(ModelClass m, int x1, int y1, int x2, int y2) {
+    private void drawArrow(ModelClass m, ModelClass m2) {
+
+        // On récupère les bonnes coordonnées
+        ArrayList<Double> listCoord = this.getNearestCoord(m, m2);
+        double x1 = listCoord.getFirst();
+        double y1 = listCoord.get(1);
+        double x2 = listCoord.get(2);
+        double y2 = listCoord.getLast();
 
         // Ligne de la flèche
         Line line = new Line(x1, y1, x2, y2);
@@ -224,7 +218,7 @@ public class ViewAllClasses extends Pane implements Observer {
         line.setStroke(Color.BLACK);
         line.setStrokeWidth(2);
 
-        /// Longueur et largeur de la pointe
+        // Longueur et largeur de la pointe
         double arrowLength = 15;
         double arrowWidth = 10;
 
@@ -243,7 +237,7 @@ public class ViewAllClasses extends Pane implements Observer {
         Polygon arrowHead = new Polygon();
         arrowHead.setId(String.valueOf(m.getId()));
         arrowHead.getPoints().addAll(
-                (double) x2, (double) y2, // Pointe de la flèche
+                x2, y2, // Pointe de la flèche
                 x3, y3, // Coin 1
                 x4, y4  // Coin 2
         );
@@ -252,6 +246,80 @@ public class ViewAllClasses extends Pane implements Observer {
         // On dessine la flèche
         this.getChildren().addAll(line, arrowHead);
 
+    }
+
+
+    /**
+     * Méthode qui cherche les point les plus proches entre les deux classes
+     * @param m1 ModelClass de la première classe
+     * @param m2 ModelClass de la deuxième classe
+     * @return Une liste comprenant les coordonnées des deux points (0: x1, 1: y1, 2: x2; 3: y2)
+     */
+    private ArrayList<Double> getNearestCoord(ModelClass m1, ModelClass m2) {
+
+        // On initialise les coordonnées les plus proches et de la distance minimal
+        ArrayList<Double> listCoord = new ArrayList<>();
+        listCoord.add(Double.MAX_VALUE);
+        listCoord.add(Double.MAX_VALUE);
+        listCoord.add(Double.MAX_VALUE);
+        listCoord.add(Double.MAX_VALUE);
+        double minDistance = Integer.MAX_VALUE;
+
+        // On récupère l'affichage des VBox
+        VBox vbox1 = m1.getDisplay();
+        VBox vbox2 = m2.getDisplay();
+
+        // On boucle sur les lignes de la première VBox (haut, milieu, bas)
+        for (int i1 = 0; i1 < 10; i1++) {
+            // On boucle sur les colonnes de la première VBox (gauche, milieu, droite)
+            for (int j1 = 0; j1 < 10; j1++) {
+
+                // On récupère les coordonnées du point de la première VBox
+                double coo_x1 = m1.getX() + (vbox1.getWidth() / 9) * i1;
+                double coo_y1 = m1.getY() + (vbox1.getHeight() / 9) * j1;
+
+                // On boucle sur les colonnes de la deuxième VBox (gauche, milieu, droite)
+                for (int i2 = 0; i2 < 10; i2++) {
+                    // On boucle sur les colonnes de la deuxième VBox (gauche, milieu, droite)
+                    for (int j2 = 0; j2 < 10; j2++) {
+
+                        // On récupère les coordonnées du point de la première VBox
+                        double coo_x2 = m2.getX() + (vbox2.getWidth() / 9) * i2;
+                        double coo_y2 = m2.getY() + (vbox2.getHeight() / 9) * j2;
+
+                        // Si la distance entre ces deux points est plus petite que la distance minimal enregistrée
+                        double distance = this.calculateDistance(coo_x1, coo_y1, coo_x2, coo_y2);
+                        if (distance < minDistance) {
+                            // On change la distance la plus petite et on récupère les points
+                            minDistance = distance;
+                            listCoord.set(0, coo_x1);
+                            listCoord.set(1, coo_y1);
+                            listCoord.set(2, coo_x2);
+                            listCoord.set(3, coo_y2);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        // On retourne les points les plus proches
+        return listCoord;
+
+    }
+
+
+
+    /**
+     * Méthode qui calcul la distance entre deux points
+     * @param x1 Coordonnée x du premier point
+     * @param y1 Coordonnée y du premier point
+     * @param x2 Coordonnée x du deuxième point
+     * @param y2 Coordonnée y du deuxième point
+     * @return La distance
+     */
+    private double calculateDistance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
 
