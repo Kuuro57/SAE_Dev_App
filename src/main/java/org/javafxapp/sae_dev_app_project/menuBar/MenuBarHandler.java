@@ -13,7 +13,7 @@ public class MenuBarHandler {
 
 
 
-    public MenuBar createMenuBar(Stage stage, ViewAllClasses view){
+    public MenuBar createMenuBar(Stage stage, ViewAllClasses view) {
 
 
         // Initialisation des menus principaux
