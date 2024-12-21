@@ -270,34 +270,39 @@ public class ViewAllClasses extends Pane implements Observer {
         VBox vbox2 = m2.getDisplay();
 
         // On boucle sur les lignes de la première VBox (haut, milieu, bas)
-        for (int i1 = 0; i1 < 10; i1++) {
+        for (int i1 = 0; i1 < 3; i1++) {
             // On boucle sur les colonnes de la première VBox (gauche, milieu, droite)
-            for (int j1 = 0; j1 < 10; j1++) {
+            for (int j1 = 0; j1 < 3; j1++) {
 
-                // On récupère les coordonnées du point de la première VBox
-                double coo_x1 = m1.getX() + (vbox1.getWidth() / 9) * i1;
-                double coo_y1 = m1.getY() + (vbox1.getHeight() / 9) * j1;
+                // Si on est pas sur un coin
+                if (!(i1 == 0 && j1 == 0) && !(i1 == 2 && j1 == 2) && !(i1 == 0 && j1 == 2) && !(i1 == 2 && j1 == 0)) {
+                    // On récupère les coordonnées du point de la première VBox
+                    double coo_x1 = m1.getX() + (vbox1.getWidth() / 2) * i1;
+                    double coo_y1 = m1.getY() + (vbox1.getHeight() / 2) * j1;
 
-                // On boucle sur les colonnes de la deuxième VBox (gauche, milieu, droite)
-                for (int i2 = 0; i2 < 10; i2++) {
                     // On boucle sur les colonnes de la deuxième VBox (gauche, milieu, droite)
-                    for (int j2 = 0; j2 < 10; j2++) {
+                    for (int i2 = 0; i2 < 3; i2++) {
+                        // On boucle sur les colonnes de la deuxième VBox (gauche, milieu, droite)
+                        for (int j2 = 0; j2 < 3; j2++) {
 
-                        // On récupère les coordonnées du point de la première VBox
-                        double coo_x2 = m2.getX() + (vbox2.getWidth() / 9) * i2;
-                        double coo_y2 = m2.getY() + (vbox2.getHeight() / 9) * j2;
+                            // Si on est pas sur un coin
+                            if (!(i2 == 0 && j2 == 0) && !(i2 == 2 && j2 == 2) && !(i2 == 0 && j2 == 2) && !(i2 == 2 && j2 == 0)) {
+                                // On récupère les coordonnées du point de la première VBox
+                                double coo_x2 = m2.getX() + (vbox2.getWidth() / 2) * i2;
+                                double coo_y2 = m2.getY() + (vbox2.getHeight() / 2) * j2;
 
-                        // Si la distance entre ces deux points est plus petite que la distance minimal enregistrée
-                        double distance = this.calculateDistance(coo_x1, coo_y1, coo_x2, coo_y2);
-                        if (distance < minDistance) {
-                            // On change la distance la plus petite et on récupère les points
-                            minDistance = distance;
-                            listCoord.set(0, coo_x1);
-                            listCoord.set(1, coo_y1);
-                            listCoord.set(2, coo_x2);
-                            listCoord.set(3, coo_y2);
+                                // Si la distance entre ces deux points est plus petite que la distance minimal enregistrée
+                                double distance = this.calculateDistance(coo_x1, coo_y1, coo_x2, coo_y2);
+                                if (distance < minDistance) {
+                                    // On change la distance la plus petite et on récupère les points
+                                    minDistance = distance;
+                                    listCoord.set(0, coo_x1);
+                                    listCoord.set(1, coo_y1);
+                                    listCoord.set(2, coo_x2);
+                                    listCoord.set(3, coo_y2);
+                                }
+                            }
                         }
-
                     }
                 }
             }
