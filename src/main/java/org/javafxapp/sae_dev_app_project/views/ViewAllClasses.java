@@ -203,7 +203,7 @@ public class ViewAllClasses extends Pane implements Observer {
      * @param m Model de la classe où va partir la flèche
      * @param m2 Model de la classe où va arriver la flèche
      * @param typeOfLine Type de ligne
-     * @param typeOfLine Type de la tête de la flèche
+     * @param typeOfHead Type de la tête de la flèche
      */
     private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead) {
 
@@ -243,7 +243,7 @@ public class ViewAllClasses extends Pane implements Observer {
                 break;
 
             case "dotted":
-                // TODO Ligne de la flèche en pointillé
+                // Ligne de la flèche en pointillé
                 line = new Line(x1, y1, x2, y2);
                 line.setId(String.valueOf(m.getId()));
                 line.setStroke(Color.BLACK);

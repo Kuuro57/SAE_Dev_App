@@ -9,6 +9,7 @@ import java.net.URLClassLoader;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class SingleClassLoader {
 
@@ -29,8 +30,8 @@ public class SingleClassLoader {
         // Initialisation des variables
         boolean isCharged = false;
         Class<?> clas = null;
-        String[] tmp = rootDirectory.getAbsolutePath().split("\\\\");
-        String[] tmp2 = file.getAbsolutePath().split("\\\\");
+        String[] tmp = rootDirectory.getAbsolutePath().split(Pattern.quote(File.separator)); // utilisation de quote pour éviter les erreurs de regex et support de windows et linux
+        String[] tmp2 = file.getAbsolutePath().split(Pattern.quote(File.separator));
         String nameClass = tmp2[tmp2.length - 1];
 
 
