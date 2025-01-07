@@ -146,23 +146,14 @@ public class MenuBarHandler {
         removeMenu.getItems().addAll(removeAttributeItem, removeMethodItem, removeConstructorItem);
 
 
-
-
-        // Initialisation des items du menu "Affichage"
-        MenuItem displayAttributesAllClassesItem = new MenuItem("Afficher les attributs de toutes les classes");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem displayMethodsAllClassesItem = new MenuItem("Afficher les méthodes de toutes les classes");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem hideAllClassAttributes = new MenuItem("Masquer les attributs");
+        MenuItem hideAllClassAttributes = new MenuItem("Masquer les attributs des classes");
         hideAllClassAttributes.setOnAction(actionEvent -> {
 
             view.hideAttributes();
 
         });
 
-        MenuItem showAllClassAttributes = new MenuItem("Afficher les attributs");
+        MenuItem showAllClassAttributes = new MenuItem("Afficher les attributs des classes");
         showAllClassAttributes.setOnAction(actionEvent -> {
 
             view.showAttributes();
@@ -174,7 +165,7 @@ public class MenuBarHandler {
         // Ajout des sous menus aux menus principaux
         fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
         editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
-        showMenu.getItems().addAll(displayAttributesAllClassesItem, displayMethodsAllClassesItem, showAllClassAttributes, hideAllClassAttributes);
+        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes);
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
 
         // On retourne le menu bar
