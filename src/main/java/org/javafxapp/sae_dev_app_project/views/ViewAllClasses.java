@@ -9,6 +9,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
+import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
@@ -157,6 +158,14 @@ public class ViewAllClasses extends Pane implements Observer {
                 for (Attribute a2 : m.getAttributes()) {
                     if (a.getName().equals(a2.getName())) {
                         a.setHidden(a2.isHidden());
+                    }
+                }
+            }
+
+            for (Method m1 : newM.getMethods()) {
+                for (Method m2 : m.getMethods()) {
+                    if (m1.getName().equals(m2.getName())) {
+                        m1.setHidden(m2.isHidden());
                     }
                 }
             }
