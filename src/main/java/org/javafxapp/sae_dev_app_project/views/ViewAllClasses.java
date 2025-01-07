@@ -180,7 +180,7 @@ public class ViewAllClasses extends Pane implements Observer {
         for (ModelClass m_interface : m.getInheritedClasses()) {
             m_interface = this.allClassesList.get(m_interface.getId());
             // On trace une ligne entre les deux classes
-            this.drawArrow(m, m_interface);
+            this.drawArrow(m, m_interface, "dotted", "empty");
         }
 
         // Si la classe hérite d'une classe
@@ -192,7 +192,7 @@ public class ViewAllClasses extends Pane implements Observer {
             System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
 
             // On trace une ligne entre les deux classes
-            this.drawArrow(m, m_herit);
+            this.drawArrow(m, m_herit, "full", "empty");
         }
     }
 
@@ -202,8 +202,10 @@ public class ViewAllClasses extends Pane implements Observer {
      * Méthode qui déssine une flèche en fonction du type de flèche choisi
      * @param m Model de la classe où va partir la flèche
      * @param m2 Model de la classe où va arriver la flèche
+     * @param typeOfLine Type de ligne
+     * @param typeOfHead Type de la tête de la flèche
      */
-    private void drawArrow(ModelClass m, ModelClass m2) {
+    private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead) {
 
         // On récupère les bonnes coordonnées
         ArrayList<Double> listCoord = this.getNearestCoord(m, m2);
@@ -212,18 +214,12 @@ public class ViewAllClasses extends Pane implements Observer {
         double x2 = listCoord.get(2);
         double y2 = listCoord.getLast();
 
-        // Ligne de la flèche
-        Line line = new Line(x1, y1, x2, y2);
-        line.setId(String.valueOf(m.getId()));
-        line.setStroke(Color.BLACK);
-        line.setStrokeWidth(2);
+        // Calcul de l'angle de la ligne
+        double angle = Math.atan2(y2 - y1, x2 - x1);
 
         // Longueur et largeur de la pointe
         double arrowLength = 15;
         double arrowWidth = 10;
-
-        // Calcul de l'angle de la ligne
-        double angle = Math.atan2(y2 - y1, x2 - x1);
 
         // Calcul des coordonnées des coins de la pointe
         double sin = Math.sin(angle);
@@ -233,7 +229,34 @@ public class ViewAllClasses extends Pane implements Observer {
         double x4 = x2 - arrowLength * cos - arrowWidth * sin;
         double y4 = y2 - arrowLength * sin + arrowWidth * cos;
 
-        // Pointe de la flèche
+
+        // On switch sur le type de la ligne
+        Line line;
+        switch (typeOfLine) {
+
+            case "full":
+                // Ligne de la flèche pleine
+                line = new Line(x1, y1, x2, y2);
+                line.setId(String.valueOf(m.getId()));
+                line.setStroke(Color.BLACK);
+                line.setStrokeWidth(1.5);
+                break;
+
+            case "dotted":
+                // Ligne de la flèche en pointillé
+                line = new Line(x1, y1, x2, y2);
+                line.setId(String.valueOf(m.getId()));
+                line.setStroke(Color.BLACK);
+                line.setStrokeWidth(1.5);
+                line.getStrokeDashArray().addAll(10.0, 5.0);
+                break;
+
+            default:
+                line = null;
+        }
+
+
+        // On switch sur le type de la pointe de la flèche
         Polygon arrowHead = new Polygon();
         arrowHead.setId(String.valueOf(m.getId()));
         arrowHead.getPoints().addAll(
@@ -241,7 +264,25 @@ public class ViewAllClasses extends Pane implements Observer {
                 x3, y3, // Coin 1
                 x4, y4  // Coin 2
         );
-        arrowHead.setFill(Color.BLACK);
+        arrowHead.setStroke(Color.BLACK);
+        arrowHead.setStrokeWidth(1.5);
+
+        switch (typeOfHead) {
+
+            case "full":
+                // Pointe de la flèche pleine
+                arrowHead.setFill(Color.BLACK);
+                break;
+
+            case "empty":
+                // Pointe de la flèche vide
+                arrowHead.setFill(this.getBackground().getFills().getFirst().getFill());
+                break;
+
+            default:
+                arrowHead = null;
+                break;
+        }
 
         // On dessine la flèche
         this.getChildren().addAll(line, arrowHead);

@@ -337,7 +337,23 @@ public class Export {
 
         aff.append("}\n");
 
-        return aff.toString();
+
+        // ----------------------------- DEPENDANCES ------------------------------- //
+
+        // Classes implémentées
+        for (ModelClass m : modelClass.getInheritedClasses()) {
+            aff.append(modelClass.getName() + " ..|> " + m.getName() + "\n");
+        }
+
+        // Classe héritée
+        ModelClass m_extended = modelClass.getExtendedClass();
+        if (m_extended != null) {
+            aff.append(modelClass.getName() + " --> " + m_extended.getName() + "\n");
+        }
+
+
+        // On retourne l'affichage final
+        return aff.append("\n").toString();
 
 
     }
