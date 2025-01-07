@@ -7,7 +7,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
+import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
@@ -146,6 +150,16 @@ public class ViewAllClasses extends Pane implements Observer {
             newM.setX(m.getX());
             newM.setY(m.getY());
 
+            // On récupère les booléens hidden de l'ancien modèle
+            // pour chaque attribut de la nouvelle classe, on regarde si l'attribut est caché ou non
+            for (Attribute a : newM.getAttributes()) {
+                for (Attribute a2 : m.getAttributes()) {
+                    if (a.getName().equals(a2.getName())) {
+                        a.setHidden(a2.isHidden());
+                    }
+                }
+            }
+
             // On remplace l'ancien modèle par le nouveau
             this.allClassesList.set(m.getId(), newM);
 
@@ -174,13 +188,25 @@ public class ViewAllClasses extends Pane implements Observer {
     private void displayDependancies(ModelClass m) {
 
         // On supprime toutes les dépendances du model
-        this.getChildren().removeIf(n -> (n instanceof Line || n instanceof Polygon) && n.getId().equals(String.valueOf(m.getId())));
+        this.getChildren().removeIf(n -> (n instanceof Line || n instanceof Polygon || n instanceof Text) && n.getId().equals(String.valueOf(m.getId())));
+
+
+        // On boucle sur les attributs de la classe
+            // si le type de l'attribut est une classe et que cette classe est dans la liste des classes alors on trace une flèche
+        for (Attribute a : m.getAttributes()) {
+            for (ModelClass model : this.allClassesList) {
+                if (a.getType().equals(model.getName())) {
+                    this.drawArrow(m, model, "full", "simple", a.getName());
+                }
+            }
+        }
+
 
         // On boucle sur les classes implémentées par cette classe
         for (ModelClass m_interface : m.getInheritedClasses()) {
             m_interface = this.allClassesList.get(m_interface.getId());
             // On trace une ligne entre les deux classes
-            this.drawArrow(m, m_interface, "dotted", "empty");
+            this.drawArrow(m, m_interface, "dotted", "empty", "");
         }
 
         // Si la classe hérite d'une classe
@@ -192,7 +218,7 @@ public class ViewAllClasses extends Pane implements Observer {
             System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
 
             // On trace une ligne entre les deux classes
-            this.drawArrow(m, m_herit, "full", "empty");
+            this.drawArrow(m, m_herit, "full", "empty", "");
         }
     }
 
@@ -204,8 +230,10 @@ public class ViewAllClasses extends Pane implements Observer {
      * @param m2 Model de la classe où va arriver la flèche
      * @param typeOfLine Type de ligne
      * @param typeOfHead Type de la tête de la flèche
+     * @param text Texte à afficher sur la flèche (null si pas de texte)
+     *
      */
-    private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead) {
+    private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead, String text) {
 
         // On récupère les bonnes coordonnées
         ArrayList<Double> listCoord = this.getNearestCoord(m, m2);
@@ -235,6 +263,7 @@ public class ViewAllClasses extends Pane implements Observer {
         switch (typeOfLine) {
 
             case "full":
+                System.out.println("yoyo");
                 // Ligne de la flèche pleine
                 line = new Line(x1, y1, x2, y2);
                 line.setId(String.valueOf(m.getId()));
@@ -253,39 +282,72 @@ public class ViewAllClasses extends Pane implements Observer {
 
             default:
                 line = null;
+                break;
         }
 
 
         // On switch sur le type de la pointe de la flèche
-        Polygon arrowHead = new Polygon();
-        arrowHead.setId(String.valueOf(m.getId()));
-        arrowHead.getPoints().addAll(
-                x2, y2, // Pointe de la flèche
-                x3, y3, // Coin 1
-                x4, y4  // Coin 2
-        );
-        arrowHead.setStroke(Color.BLACK);
-        arrowHead.setStrokeWidth(1.5);
-
+        Polygon arrowHead;
         switch (typeOfHead) {
 
             case "full":
                 // Pointe de la flèche pleine
+                arrowHead = new Polygon();
+                arrowHead.setId(String.valueOf(m.getId()));
+                arrowHead.getPoints().addAll(
+                        x2, y2, // Pointe de la flèche
+                        x3, y3, // Coin 1
+                        x4, y4  // Coin 2
+                );
+                arrowHead.setStroke(Color.BLACK);
+                arrowHead.setStrokeWidth(0.5);
                 arrowHead.setFill(Color.BLACK);
+                this.getChildren().addAll(line, arrowHead);
                 break;
 
             case "empty":
                 // Pointe de la flèche vide
+                arrowHead = new Polygon();
+                arrowHead.setId(String.valueOf(m.getId()));
+                arrowHead.getPoints().addAll(
+                        x2, y2, // Pointe de la flèche
+                        x3, y3, // Coin 1
+                        x4, y4  // Coin 2
+                );
+                arrowHead.setStroke(Color.BLACK);
+                arrowHead.setStrokeWidth(0.5);
                 arrowHead.setFill(this.getBackground().getFills().getFirst().getFill());
+                this.getChildren().addAll(line, arrowHead);
                 break;
 
-            default:
-                arrowHead = null;
+            case "simple":
+                System.out.println("hey");
+                // ligne gauche : part de la pointe de la flèche et va au coin 1 de la pointe
+                Line lineLeft = new Line(x2, y2, x3, y3);
+                lineLeft.setId(String.valueOf(m.getId()));
+                lineLeft.setStroke(Color.BLACK);
+                lineLeft.setStrokeWidth(1);
+                // ligne droite : part de la pointe de la flèche et va au coin 2 de la pointe
+                Line lineRight = new Line(x2, y2, x4, y4);
+                lineRight.setId(String.valueOf(m.getId()));
+                lineRight.setStroke(Color.BLACK);
+                lineRight.setStrokeWidth(1);
+
+                // Si il y a un texte à afficher
+                if (!text.isEmpty()) {
+                    // On récupère les coordonnées du texte
+                    double xText = (x1 + x2) / 2;
+                    double yText = (y1 + y2) / 2;
+
+                    // On affiche le texte
+                    Text textArrow = new Text(xText, yText, text);
+                    textArrow.setId(String.valueOf(m.getId()));
+                    this.getChildren().add(textArrow);
+                }
+                this.getChildren().addAll(line, lineLeft, lineRight); // ajout des lignes qui forment la flèche
+
                 break;
         }
-
-        // On dessine la flèche
-        this.getChildren().addAll(line, arrowHead);
 
     }
 
@@ -309,7 +371,7 @@ public class ViewAllClasses extends Pane implements Observer {
         // Initialisation du nombre de divisions par face
         int nbDivision = 4;
 
-        // On récupère l'affichage des VBox
+        // On récupère l'affichage des VBox/
         VBox vbox1 = m1.getDisplay();
         VBox vbox2 = m2.getDisplay();
 

@@ -10,6 +10,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
+import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
 import java.lang.reflect.Parameter;
@@ -116,7 +117,23 @@ public class ModelClass implements Subject {
 
         // Ajout des attributs à afficher
         for (Attribute a : this.attributes) {
-            vAttributs.getChildren().add(a.getDisplay());
+
+            // si l'attribut n'est pas caché
+
+            if (!a.isHidden()) {
+                // si le type de l'attribut est une classe déjà chargée
+                // on cache l'attribut
+                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
+                    if (c.getSimpleName().equals(a.getType())) {
+                        a.setHidden(true);
+                    }
+                }
+                // sinon on affiche l'attribut
+                vAttributs.getChildren().add(a.getDisplay());
+            }
+
+
+
         }
 
         // Ajout des constructeurs à afficher
