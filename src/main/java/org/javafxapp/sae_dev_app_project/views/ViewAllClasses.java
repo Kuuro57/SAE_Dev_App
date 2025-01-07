@@ -81,7 +81,7 @@ public class ViewAllClasses extends Pane implements Observer {
             display.setOnMousePressed(action -> {
 
                 // On sélectionne ce modèle
-                display.setBackground(new Background(new BackgroundFill(Color.RED, null, new Insets(0, 0, 0, 0))));
+                display.setBackground(new Background(new BackgroundFill(Color.DODGERBLUE, null, new Insets(0, 0, 0, 0))));
 
             });
 

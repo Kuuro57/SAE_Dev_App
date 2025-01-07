@@ -97,7 +97,7 @@ public class ModelClass implements Subject {
         v.setId(String.valueOf(this.id));
         v.setAlignment(Pos.TOP_CENTER);
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1,1,0,1))));
-        v.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, new CornerRadii(3), new Insets(0))));
+        v.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, new CornerRadii(3), new Insets(0))));
         v.getChildren().add(nomClasse);
 
         // VBOX des attributs
