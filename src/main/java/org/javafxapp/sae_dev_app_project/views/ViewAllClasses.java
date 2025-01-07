@@ -215,7 +215,7 @@ public class ViewAllClasses extends Pane implements Observer {
         for (Attribute a : m.getAttributes()) {
             for (ModelClass model : this.allClassesList) {
                 if (a.getType().equals(model.getName())) {
-                    this.drawArrow(m, model, "full", "simple", a.getName());
+                    this.drawArrow(m, model, "full", "simple", a.getModifier() + a.getName());
                 }
             }
         }
