@@ -32,7 +32,6 @@ public class ModelClass implements Subject {
     private ArrayList<Constructor> constructors; // Liste des constructeurs de la classe
     private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
     private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
-    private boolean isSelected = false; // Booleen qui indique si la classe est selectionnée pour le déplacement
     private String type; // Type de la classe
 
 
@@ -78,8 +77,6 @@ public class ModelClass implements Subject {
         // Initialisation de la VBox et de son visuel
         VBox v = new VBox();
 
-        //Image icon = setIcon();
-
         ArrayList<String> modifs = this.hashType();
         String modifierClass;
 
@@ -91,6 +88,11 @@ public class ModelClass implements Subject {
 
         // Nom de la classe et Type de classe (abstract, interface, class)
         Text nomClasse = new Text(modifierClass + " " + this.name);
+
+        // On lui donnes les coordonnées
+        v.setLayoutX(this.x);
+        v.setLayoutY(this.y);
+
         // VBOX de case classe
         v.setId(String.valueOf(this.id));
         v.setAlignment(Pos.TOP_CENTER);
@@ -98,7 +100,7 @@ public class ModelClass implements Subject {
         v.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, new CornerRadii(3), new Insets(0, 0, 0, 0))));
         v.getChildren().add(nomClasse);
 
-        // VBOX des méthodes
+        // VBOX des attributs
         VBox vAttributs = new VBox();
         vAttributs.setAlignment(Pos.BASELINE_LEFT);
         vAttributs.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 0, 0))));
@@ -122,6 +124,7 @@ public class ModelClass implements Subject {
             vMethods.getChildren().add(c.getDisplay());
         }
 
+        // On ajoute les attributs à la VBox
         v.getChildren().add(vAttributs);
 
         // Ajout des méthodes à afficher
@@ -129,7 +132,11 @@ public class ModelClass implements Subject {
             vMethods.getChildren().add(m.getDisplay());
         }
 
+        // On ajoute les méthodes à la VBox
         v.getChildren().add(vMethods);
+
+        // On donne la bonne taille à la VBox
+        v.autosize();
 
         return v;
 
@@ -205,8 +212,7 @@ public class ModelClass implements Subject {
         this.extendedClass = extendedClass;
     }
 
-    public boolean isSelected() { return isSelected; }
-    public void toogleIsSelected() { this.isSelected = !this.isSelected; }
+
 
     /**
      * Méthode toString qui affiche toutes les informations de la classe

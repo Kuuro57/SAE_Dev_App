@@ -171,7 +171,7 @@ public class Import {
      * @param view Vue qui comprend toutes les classes
      * @throws FileNotFoundException Cas où la classe n'est pas trouvée
      */
-    public static void importClass(ViewAllClasses view) throws Exception {
+    public static void importClass(ViewAllClasses view) throws FileNotFoundException {
 
 
         // On demande à l'utilisateur de choisir un fichier .class
@@ -208,7 +208,7 @@ public class Import {
      * Méthode qui importe toutes les classes d'un package
      * @param view Vue qui comprend toutes les classes
      */
-    public static void importPackage(ViewAllClasses view) throws Exception {
+    public static void importPackage(ViewAllClasses view) throws FileNotFoundException {
 
 
         // On demande à l'utilisateur de choisir un dossier où ce trouve les fichiers .class
@@ -222,10 +222,10 @@ public class Import {
             File[] files = file.listFiles((dir, name) -> name.endsWith(".class"));
             File rootPath = file.getAbsoluteFile();
 
-            System.out.println(Arrays.toString(files));
-            System.out.println(rootPath.getAbsolutePath());
-            System.out.println(files[0].getAbsolutePath());
-            System.out.println("-------------");
+            // Si le dossier ne comprend pas de fichiers .class
+            if (files.length == 0) {
+                throw new FileNotFoundException("Le dossier sélectionné ne contient pas de fichier .class");
+            }
 
             // Initialisation du ClassLoader
             SingleClassLoader singleClassLoader = new SingleClassLoader();

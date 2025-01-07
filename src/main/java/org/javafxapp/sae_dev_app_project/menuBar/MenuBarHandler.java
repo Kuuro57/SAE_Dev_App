@@ -13,7 +13,7 @@ public class MenuBarHandler {
 
 
 
-    public MenuBar createMenuBar(Stage stage, ViewAllClasses view){
+    public MenuBar createMenuBar(Stage stage, ViewAllClasses view) {
 
 
         // Initialisation des menus principaux
@@ -33,8 +33,8 @@ public class MenuBarHandler {
             try {
                 Import.importClass(view);
             }
-            catch (Exception e) {
-                displayError("Erreur lors de l'importation de la classe ! (Classe non trouvée)");
+            catch (FileNotFoundException e) {
+                displayError("Erreur lors de l'importation de la classe !\nMessage : " + e.getMessage());
             }
         });
 
@@ -44,7 +44,7 @@ public class MenuBarHandler {
                 Import.importPackage(view);
             }
             catch (Exception e) {
-                displayError("Erreur lors de l'importation du package ! (Classe non trouvée)");
+                displayError("Erreur lors de l'importation du package !\nMessage : " + e.getMessage());
             }
         });
 

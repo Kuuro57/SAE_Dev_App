@@ -1,12 +1,15 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class SingleClassLoader {
 
@@ -21,15 +24,14 @@ public class SingleClassLoader {
      * @param file Fichier .class à charger
      * @param rootDirectory Répertoire racine des packages (dossier de base pour déterminer le package)
      * @return L'objet Class correspondant
-     * @throws IOException Si une erreur de lecture survient
      */
-    public Class<?> loadClassFromFile(File file, File rootDirectory) throws Exception {
+    public Class<?> loadClassFromFile(File file, File rootDirectory) throws FileNotFoundException {
 
         // Initialisation des variables
         boolean isCharged = false;
         Class<?> clas = null;
-        String[] tmp = rootDirectory.getAbsolutePath().split("\\\\");
-        String[] tmp2 = file.getAbsolutePath().split("\\\\");
+        String[] tmp = rootDirectory.getAbsolutePath().split(Pattern.quote(File.separator)); // utilisation de quote pour éviter les erreurs de regex et support de windows et linux
+        String[] tmp2 = file.getAbsolutePath().split(Pattern.quote(File.separator));
         String nameClass = tmp2[tmp2.length - 1];
 
 
@@ -66,7 +68,7 @@ public class SingleClassLoader {
                 isCharged = true;
 
             }
-            catch (ClassNotFoundException | NoClassDefFoundError ignored) {}
+            catch (ClassNotFoundException | NoClassDefFoundError | MalformedURLException ignored) {}
 
 
             // Si la classe est chargée, on renvoie l'objet Class
@@ -78,7 +80,7 @@ public class SingleClassLoader {
 
         }
 
-        throw new ClassNotFoundException("Le fichier est invalide");
+        throw new FileNotFoundException("Impossible de charger la classe");
 
 
     }
