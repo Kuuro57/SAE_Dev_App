@@ -443,6 +443,28 @@ public class ViewAllClasses extends Pane implements Observer {
 
     }
 
+    public void hideMethods(){
+
+        for(ModelClass m : allClassesList){
+
+            m.hideAllMethods();
+            update();
+
+        }
+
+    }
+
+    public void showMethods(){
+
+        for(ModelClass m : allClassesList){
+
+            m.showAllMethods();
+            update();
+
+        }
+
+    }
+
 
     /**
      * Méthode qui calcul la distance entre deux points

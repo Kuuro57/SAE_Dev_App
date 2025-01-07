@@ -21,6 +21,7 @@ public class Method extends ClassComponent {
         this.name = name;
         this.returnType = returnType;
         this.parameters = parameters;
+        this.hidden = false;
     }
 
 

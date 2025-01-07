@@ -144,7 +144,19 @@ public class ModelClass implements Subject {
 
         // Ajout des constructeurs à afficher
         for (Constructor c : this.constructors) {
-            vMethods.getChildren().add(c.getDisplay());
+            // si la méthode n'est pas cachée
+
+            if (!c.isHidden()) {
+                // si le type de la méthode est une classe déjà chargé
+                // on cache l'attribut
+                for (Class<?> classe : SingleClassLoader.LOADED_CLASSES) {
+                    if (classe.getSimpleName().equals(c.getName())) {
+                        c.setHidden(true);
+                    }
+                }
+                // sinon on affiche l'attribut
+                vMethods.getChildren().add(c.getDisplay());
+            }
         }
 
         // On ajoute les attributs à la VBox
@@ -152,7 +164,19 @@ public class ModelClass implements Subject {
 
         // Ajout des méthodes à afficher
         for (Method m : this.methods) {
-            vMethods.getChildren().add(m.getDisplay());
+            // si la méthode n'est pas cachée
+
+            if (!m.isHidden()) {
+                // si le type de la méthode est une classe déjà chargé
+                // on cache l'attribut
+                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
+                    if (c.getSimpleName().equals(m.getReturnType())) {
+                        m.setHidden(true);
+                    }
+                }
+                // sinon on affiche l'attribut
+                vMethods.getChildren().add(m.getDisplay());
+            }
         }
 
         // On ajoute les méthodes à la VBox
@@ -328,6 +352,8 @@ public class ModelClass implements Subject {
         return list;
     }
 
+
+
     public void hideAllAttributes() {
 
         if (!attributes.isEmpty()) {
@@ -346,6 +372,30 @@ public class ModelClass implements Subject {
 
             for (Attribute a : attributes) {
                 a.setHidden(false);
+            }
+
+        }
+
+    }
+
+    public void hideAllMethods() {
+
+        if (!methods.isEmpty()) {
+
+            for (Method m : methods) {
+                m.setHidden(true);
+            }
+
+        }
+
+    }
+
+    public void showAllMethods() {
+
+        if (!methods.isEmpty()) {
+
+            for (Method m : methods) {
+                m.setHidden(false);
             }
 
         }

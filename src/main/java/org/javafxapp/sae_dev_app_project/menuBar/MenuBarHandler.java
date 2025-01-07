@@ -160,12 +160,27 @@ public class MenuBarHandler {
 
         });
 
+        MenuItem hideAllClassMethods = new MenuItem("Masquer les méthodes des classes");
+        hideAllClassMethods.setOnAction(actionEvent -> {
+
+            view.hideMethods();
+
+        });
+
+        MenuItem showAllClassMethods = new MenuItem("Afficher les méthodes des classes");
+        showAllClassMethods.setOnAction(actionEvent -> {
+
+            view.showMethods();
+
+        });
+
 
 
         // Ajout des sous menus aux menus principaux
         fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
         editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
-        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes);
+        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes, new SeparatorMenuItem(), showAllClassMethods, hideAllClassMethods);
+
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
 
         // On retourne le menu bar
