@@ -3,16 +3,18 @@ package org.javafxapp.sae_dev_app_project.treeView;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
+import org.javafxapp.sae_dev_app_project.importExport.Import;
 
 public class PackageTreeView {
 
     private TreeView<PackageNode> treeView;
-    private TreeItem<PackageNode> rootItem;
 
     public PackageTreeView() {
-        rootItem = new TreeItem<>(new PackageNode("Root", ""));
-        treeView = new TreeView<>(rootItem);
+        treeView = new TreeView<>();
     }
 
     public TreeView<PackageNode> getTreeView() {
@@ -21,41 +23,44 @@ public class PackageTreeView {
 
     public void addFile(String fileName, String path) {
         TreeItem<PackageNode> file = new TreeItem<>(new PackageNode(fileName, path));
-        rootItem.getChildren().add(file);
+        treeView.getRoot().getChildren().add(file);
     }
 
     public TreeView<PackageNode> createPackageTreeView() {
-        TreeItem<PackageNode> root = new TreeItem<>(new PackageNode("Root", ""));
 
-        //package qui vient du filechooser
-        TreeItem<PackageNode> package1 = new TreeItem<>(new PackageNode("package1", ""));
-        TreeItem<PackageNode> package2 = new TreeItem<>(new PackageNode("package2", ""));
-        TreeItem<PackageNode> subPackage1 = new TreeItem<>(new PackageNode("subPackage1", ""));
-
-        root.getChildren().addAll(package1, package2);
-        package1.getChildren().add(subPackage1);
-        root.setExpanded(true);
-
-        TreeView<PackageNode> treeView = new TreeView<>(root);
-        treeView.setCellFactory(new Callback<TreeView<PackageNode>, TreeCell<PackageNode>>() {
-            @Override
-            public TreeCell<PackageNode> call(TreeView<PackageNode> packageNodeTreeView) {
-                return new TreeCell<PackageNode>() {
-                    @Override
-                    protected void updateItem(PackageNode packageNode, boolean empty) {
-                        super.updateItem(packageNode, empty);
-                        if (packageNode != null) {
-                            setText(packageNode.toString());
-                            setStyle(" -fx-background-color: grey ; ");
-                        } else {
-                            setText("");
-                            setStyle("");
-                        }
-                    }
-                };
-            }
-
-        });
+        TreeView<PackageNode> treeView = new TreeView<>();
+        Import.setTreeView(treeView);
         return treeView;
+    }
+
+    private void setupDragAndDrop() {
+        treeView.setCellFactory(tv -> {
+            TreeCell<PackageNode> cell = new TreeCell<>() {
+                @Override
+                protected void updateItem(PackageNode item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            };
+
+            cell.setOnDragDetected(event -> {
+                if (cell.getItem() == null) {
+                    return;
+                }
+
+                Dragboard dragboard = cell.startDragAndDrop(TransferMode.MOVE);
+                ClipboardContent content = new ClipboardContent();
+                content.putString(cell.getItem().getName());
+                dragboard.setContent(content);
+                event.consume();
+            });
+
+            return cell;
+        });
     }
 }

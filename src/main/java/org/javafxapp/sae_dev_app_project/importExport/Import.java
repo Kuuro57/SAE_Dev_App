@@ -1,9 +1,13 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
+import com.sun.source.tree.Tree;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
+import org.javafxapp.sae_dev_app_project.treeView.PackageNode;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.io.File;
@@ -13,11 +17,16 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 
 public class Import {
 
+    private static TreeView<PackageNode> treeView;
 
+    public static void setTreeView(TreeView<PackageNode> treeView) {
+        Import.treeView = treeView;
+    }
     /**
      * Méthode qui récupère et met en forme toutes les informations d'une classe
      * @param nomClasse Nom de la classe dont on veut les informations
@@ -192,16 +201,13 @@ public class Import {
             model.addObserver(view);
             view.addClass(model);
 
-        }
+            addClassToTreeView(clas.getName(), file.getParent(), true);
 
+        }
         else {
             throw new FileNotFoundException("Fichier non choisi");
         }
-
-
-
     }
-
 
 
     /**
@@ -236,11 +242,7 @@ public class Import {
                 // On charge la classe avec le CustomClassLoader
                 Class<?> clas = singleClassLoader.loadClassFromFile(f, rootPath);
 
-                // On récupère le nom de la classe, on crée un modèle et on l'ajoute à la vue graphique
-                ModelClass model = Import.getModelClass(view, clas.getSimpleName());
-                model.addObserver(view);
-                view.addClass(model);
-
+                addClassToTreeView(clas.getName(), f.getParent(), false);
             }
 
         }
@@ -250,7 +252,42 @@ public class Import {
 
     }
 
+    private static void addClassToTreeView(String className, String packagePath, boolean isSingleClass) {
+        if (treeView == null) return;
 
+        // Ensure the root node exists
+        if (treeView.getRoot() == null) {
+            treeView.setRoot(new TreeItem<>(new PackageNode("Elements importés", "")));
+        }
 
+        // Extract the simple class name from the full class name
+        String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
+        TreeItem<PackageNode> classNode = new TreeItem<>(new PackageNode(simpleClassName, packagePath));
 
+        if (isSingleClass) {
+            // Add the class as a standalone node under the root
+            treeView.getRoot().getChildren().add(classNode);
+        } else {
+            // Extract the directory name from the full path
+            String directoryName = new File(packagePath).getName();
+            TreeItem<PackageNode> packageNode = null;
+
+            // Check if the package node already exists under the root
+            for (TreeItem<PackageNode> node : treeView.getRoot().getChildren()) {
+                if (node.getValue().getName().equals(directoryName)) {
+                    packageNode = node;
+                    break;
+                }
+            }
+
+            // If the package node does not exist, create it
+            if (packageNode == null) {
+                packageNode = new TreeItem<>(new PackageNode(directoryName, packagePath));
+                treeView.getRoot().getChildren().add(packageNode);
+            }
+
+            // Add the class node under the package node
+            packageNode.getChildren().add(classNode);
+        }
+    }
 }

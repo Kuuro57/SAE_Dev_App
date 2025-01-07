@@ -3,6 +3,8 @@ package org.javafxapp.sae_dev_app_project.views;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -26,8 +28,37 @@ public class ViewAllClasses extends Pane implements Observer {
      */
     public ViewAllClasses() {
         this.allClassesList = new ArrayList<>(1000);
+        setupDropHandling();
     }
 
+
+    private void setupDropHandling() {
+        this.setOnDragOver(event -> {
+            if (event.getGestureSource() != this && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+
+        this.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            boolean success = false;
+            if (dragboard.hasString()) {
+                String className = dragboard.getString();
+                // Handle the drop, e.g., add the class to the view
+                ModelClass modelClass = Import.getModelClass(this, className);
+                if (modelClass != null) {
+                    modelClass.setX((int) event.getX());
+                    modelClass.setY((int) event.getY());
+                    this.addClass(modelClass);
+                    this.update();
+                    success = true;
+                }
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+    }
 
     /**
      * Méthode qui ajoute une classe à la liste des classes représentées graphiquement
