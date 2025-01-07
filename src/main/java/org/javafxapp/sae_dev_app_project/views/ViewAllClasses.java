@@ -9,6 +9,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
+import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
@@ -166,6 +167,14 @@ public class ViewAllClasses extends Pane implements Observer {
                 for (Method m2 : m.getMethods()) {
                     if (m1.getName().equals(m2.getName())) {
                         m1.setHidden(m2.isHidden());
+                    }
+                }
+            }
+
+            for (Constructor c : newM.getConstructors()) {
+                for (Constructor c2 : m.getConstructors()) {
+                    if (c.getName().equals(c2.getName())) {
+                        c.setHidden(c2.isHidden());
                     }
                 }
             }
@@ -468,6 +477,28 @@ public class ViewAllClasses extends Pane implements Observer {
         for(ModelClass m : allClassesList){
 
             m.showAllMethods();
+            update();
+
+        }
+
+    }
+
+    public void hideConstructors(){
+
+        for(ModelClass m : allClassesList){
+
+            m.hideConstructors();
+            update();
+
+        }
+
+    }
+
+    public void showConstructors(){
+
+        for(ModelClass m : allClassesList){
+
+            m.showConstructors();
             update();
 
         }

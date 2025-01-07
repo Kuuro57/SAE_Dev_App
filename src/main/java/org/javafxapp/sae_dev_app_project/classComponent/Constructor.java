@@ -33,6 +33,7 @@ public class Constructor extends ClassComponent {
         this.modifier = modifier;
         this.name = name;
         this.parameters = new ArrayList<>();
+        this.hidden = false;
     }
 
 
@@ -47,6 +48,7 @@ public class Constructor extends ClassComponent {
         this.modifier = modifier;
         this.name = name;
         this.parameters = parameters;
+        this.hidden = false;
     }
 
 

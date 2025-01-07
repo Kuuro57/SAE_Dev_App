@@ -127,7 +127,7 @@ public class ModelClass implements Subject {
             // si l'attribut n'est pas caché
 
             if (!a.isHidden()) {
-                // si le type de l'attribut est une classe déjà chargée
+                // si le type de l'attribut est une classe déjà chargé
                 // on cache l'attribut
                 for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
                     if (c.getSimpleName().equals(a.getType())) {
@@ -144,17 +144,17 @@ public class ModelClass implements Subject {
 
         // Ajout des constructeurs à afficher
         for (Constructor c : this.constructors) {
-            // si la méthode n'est pas cachée
+            // si le constructeur n'est pas caché
 
             if (!c.isHidden()) {
-                // si le type de la méthode est une classe déjà chargé
-                // on cache l'attribut
+                // si le type de le constructeur est une classe déjà chargé
+                // on cache le constructeur
                 for (Class<?> classe : SingleClassLoader.LOADED_CLASSES) {
                     if (classe.getSimpleName().equals(c.getName())) {
-                        c.setHidden(true);
+                        c.setHidden(false);
                     }
                 }
-                // sinon on affiche l'attribut
+                // sinon on affiche le constructeur
                 vMethods.getChildren().add(c.getDisplay());
             }
         }
@@ -168,13 +168,13 @@ public class ModelClass implements Subject {
 
             if (!m.isHidden()) {
                 // si le type de la méthode est une classe déjà chargé
-                // on cache l'attribut
+                // on cache la méthode
                 for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
                     if (c.getSimpleName().equals(m.getReturnType())) {
                         m.setHidden(true);
                     }
                 }
-                // sinon on affiche l'attribut
+                // sinon on affiche la méthode
                 vMethods.getChildren().add(m.getDisplay());
             }
         }
@@ -396,6 +396,30 @@ public class ModelClass implements Subject {
 
             for (Method m : methods) {
                 m.setHidden(false);
+            }
+
+        }
+
+    }
+
+    public void hideConstructors() {
+
+        if (!constructors.isEmpty()) {
+
+            for (Constructor c : constructors) {
+                c.setHidden(true);
+            }
+
+        }
+
+    }
+
+    public void showConstructors() {
+
+        if (!constructors.isEmpty()) {
+
+            for (Constructor c : constructors) {
+                c.setHidden(false);
             }
 
         }

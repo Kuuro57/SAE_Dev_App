@@ -174,12 +174,26 @@ public class MenuBarHandler {
 
         });
 
+        MenuItem hideAllClassConstructors = new MenuItem("Masquer les constructeurs des classes");
+        hideAllClassConstructors.setOnAction(actionEvent -> {
+
+            view.hideConstructors();
+
+        });
+
+        MenuItem showAllClassConstructors = new MenuItem("Afficher les constructeurs des classes");
+        showAllClassConstructors.setOnAction(actionEvent -> {
+
+            view.showConstructors();
+
+        });
+
 
 
         // Ajout des sous menus aux menus principaux
         fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
         editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
-        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes, new SeparatorMenuItem(), showAllClassMethods, hideAllClassMethods);
+        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes, new SeparatorMenuItem(), showAllClassConstructors, hideAllClassConstructors, new SeparatorMenuItem(), showAllClassMethods, hideAllClassMethods);
 
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
 
