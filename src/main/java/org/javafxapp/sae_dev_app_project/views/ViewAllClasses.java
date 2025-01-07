@@ -7,11 +7,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
-import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
@@ -89,6 +87,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
             });
 
+
             // Action quand l'utilisateur relâche le clique
             display.setOnMouseReleased(action -> {
 
@@ -124,6 +123,8 @@ public class ViewAllClasses extends Pane implements Observer {
 
             // On l'ajoute sur le Pane
             this.getChildren().add(display);
+
+
 
         }
 
@@ -419,6 +420,28 @@ public class ViewAllClasses extends Pane implements Observer {
 
     }
 
+
+    public void hideAttributes(){
+
+        for(ModelClass m : allClassesList){
+
+            m.hideAllAttributes();
+            update();
+
+        }
+
+    }
+
+    public void showAttributes(){
+
+        for(ModelClass m : allClassesList){
+
+            m.showAllAttributes();
+            update();
+
+        }
+
+    }
 
 
     /**

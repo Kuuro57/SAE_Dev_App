@@ -6,7 +6,6 @@ import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 public class MenuBarHandler {
@@ -81,7 +80,9 @@ public class MenuBarHandler {
 
         // Initialisation des items du menu "Edition"
         MenuItem addClassItem = new MenuItem("Créer une classe");
-        // TODO Ajouter l'action correspondante !
+        //addClassItem.setOnAction(actionEvent -> ModelClass.classCreator());
+
+
 
         MenuItem createPackageItem = new MenuItem("Créer un package");
         // TODO Ajouter l'action correspondante !
@@ -154,17 +155,29 @@ public class MenuBarHandler {
         MenuItem displayMethodsAllClassesItem = new MenuItem("Afficher les méthodes de toutes les classes");
         // TODO Ajouter l'action correspondante !
 
+        MenuItem hideAllClassAttributes = new MenuItem("Masquer les attributs");
+        hideAllClassAttributes.setOnAction(actionEvent -> {
 
+            view.hideAttributes();
+
+        });
+
+        MenuItem showAllClassAttributes = new MenuItem("Afficher les attributs");
+        showAllClassAttributes.setOnAction(actionEvent -> {
+
+            view.showAttributes();
+
+        });
 
 
 
         // Ajout des sous menus aux menus principaux
         fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
         editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
-        showMenu.getItems().addAll(displayAttributesAllClassesItem, displayMethodsAllClassesItem);
+        showMenu.getItems().addAll(displayAttributesAllClassesItem, displayMethodsAllClassesItem, showAllClassAttributes, hideAllClassAttributes);
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
 
-        // On retourne la menu bar
+        // On retourne le menu bar
         return menuBar;
     }
 

@@ -2,10 +2,16 @@ package org.javafxapp.sae_dev_app_project.subjects;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
@@ -320,6 +326,30 @@ public class ModelClass implements Subject {
         }
 
         return list;
+    }
+
+    public void hideAllAttributes() {
+
+        if (!attributes.isEmpty()) {
+
+            for (Attribute a : attributes) {
+                a.setHidden(true);
+            }
+
+        }
+
+    }
+
+    public void showAllAttributes() {
+
+        if (!attributes.isEmpty()) {
+
+            for (Attribute a : attributes) {
+                a.setHidden(false);
+            }
+
+        }
+
     }
 
 
