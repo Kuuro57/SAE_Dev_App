@@ -6,11 +6,14 @@ import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 public class MenuBarHandler {
 
 
 
-    public MenuBar createMenuBar(Stage stage, ViewAllClasses view){
+    public MenuBar createMenuBar(Stage stage, ViewAllClasses view) {
 
 
         // Initialisation des menus principaux
@@ -30,8 +33,8 @@ public class MenuBarHandler {
             try {
                 Import.importClass(view);
             }
-            catch (ClassNotFoundException e) {
-                displayError("Erreur lors de l'importation de la classe ! (Classe non trouvée)");
+            catch (FileNotFoundException e) {
+                displayError("Erreur lors de l'importation de la classe !\nMessage : " + e.getMessage());
             }
         });
 
@@ -40,8 +43,8 @@ public class MenuBarHandler {
             try {
                 Import.importPackage(view);
             }
-            catch (ClassNotFoundException e) {
-                displayError("Erreur lors de l'importation du package ! (Classe non trouvée)");
+            catch (Exception e) {
+                displayError("Erreur lors de l'importation du package !\nMessage : " + e.getMessage());
             }
         });
 
