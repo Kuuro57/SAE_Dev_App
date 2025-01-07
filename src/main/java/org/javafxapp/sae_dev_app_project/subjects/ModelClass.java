@@ -97,8 +97,8 @@ public class ModelClass implements Subject {
         // VBOX de case classe
         v.setId(String.valueOf(this.id));
         v.setAlignment(Pos.TOP_CENTER);
-        v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-        v.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, new CornerRadii(3), new Insets(0, 0, 0, 0))));
+        v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1,1,0,1))));
+        v.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, new CornerRadii(3), new Insets(0))));
         v.getChildren().add(nomClasse);
 
         // VBOX des attributs
@@ -111,7 +111,7 @@ public class ModelClass implements Subject {
         // VBOX des méthodes
         VBox vMethods = new VBox();
         vMethods.setAlignment(Pos.BASELINE_LEFT);
-        vMethods.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 0, 0))));
+        vMethods.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
         vMethods.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         vMethods.setPadding(new Insets(0, 3, 10, 3));
 
