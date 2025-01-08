@@ -10,6 +10,7 @@ public abstract class ClassComponent {
     // Attributs
     protected String modifier; // Type d'accès (public, private, protected, abstract, static)
     protected String name; // Nom du composant
+    protected boolean hidden; // Si le composant est caché ou non
 
 
 
@@ -22,5 +23,14 @@ public abstract class ClassComponent {
      */
     public String getName() { return name; }
     public String getModifier() { return modifier; }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
 
 }

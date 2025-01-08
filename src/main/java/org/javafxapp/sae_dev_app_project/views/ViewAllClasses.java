@@ -2,15 +2,18 @@ package org.javafxapp.sae_dev_app_project.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Text;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
+import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
+import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
-import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
+import org.javafxapp.sae_dev_app_project.menuBar.ContextMenuHandler;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
@@ -81,42 +84,59 @@ public class ViewAllClasses extends Pane implements Observer {
             // On récupère l'affichage de la classe
             VBox display = m.getDisplay();
 
+            // Initialisation du context menu
+            ContextMenu contextMenu = ContextMenuHandler.createClassContextMenu(this, m);
+
 
             // Action quand l'utilisateur appuie sur la classe
             display.setOnMousePressed(action -> {
 
-                // On sélectionne ce modèle
-                display.setBackground(new Background(new BackgroundFill(Color.RED, null, new Insets(0, 0, 0, 0))));
+                // Si l'utilisateur à fait un clique droit et que le context menu n'est pas affiché
+                if (action.getButton() == MouseButton.SECONDARY && !contextMenu.isShowing()) {
+                    // On affiche un nouveau context menu
+                    contextMenu.show(display, Side.RIGHT, 0, 0);
+                }
+
+                // Sinon si l'utilisateur à fait un clique gauche
+                else if (action.getButton() == MouseButton.PRIMARY) {
+                    // On sélectionne ce modèle
+                    display.setBackground(new Background(new BackgroundFill(Color.DODGERBLUE, null, new Insets(0, 0, 0, 0))));
+                }
 
             });
+
 
             // Action quand l'utilisateur relâche le clique
             display.setOnMouseReleased(action -> {
 
-                ModelClass model = this.allClassesList.get(Integer.parseInt(display.getId()));
+                // Si le bouton relâché est le clic gauche
+                if (action.getButton() == MouseButton.PRIMARY) {
 
-                // On désélectionne ce modèle
-                display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
+                    ModelClass model = this.allClassesList.get(Integer.parseInt(display.getId()));
 
-                // On récupère les coordonnées vis à vis de toute la page (pas seulement de la vue)
-                Node parent = display.getParent();
-                Point2D cooVBox = parent.sceneToLocal(action.getSceneX(), action.getSceneY()); // Transformation des coordonnées du clique pour que la VBox se positionne au bon endroit
-                int coo_x = (int) (cooVBox.getX() - display.getWidth() / 2);
-                int coo_y = (int) (cooVBox.getY() - display.getHeight() / 2);
+                    // On désélectionne ce modèle
+                    display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
 
-                // On change ses coordonnées
-                display.setLayoutX(coo_x);
-                display.setLayoutY(coo_y);
+                    // On récupère les coordonnées vis à vis de toute la page (pas seulement de la vue)
+                    Node parent = display.getParent();
+                    Point2D cooVBox = parent.sceneToLocal(action.getSceneX(), action.getSceneY()); // Transformation des coordonnées du clique pour que la VBox se positionne au bon endroit
+                    int coo_x = (int) (cooVBox.getX() - display.getWidth() / 2);
+                    int coo_y = (int) (cooVBox.getY() - display.getHeight() / 2);
 
-                // On change les coordonnées du modèle (pour que la classe soit au milieu des coordonées du clique)
-                model.setX(coo_x);
-                model.setY(coo_y);
+                    // On change ses coordonnées
+                    display.setLayoutX(coo_x);
+                    display.setLayoutY(coo_y);
 
-                // On met à jour les dépendances de cette classe
-                this.displayDependancies(m);
+                    // On change les coordonnées du modèle (pour que la classe soit au milieu des coordonées du clique)
+                    model.setX(coo_x);
+                    model.setY(coo_y);
 
-                // On met à jour la vue du diagramme
-                this.update();
+                    // On met à jour les dépendances de cette classe
+                    this.displayDependancies(m);
+
+                    // On met à jour la vue du diagramme
+                    this.update();
+                }
 
             });
 
@@ -125,6 +145,8 @@ public class ViewAllClasses extends Pane implements Observer {
 
             // On l'ajoute sur le Pane
             this.getChildren().add(display);
+
+
 
         }
 
@@ -150,6 +172,32 @@ public class ViewAllClasses extends Pane implements Observer {
             newM.setId(m.getId());
             newM.setX(m.getX());
             newM.setY(m.getY());
+
+            // On récupère les booléens hidden de l'ancien modèle
+            // pour chaque attribut de la nouvelle classe, on regarde si l'attribut est caché ou non
+            for (Attribute a : newM.getAttributes()) {
+                for (Attribute a2 : m.getAttributes()) {
+                    if (a.getName().equals(a2.getName())) {
+                        a.setHidden(a2.isHidden());
+                    }
+                }
+            }
+
+            for (Method m1 : newM.getMethods()) {
+                for (Method m2 : m.getMethods()) {
+                    if (m1.getName().equals(m2.getName())) {
+                        m1.setHidden(m2.isHidden());
+                    }
+                }
+            }
+
+            for (Constructor c : newM.getConstructors()) {
+                for (Constructor c2 : m.getConstructors()) {
+                    if (c.getName().equals(c2.getName())) {
+                        c.setHidden(c2.isHidden());
+                    }
+                }
+            }
 
             // On remplace l'ancien modèle par le nouveau
             this.allClassesList.set(m.getId(), newM);
@@ -179,7 +227,19 @@ public class ViewAllClasses extends Pane implements Observer {
     private void displayDependancies(ModelClass m) {
 
         // On supprime toutes les dépendances du model
-        this.getChildren().removeIf(n -> (n instanceof Line || n instanceof Polygon) && n.getId().equals(String.valueOf(m.getId())));
+        this.getChildren().removeIf(n -> (n instanceof Line || n instanceof Polygon || n instanceof Text) && n.getId().equals(String.valueOf(m.getId())));
+
+
+        // On boucle sur les attributs de la classe
+            // si le type de l'attribut est une classe et que cette classe est dans la liste des classes alors on trace une flèche
+        for (Attribute a : m.getAttributes()) {
+            for (ModelClass model : this.allClassesList) {
+                if (a.getType().equals(model.getName())) {
+                    this.drawArrow(m, model, "full", "simple", a.getModifier() + " " + a.getName());
+                }
+            }
+        }
+
 
         ArrayList<ModelClass> tempClasses = new ArrayList<>(this.allClassesList);
         Set<Class<?>> loadedClasses = SingleClassLoader.LOADED_CLASSES;
@@ -198,7 +258,7 @@ public class ViewAllClasses extends Pane implements Observer {
         for (ModelClass m_interface : m.getInheritedClasses()) {
             m_interface = this.allClassesList.get(m_interface.getId());
             // On trace une ligne entre les deux classes
-            this.drawArrow(m, m_interface, "dotted", "empty");
+            this.drawArrow(m, m_interface, "dotted", "empty", "");
         }
 
         // Si la classe hérite d'une classe
@@ -235,15 +295,17 @@ public class ViewAllClasses extends Pane implements Observer {
      * @param m2 Model de la classe où va arriver la flèche
      * @param typeOfLine Type de ligne
      * @param typeOfHead Type de la tête de la flèche
+     * @param text Texte à afficher sur la flèche (null si pas de texte)
+     *
      */
-    private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead) {
+    private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead, String text) {
 
         // On récupère les bonnes coordonnées
         ArrayList<Double> listCoord = this.getNearestCoord(m, m2);
-        double x1 = listCoord.get(0);
+        double x1 = listCoord.getFirst();
         double y1 = listCoord.get(1);
         double x2 = listCoord.get(2);
-        double y2 = listCoord.get(3);
+        double y2 = listCoord.getLast();
 
         // Calcul de l'angle de la ligne
         double angle = Math.atan2(y2 - y1, x2 - x1);
@@ -284,39 +346,72 @@ public class ViewAllClasses extends Pane implements Observer {
 
             default:
                 line = null;
+                break;
         }
 
 
         // On switch sur le type de la pointe de la flèche
-        Polygon arrowHead = new Polygon();
-        arrowHead.setId(String.valueOf(m.getId()));
-        arrowHead.getPoints().addAll(
-                x2, y2, // Pointe de la flèche
-                x3, y3, // Coin 1
-                x4, y4  // Coin 2
-        );
-        arrowHead.setStroke(Color.BLACK);
-        arrowHead.setStrokeWidth(1.5);
-
+        Polygon arrowHead;
         switch (typeOfHead) {
 
             case "full":
                 // Pointe de la flèche pleine
+                arrowHead = new Polygon();
+                arrowHead.setId(String.valueOf(m.getId()));
+                arrowHead.getPoints().addAll(
+                        x2, y2, // Pointe de la flèche
+                        x3, y3, // Coin 1
+                        x4, y4  // Coin 2
+                );
+                arrowHead.setStroke(Color.BLACK);
+                arrowHead.setStrokeWidth(0.5);
                 arrowHead.setFill(Color.BLACK);
+                this.getChildren().addAll(line, arrowHead);
                 break;
 
             case "empty":
                 // Pointe de la flèche vide
-                arrowHead.setFill(this.getBackground().getFills().get(0).getFill());
+                arrowHead = new Polygon();
+                arrowHead.setId(String.valueOf(m.getId()));
+                arrowHead.getPoints().addAll(
+                        x2, y2, // Pointe de la flèche
+                        x3, y3, // Coin 1
+                        x4, y4  // Coin 2
+                );
+                arrowHead.setStroke(Color.BLACK);
+                arrowHead.setStrokeWidth(0.5);
+                arrowHead.setFill(this.getBackground().getFills().getFirst().getFill());
+                this.getChildren().addAll(line, arrowHead);
                 break;
 
-            default:
-                arrowHead = null;
+            case "simple":
+                System.out.println("hey");
+                // ligne gauche : part de la pointe de la flèche et va au coin 1 de la pointe
+                Line lineLeft = new Line(x2, y2, x3, y3);
+                lineLeft.setId(String.valueOf(m.getId()));
+                lineLeft.setStroke(Color.BLACK);
+                lineLeft.setStrokeWidth(1);
+                // ligne droite : part de la pointe de la flèche et va au coin 2 de la pointe
+                Line lineRight = new Line(x2, y2, x4, y4);
+                lineRight.setId(String.valueOf(m.getId()));
+                lineRight.setStroke(Color.BLACK);
+                lineRight.setStrokeWidth(1);
+
+                // Si il y a un texte à afficher
+                if (!text.isEmpty()) {
+                    // On récupère les coordonnées du texte
+                    double xText = (x1 + x2) / 2;
+                    double yText = (y1 + y2) / 2;
+
+                    // On affiche le texte
+                    Text textArrow = new Text(xText, yText, text);
+                    textArrow.setId(String.valueOf(m.getId()));
+                    this.getChildren().add(textArrow);
+                }
+                this.getChildren().addAll(line, lineLeft, lineRight); // ajout des lignes qui forment la flèche
+
                 break;
         }
-
-        // On dessine la flèche
-        this.getChildren().addAll(line, arrowHead);
 
     }
 
@@ -389,6 +484,72 @@ public class ViewAllClasses extends Pane implements Observer {
     }
 
 
+    public void hideAttributes(){
+
+        for(ModelClass m : allClassesList){
+
+            m.hideAllAttributes();
+            update();
+
+        }
+
+    }
+
+    public void showAttributes(){
+
+        for(ModelClass m : allClassesList){
+
+            m.showAllAttributes();
+            update();
+
+        }
+
+    }
+
+    public void hideMethods(){
+
+        for(ModelClass m : allClassesList){
+
+            m.hideAllMethods();
+            update();
+
+        }
+
+    }
+
+    public void showMethods(){
+
+        for(ModelClass m : allClassesList){
+
+            m.showAllMethods();
+            update();
+
+        }
+
+    }
+
+    public void hideConstructors(){
+
+        for(ModelClass m : allClassesList){
+
+            m.hideConstructors();
+            update();
+
+        }
+
+    }
+
+    public void showConstructors(){
+
+        for(ModelClass m : allClassesList){
+
+            m.showConstructors();
+            update();
+
+        }
+
+    }
+
 
     /**
      * Méthode qui calcul la distance entre deux points
@@ -427,3 +588,5 @@ public class ViewAllClasses extends Pane implements Observer {
         return this.allClassesList;
     }
 }
+
+

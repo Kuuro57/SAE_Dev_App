@@ -18,6 +18,7 @@ import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.treeView.DragAndDropHandler;
 import org.javafxapp.sae_dev_app_project.treeView.PackageNode;
 import org.javafxapp.sae_dev_app_project.treeView.PackageTreeView;
+import org.javafxapp.sae_dev_app_project.menuBar.MenuBarHandler;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 

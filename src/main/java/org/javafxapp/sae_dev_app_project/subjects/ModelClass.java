@@ -2,14 +2,21 @@ package org.javafxapp.sae_dev_app_project.subjects;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
+import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
 import java.lang.reflect.Parameter;
@@ -96,8 +103,8 @@ public class ModelClass implements Subject {
         // VBOX de case classe
         v.setId(String.valueOf(this.id));
         v.setAlignment(Pos.TOP_CENTER);
-        v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-        v.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, new CornerRadii(3), new Insets(0, 0, 0, 0))));
+        v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1,1,0,1))));
+        v.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, new CornerRadii(3), new Insets(0))));
         v.getChildren().add(nomClasse);
 
         // VBOX des attributs
@@ -110,18 +117,46 @@ public class ModelClass implements Subject {
         // VBOX des méthodes
         VBox vMethods = new VBox();
         vMethods.setAlignment(Pos.BASELINE_LEFT);
-        vMethods.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 0, 0))));
+        vMethods.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1, 0, 1, 0))));
         vMethods.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         vMethods.setPadding(new Insets(0, 3, 10, 3));
 
         // Ajout des attributs à afficher
         for (Attribute a : this.attributes) {
-            vAttributs.getChildren().add(a.getDisplay());
+
+            // si l'attribut n'est pas caché
+
+            if (!a.isHidden()) {
+                // si le type de l'attribut est une classe déjà chargé
+                // on cache l'attribut
+                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
+                    if (c.getSimpleName().equals(a.getType())) {
+                        a.setHidden(true);
+                    }
+                }
+                // sinon on affiche l'attribut
+                vAttributs.getChildren().add(a.getDisplay());
+            }
+
+
+
         }
 
         // Ajout des constructeurs à afficher
         for (Constructor c : this.constructors) {
-            vMethods.getChildren().add(c.getDisplay());
+            // si le constructeur n'est pas caché
+
+            if (!c.isHidden()) {
+                // si le type de le constructeur est une classe déjà chargé
+                // on cache le constructeur
+                for (Class<?> classe : SingleClassLoader.LOADED_CLASSES) {
+                    if (classe.getSimpleName().equals(c.getName())) {
+                        c.setHidden(false);
+                    }
+                }
+                // sinon on affiche le constructeur
+                vMethods.getChildren().add(c.getDisplay());
+            }
         }
 
         // On ajoute les attributs à la VBox
@@ -129,7 +164,19 @@ public class ModelClass implements Subject {
 
         // Ajout des méthodes à afficher
         for (Method m : this.methods) {
-            vMethods.getChildren().add(m.getDisplay());
+            // si la méthode n'est pas cachée
+
+            if (!m.isHidden()) {
+                // si le type de la méthode est une classe déjà chargé
+                // on cache la méthode
+                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
+                    if (c.getSimpleName().equals(m.getReturnType())) {
+                        m.setHidden(true);
+                    }
+                }
+                // sinon on affiche la méthode
+                vMethods.getChildren().add(m.getDisplay());
+            }
         }
 
         // On ajoute les méthodes à la VBox
@@ -303,6 +350,80 @@ public class ModelClass implements Subject {
         }
 
         return list;
+    }
+
+
+
+    public void hideAllAttributes() {
+
+        if (!attributes.isEmpty()) {
+
+            for (Attribute a : attributes) {
+                a.setHidden(true);
+            }
+
+        }
+
+    }
+
+    public void showAllAttributes() {
+
+        if (!attributes.isEmpty()) {
+
+            for (Attribute a : attributes) {
+                a.setHidden(false);
+            }
+
+        }
+
+    }
+
+    public void hideAllMethods() {
+
+        if (!methods.isEmpty()) {
+
+            for (Method m : methods) {
+                m.setHidden(true);
+            }
+
+        }
+
+    }
+
+    public void showAllMethods() {
+
+        if (!methods.isEmpty()) {
+
+            for (Method m : methods) {
+                m.setHidden(false);
+            }
+
+        }
+
+    }
+
+    public void hideConstructors() {
+
+        if (!constructors.isEmpty()) {
+
+            for (Constructor c : constructors) {
+                c.setHidden(true);
+            }
+
+        }
+
+    }
+
+    public void showConstructors() {
+
+        if (!constructors.isEmpty()) {
+
+            for (Constructor c : constructors) {
+                c.setHidden(false);
+            }
+
+        }
+
     }
 
 

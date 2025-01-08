@@ -3,6 +3,7 @@ package org.javafxapp.sae_dev_app_project.classComponent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
+import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 
 
 /**
@@ -23,6 +24,7 @@ public class Attribute extends ClassComponent {
         this.modifier = modifier;
         this.name = name;
         this.type = type;
+        this.hidden = false;
     }
 
 
@@ -45,6 +47,7 @@ public class Attribute extends ClassComponent {
 
         // Ajout du type
         Text typeText = new Text(" : " + Export.removePackageName(type)); // remove package name pour enlever le nom des packages a chaque fois
+
         hBox.getChildren().add(typeText);
 
         return hBox;
@@ -62,5 +65,6 @@ public class Attribute extends ClassComponent {
         // modifier depuis ModelClass
         return Export.convertModifier(getModifier()) + " " + Export.removePackageName(getName()) + " : " + Export.removePackageName(getType());
     }
+
 
 }
