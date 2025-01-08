@@ -50,6 +50,23 @@ public class ContextMenuHandler {
         });
         contextMenu.getItems().add(displayMethodsItem);
 
+        // Bouton qui masque les constructeurs de la classe
+        MenuItem hideConstructorsItem = new MenuItem("Masquer tous les constructeurs");
+        hideConstructorsItem.setOnAction(actionEvent -> {
+            model.hideConstructors();
+            view.update();
+        });
+        contextMenu.getItems().add(hideConstructorsItem);
+
+        // Bouton qui affiche les constructeurs de la classe
+        MenuItem displayConstructorsItem = new MenuItem("Afficher tous les constructeurs");
+        displayConstructorsItem.setOnAction(actionEvent -> {
+            model.showConstructors();
+            view.update();
+        });
+        contextMenu.getItems().add(displayConstructorsItem);
+
+
         return contextMenu;
 
     }

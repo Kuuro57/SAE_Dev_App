@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -236,7 +237,6 @@ public class Export {
 
                 // Retour à la ligne
                 bufferedWriter.newLine();
-
             }
 
             // On ajoute le "@enduml"
