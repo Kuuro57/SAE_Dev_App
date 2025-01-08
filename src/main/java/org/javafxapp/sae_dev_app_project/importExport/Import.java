@@ -22,11 +22,20 @@ import java.util.regex.Pattern;
 
 public class Import {
 
+    /**
+     * Attribut
+     * treeView : Arbre des packages
+     */
     private static TreeView<PackageNode> treeView;
 
+    /**
+     * Méthode qui permet de récupérer l'arbre des packages
+     * @param treeView
+     */
     public static void setTreeView(TreeView<PackageNode> treeView) {
         Import.treeView = treeView;
     }
+
     /**
      * Méthode qui récupère et met en forme toutes les informations d'une classe
      * @param nomClasse Nom de la classe dont on veut les informations
@@ -240,7 +249,8 @@ public class Import {
                 // On charge la classe avec le CustomClassLoader
                 Class<?> clas = singleClassLoader.loadClassFromFile(f, rootPath);
 
-                addClassToTreeView(clas.getName(), f.getParent(), false);
+                // On ajoute la classe à l'arbre des packages
+                addClassToTreeView(clas.getName(), f.getParent());
             }
 
         }
@@ -250,42 +260,43 @@ public class Import {
 
     }
 
-    private static void addClassToTreeView(String className, String packagePath, boolean isSingleClass) {
+    /**
+     * Méthode qui importe toutes les classes d'un package
+     * @param className Nom de la classe à importer
+     * @param packagePath Chemin du package
+     *
+     */
+    private static void addClassToTreeView(String className, String packagePath) {
         if (treeView == null) return;
 
-        // Ensure the root node exists
+        // Si l'arbre est vide, on ajoute un noeud racine
         if (treeView.getRoot() == null) {
             treeView.setRoot(new TreeItem<>(new PackageNode("Elements importés", "")));
         }
 
-        // Extract the simple class name from the full class name
+        // On récupère le nom simple de la classe
         String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
         TreeItem<PackageNode> classNode = new TreeItem<>(new PackageNode(simpleClassName, packagePath));
 
-        if (isSingleClass) {
-            // Add the class as a standalone node under the root
-            treeView.getRoot().getChildren().add(classNode);
-        } else {
-            // Extract the directory name from the full path
-            String directoryName = new File(packagePath).getName();
-            TreeItem<PackageNode> packageNode = null;
+        // On récupère le nom du package
+        String directoryName = new File(packagePath).getName();
+        TreeItem<PackageNode> packageNode = null;
 
-            // Check if the package node already exists under the root
-            for (TreeItem<PackageNode> node : treeView.getRoot().getChildren()) {
-                if (node.getValue().getName().equals(directoryName)) {
-                    packageNode = node;
-                    break;
-                }
+        // On parcourt les noeuds de l'arbre pour trouver le package
+        for (TreeItem<PackageNode> node : treeView.getRoot().getChildren()) {
+            if (node.getValue().getName().equals(directoryName)) {
+                packageNode = node;
+                break;
             }
-
-            // If the package node does not exist, create it
-            if (packageNode == null) {
-                packageNode = new TreeItem<>(new PackageNode(directoryName, packagePath));
-                treeView.getRoot().getChildren().add(packageNode);
-            }
-
-            // Add the class node under the package node
-            packageNode.getChildren().add(classNode);
         }
+
+        // Si le package n'existe pas, on le crée
+        if (packageNode == null) {
+            packageNode = new TreeItem<>(new PackageNode(directoryName, packagePath));
+            treeView.getRoot().getChildren().add(packageNode);
+        }
+
+        // On ajoute la classe au package
+        packageNode.getChildren().add(classNode);
     }
 }
