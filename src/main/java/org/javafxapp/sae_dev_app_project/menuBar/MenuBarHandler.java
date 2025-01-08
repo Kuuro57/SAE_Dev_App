@@ -81,7 +81,11 @@ public class MenuBarHandler {
 
         // Initialisation des items du menu "Edition"
         MenuItem addClassItem = new MenuItem("Créer une classe");
-        // TODO Ajouter l'action correspondante !
+        addClassItem.setOnAction(actionEvent -> {
+
+            view.classCreator();
+
+        });
 
         MenuItem createPackageItem = new MenuItem("Créer un package");
         // TODO Ajouter l'action correspondante !
