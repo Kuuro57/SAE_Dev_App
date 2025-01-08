@@ -34,6 +34,22 @@ public class ContextMenuHandler {
         });
         contextMenu.getItems().add(displayAttributsItem);
 
+        // Bouton qui masque toutes les méthodes de la classe
+        MenuItem hideMethodsItem = new MenuItem("Masquer toutes les méthodes");
+        hideMethodsItem.setOnAction(actionEvent -> {
+            model.hideAllMethods();
+            view.update();
+        });
+        contextMenu.getItems().add(hideMethodsItem);
+
+        // Bouton qui affiche toutes les méthodes de la classe
+        MenuItem displayMethodsItem = new MenuItem("Afficher toutes les méthodes");
+        displayMethodsItem.setOnAction(actionEvent -> {
+            model.showAllMethods();
+            view.update();
+        });
+        contextMenu.getItems().add(displayMethodsItem);
+
         return contextMenu;
 
     }
