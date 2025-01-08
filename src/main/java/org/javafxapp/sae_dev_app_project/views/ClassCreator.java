@@ -7,7 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -161,15 +160,15 @@ public class ClassCreator {
         modifier1.setPadding(new Insets(5));
 
         ComboBox<String> accesMod = new ComboBox<>();
-        accesMod.getItems().addAll("Public", "Private", "Protected");
+        accesMod.getItems().addAll("public", "private", "protected");
         accesMod.setPromptText("Choisir");
 
         ComboBox<String> staticMod = new ComboBox<>();
-        staticMod.getItems().addAll("Static", "-");
+        staticMod.getItems().addAll("static", "-");
         staticMod.setPromptText("Choisir");
 
         ComboBox<String> finalMod = new ComboBox<>();
-        finalMod.getItems().addAll("Final", "-");
+        finalMod.getItems().addAll("final", "-");
         finalMod.setPromptText("Choisir");
 
         Button ajtAtt = new Button("Ajouter l'attribut");
@@ -178,7 +177,7 @@ public class ClassCreator {
 
             if (!attName.getText().isEmpty() && !attType.getText().isEmpty()) {
                 Attribute a = new Attribute(
-                        accesMod.getValue().toLowerCase() + staticMod.getValue().toLowerCase() + finalMod.getValue().toLowerCase(),
+                        accesMod.getValue() + staticMod.getValue() + finalMod.getValue(),
                         attType.getText(),
                         attName.getText()
                 );
@@ -219,7 +218,7 @@ public class ClassCreator {
         modifierConst.setPadding(new Insets(5));
 
         ComboBox<String> accesConst = new ComboBox<>();
-        accesConst.getItems().addAll("Public", "Private", "Protected");
+        accesConst.getItems().addAll("public", "private", "protected");
         accesConst.setPromptText("Choisir");
 
         Label ajtParam = new Label("Ajouter un paramètre :");
@@ -284,11 +283,11 @@ public class ClassCreator {
         modMeth.setPadding(new Insets(5));
 
         ComboBox<String> accesMeth = new ComboBox<>();
-        accesMeth.getItems().addAll("Public", "Private", "Protected");
+        accesMeth.getItems().addAll("public", "private", "protected");
         accesMeth.setPromptText("Choisir");
 
         ComboBox<String> staticMeth = new ComboBox<>();
-        staticMeth.getItems().addAll("Static", "-");
+        staticMeth.getItems().addAll("static", "-");
         staticMeth.setPromptText("Choisir");
 
         Label ajtMethParam = new Label("Ajouter un paramètre :");
