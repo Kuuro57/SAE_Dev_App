@@ -10,8 +10,6 @@ import java.io.FileNotFoundException;
 
 public class MenuBarHandler {
 
-
-
     /**
      * Méthode qui créé une menuBar
      * @param stage Stage de la page JavaFX

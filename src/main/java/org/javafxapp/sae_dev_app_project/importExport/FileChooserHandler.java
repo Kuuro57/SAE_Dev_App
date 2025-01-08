@@ -10,14 +10,11 @@ import java.io.File;
  */
 public class FileChooserHandler {
 
-
     /**
      * Constructeur de la classe
      */
     public FileChooserHandler() {
     }
-
-
 
     /**
      * Méthode qui ouvre un FileChooser pour choisir un fichier .class
@@ -55,7 +52,10 @@ public class FileChooserHandler {
 
     }
 
-
+    /**
+     * Méthode qui ouvre un FileChooser pour choisir un fichier .class
+     * @return Objet de type
+     */
     public File openRepositoryPath(){
 
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -64,8 +64,6 @@ public class FileChooserHandler {
         return directoryChooser.showDialog(null);
 
     }
-
-
 
     /**
      * Méthode qui ouvre un pop-up permettant de choisir un dossier et un nom de fichier
