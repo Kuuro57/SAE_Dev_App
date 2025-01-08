@@ -43,8 +43,8 @@ public class DragAndDropHandler {
                 String className = event.getDragboard().getString();
                 ModelClass modelClass = Import.getModelClass(view, className);
                 if (modelClass != null) {
+                    modelClass.addObserver(view);
                     view.addClass(modelClass);
-                    view.update();
                     success = true;
                 }
             }

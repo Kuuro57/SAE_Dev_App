@@ -46,7 +46,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
             // On lui donne un nouvel id et on l'ajoute à la liste
             m.setId(this.allClassesList.size());
-            this.allClassesList.add(m);
+            this.allClassesList.add(m.getId(), m);
 
             // On notifie l'observeur que le modèle est ajouté à la liste
             m.notifyObservers();
@@ -217,6 +217,7 @@ public class ViewAllClasses extends Pane implements Observer {
                         }
                     }
 
+                    System.out.println(this.allClassesList);
                     m_herit = this.allClassesList.get(m_herit.getId());
                     System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
                     // On trace une ligne entre les deux classes
@@ -399,6 +400,22 @@ public class ViewAllClasses extends Pane implements Observer {
      */
     private double calculateDistance(double x1, double y1, double x2, double y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+
+
+
+    /**
+     * Méthode qui cherche un ModelClass en fonction du nom
+     * @param name Nom de la classe que l'on cherche
+     * @return Objet ModelClass
+     */
+    public ModelClass findClassByName(String name) {
+        for (ModelClass m : this.allClassesList) {
+            if (m.getName().equals(name)) {
+                return m;
+            }
+        }
+        return null;
     }
 
 

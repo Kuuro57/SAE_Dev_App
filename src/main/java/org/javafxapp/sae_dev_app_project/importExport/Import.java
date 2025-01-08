@@ -110,8 +110,8 @@ public class Import {
 
         // Si la classe hérite d'une classe
         if (clas.getSuperclass() != null) {
-            // Si cette classe est déjà chargée
-            if (SingleClassLoader.hasBeenLoaded(clas.getSuperclass().getSimpleName())) {
+            // Si cette classe est déjà sur le graphique
+            if (view.findClassByName(clas.getSuperclass().getSimpleName()) != null) {
                 // On ajoute à la classe la classe héritée
                 modelClass.setExtendedClass(Import.getModelClass(view, clas.getSuperclass().getSimpleName()));
             }
@@ -196,8 +196,10 @@ public class Import {
             SingleClassLoader singleClassLoader = new SingleClassLoader();
             Class<?> clas = singleClassLoader.loadClassFromFile(file, rootPath);
 
-
-            addClassToTreeView(clas.getName(), file.getParent(), true);
+            // On créé le modèle et on l'ajoute à la vue graphique
+            ModelClass model = Import.getModelClass(view, clas.getSimpleName());
+            model.addObserver(view);
+            view.addClass(model);
 
         }
         else {
