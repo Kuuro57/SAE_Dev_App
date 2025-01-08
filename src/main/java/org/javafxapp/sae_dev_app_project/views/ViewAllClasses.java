@@ -10,9 +10,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
+import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Classe qui représente la vue qui contient toutes les classes représentées graphiquements
@@ -28,36 +31,6 @@ public class ViewAllClasses extends Pane implements Observer {
      */
     public ViewAllClasses() {
         this.allClassesList = new ArrayList<>(1000);
-        setupDropHandling();
-    }
-
-
-    private void setupDropHandling() {
-        this.setOnDragOver(event -> {
-            if (event.getGestureSource() != this && event.getDragboard().hasString()) {
-                event.acceptTransferModes(TransferMode.MOVE);
-            }
-            event.consume();
-        });
-
-        this.setOnDragDropped(event -> {
-            Dragboard dragboard = event.getDragboard();
-            boolean success = false;
-            if (dragboard.hasString()) {
-                String className = dragboard.getString();
-                // Handle the drop, e.g., add the class to the view
-                ModelClass modelClass = Import.getModelClass(this, className);
-                if (modelClass != null) {
-                    modelClass.setX((int) event.getX());
-                    modelClass.setY((int) event.getY());
-                    this.addClass(modelClass);
-                    this.update();
-                    success = true;
-                }
-            }
-            event.setDropCompleted(success);
-            event.consume();
-        });
     }
 
     /**
@@ -72,6 +45,7 @@ public class ViewAllClasses extends Pane implements Observer {
         if (!this.allClassesList.contains(m)) {
 
             // On lui donne un nouvel id et on l'ajoute à la liste
+            m.setId(this.allClassesList.size());
             this.allClassesList.add(m);
 
             // On notifie l'observeur que le modèle est ajouté à la liste
@@ -207,6 +181,19 @@ public class ViewAllClasses extends Pane implements Observer {
         // On supprime toutes les dépendances du model
         this.getChildren().removeIf(n -> (n instanceof Line || n instanceof Polygon) && n.getId().equals(String.valueOf(m.getId())));
 
+        ArrayList<ModelClass> tempClasses = new ArrayList<>(this.allClassesList);
+        Set<Class<?>> loadedClasses = SingleClassLoader.LOADED_CLASSES;
+
+
+        for (ModelClass m2 : tempClasses) {
+            // On vérifie que la classe est chargée
+            if (loadedClasses.contains(m2.getClass())) {
+                // On affiche les dépendances
+                this.drawArrow(m, m2, "dotted", "empty");
+            }
+        }
+
+
         // On boucle sur les classes implémentées par cette classe
         for (ModelClass m_interface : m.getInheritedClasses()) {
             m_interface = this.allClassesList.get(m_interface.getId());
@@ -216,14 +203,26 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Si la classe hérite d'une classe
         ModelClass m_herit = m.getExtendedClass();
+
         if (m_herit != null) {
 
-            m_herit = this.allClassesList.get(m_herit.getId());
+            for (Class<?> c : loadedClasses) {
+                if (c.getSimpleName().equals(m_herit.getName())) {
 
-            System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
+                    // verif si la classe hérité est bien chargée dans allClassesList (en fonction de son nom)
+                    for (ModelClass m_temp : this.allClassesList) {
+                        if (m_temp.getName().equals(m_herit.getName())) {
+                            m_herit = m_temp;
+                            break;
+                        }
+                    }
 
-            // On trace une ligne entre les deux classes
-            this.drawArrow(m, m_herit, "full", "empty");
+                    m_herit = this.allClassesList.get(m_herit.getId());
+                    System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
+                    // On trace une ligne entre les deux classes
+                    this.drawArrow(m, m_herit, "full", "empty");
+                }
+            }
         }
     }
 
@@ -240,10 +239,10 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // On récupère les bonnes coordonnées
         ArrayList<Double> listCoord = this.getNearestCoord(m, m2);
-        double x1 = listCoord.getFirst();
+        double x1 = listCoord.get(0);
         double y1 = listCoord.get(1);
         double x2 = listCoord.get(2);
-        double y2 = listCoord.getLast();
+        double y2 = listCoord.get(3);
 
         // Calcul de l'angle de la ligne
         double angle = Math.atan2(y2 - y1, x2 - x1);
@@ -307,7 +306,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
             case "empty":
                 // Pointe de la flèche vide
-                arrowHead.setFill(this.getBackground().getFills().getFirst().getFill());
+                arrowHead.setFill(this.getBackground().getFills().get(0).getFill());
                 break;
 
             default:
@@ -411,5 +410,3 @@ public class ViewAllClasses extends Pane implements Observer {
         return this.allClassesList;
     }
 }
-
-

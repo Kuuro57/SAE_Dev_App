@@ -29,14 +29,15 @@ public class DragAndDropHandler {
             }
         });
 
-        treeView.setOnDragOver(event -> {
-            if (event.getGestureSource() != treeView && event.getDragboard().hasString()) {
+        view.setOnDragOver(event -> {
+            if (event.getGestureSource() != view && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.COPY);
             }
             event.consume();
         });
 
-        treeView.setOnDragDropped(event -> {
+
+        view.setOnDragDropped(event -> {
             boolean success = false;
             if (event.getDragboard().hasString()) {
                 String className = event.getDragboard().getString();

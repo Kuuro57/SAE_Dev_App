@@ -196,10 +196,6 @@ public class Import {
             SingleClassLoader singleClassLoader = new SingleClassLoader();
             Class<?> clas = singleClassLoader.loadClassFromFile(file, rootPath);
 
-            // On créé le modèle et on l'ajoute à la vue graphique
-            ModelClass model = Import.getModelClass(view, clas.getSimpleName());
-            model.addObserver(view);
-            view.addClass(model);
 
             addClassToTreeView(clas.getName(), file.getParent(), true);
 
