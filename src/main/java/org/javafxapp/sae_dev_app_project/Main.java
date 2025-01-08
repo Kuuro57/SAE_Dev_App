@@ -5,12 +5,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import org.javafxapp.sae_dev_app_project.menuBar.MenuBarHandler;
-import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
+import org.javafxapp.sae_dev_app_project.menuHandler.MenuBarHandler;
+import org.javafxapp.sae_dev_app_project.treeView.DragAndDropHandler;
+import org.javafxapp.sae_dev_app_project.treeView.PackageNode;
+import org.javafxapp.sae_dev_app_project.treeView.PackageTreeView;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 
@@ -49,6 +52,18 @@ public class Main extends Application {
         graphicView.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         graphicView.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, new Insets(0, 0, 0, 0))));
         graphicView.getStyleClass().add("grid-cell");
+
+        // Création du TreeView et la mettre a gauche
+        PackageTreeView packageTreeView = new PackageTreeView();
+        TreeView<PackageNode> treeView = packageTreeView.createPackageTreeView();
+
+
+        DragAndDropHandler dragAndDropHandler = new DragAndDropHandler(graphicView);
+        dragAndDropHandler.setupDragAndDrop(treeView);
+
+
+        // Ajout du TreeView à la partie gauche du GridPane
+        grid.add(treeView, 0, 1);
 
 
         // On ajoute les vues au Gridpane

@@ -2,7 +2,8 @@ package org.javafxapp.sae_dev_app_project.classComponent;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import org.javafxapp.sae_dev_app_project.importExport.FileManipulator;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
+import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 
 
 /**
@@ -23,6 +24,7 @@ public class Attribute extends ClassComponent {
         this.modifier = modifier;
         this.name = name;
         this.type = type;
+        this.hidden = false;
     }
 
 
@@ -36,7 +38,7 @@ public class Attribute extends ClassComponent {
         HBox hBox = new HBox();
 
         // Ajout du type d'accès
-        Text modifierText = new Text(FileManipulator.convertModifier(modifier));
+        Text modifierText = new Text(Export.convertModifier(modifier));
         hBox.getChildren().add(modifierText);
 
         // Ajout du nom
@@ -44,7 +46,8 @@ public class Attribute extends ClassComponent {
         hBox.getChildren().add(nameText);
 
         // Ajout du type
-        Text typeText = new Text(" : " + FileManipulator.removePackageName(type)); // remove package name pour enlever le nom des packages a chaque fois
+        Text typeText = new Text(" : " + Export.removePackageName(type)); // remove package name pour enlever le nom des packages a chaque fois
+
         hBox.getChildren().add(typeText);
 
         return hBox;
@@ -60,7 +63,8 @@ public class Attribute extends ClassComponent {
     @Override
     public String toString() {
         // modifier depuis ModelClass
-        return FileManipulator.convertModifier(getModifier()) + " " + FileManipulator.removePackageName(getName()) + " : " + FileManipulator.removePackageName(getType());
+        return Export.convertModifier(getModifier()) + " " + Export.removePackageName(getName()) + " : " + Export.removePackageName(getType());
     }
+
 
 }
