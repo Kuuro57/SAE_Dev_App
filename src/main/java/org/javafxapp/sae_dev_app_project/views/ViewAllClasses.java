@@ -14,6 +14,7 @@ import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.menuHandler.ContextMenuHandler;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
@@ -235,7 +236,7 @@ public class ViewAllClasses extends Pane implements Observer {
         for (Attribute a : m.getAttributes()) {
             for (ModelClass model : this.allClassesList) {
                 if (a.getType().equals(model.getName())) {
-                    this.drawArrow(m, model, "full", "simple", a.getModifier() + " " + a.getName());
+                    this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + a.getName());
                 }
             }
         }
