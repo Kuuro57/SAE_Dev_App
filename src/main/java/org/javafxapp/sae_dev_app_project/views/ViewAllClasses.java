@@ -4,6 +4,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -12,13 +14,15 @@ import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
-import org.javafxapp.sae_dev_app_project.menuBar.ContextMenuHandler;
+import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
+import org.javafxapp.sae_dev_app_project.menuHandler.ContextMenuHandler;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * Classe qui représente la vue qui contient toutes les classes représentées graphiquements
@@ -231,25 +235,12 @@ public class ViewAllClasses extends Pane implements Observer {
 
 
         // On boucle sur les attributs de la classe
-            // si le type de l'attribut est une classe et que cette classe est dans la liste des classes alors on trace une flèche
+        // si le type de l'attribut est une classe et que cette classe est dans la liste des classes alors on trace une flèche
         for (Attribute a : m.getAttributes()) {
             for (ModelClass model : this.allClassesList) {
                 if (a.getType().equals(model.getName())) {
-                    this.drawArrow(m, model, "full", "simple", a.getModifier() + " " + a.getName());
+                    this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
                 }
-            }
-        }
-
-
-        ArrayList<ModelClass> tempClasses = new ArrayList<>(this.allClassesList);
-        Set<Class<?>> loadedClasses = SingleClassLoader.LOADED_CLASSES;
-
-
-        for (ModelClass m2 : tempClasses) {
-            // On vérifie que la classe est chargée
-            if (loadedClasses.contains(m2.getClass())) {
-                // On affiche les dépendances
-                this.drawArrow(m, m2, "dotted", "empty");
             }
         }
 
@@ -263,28 +254,16 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Si la classe hérite d'une classe
         ModelClass m_herit = m.getExtendedClass();
-
         if (m_herit != null) {
 
-            for (Class<?> c : loadedClasses) {
-                if (c.getSimpleName().equals(m_herit.getName())) {
+            m_herit = this.allClassesList.get(m_herit.getId());
 
-                    // verif si la classe hérité est bien chargée dans allClassesList (en fonction de son nom)
-                    for (ModelClass m_temp : this.allClassesList) {
-                        if (m_temp.getName().equals(m_herit.getName())) {
-                            m_herit = m_temp;
-                            break;
-                        }
-                    }
+            System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
 
-                    System.out.println(this.allClassesList);
-                    m_herit = this.allClassesList.get(m_herit.getId());
-                    System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
-                    // On trace une ligne entre les deux classes
-                    this.drawArrow(m, m_herit, "full", "empty");
-                }
-            }
+            // On trace une ligne entre les deux classes
+            this.drawArrow(m, m_herit, "full", "empty", "");
         }
+
     }
 
 
