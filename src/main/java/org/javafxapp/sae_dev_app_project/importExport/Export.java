@@ -367,6 +367,12 @@ public class Export {
 
         StringBuffer res = new StringBuffer();
 
+        // Utilisé pour l'affichage en cas de -
+        if (access.contains("-")){
+            access = access.replace("-", "");
+            convertModifier(access);
+        }
+
         // Si l'attribut (ou la méthode) est private
         if (access.contains("private")) {
             // On commence par "- "
@@ -397,6 +403,12 @@ public class Export {
         if (access.contains("abstract")) {
             // On ajoute "{abstract} "
             res.append("{abstract} ");
+        }
+
+        //Si un attribut est final
+        if (access.contains("final")) {
+            // On ajoute "{final}"
+            res.append("{final} ");
         }
 
         // On retourne le résultat

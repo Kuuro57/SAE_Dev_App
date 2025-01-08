@@ -5,14 +5,16 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
+import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
+import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
@@ -361,54 +363,6 @@ public class ViewAllClasses extends Pane implements Observer {
         // On retourne les points les plus proches
         return listCoord;
 
-    }
-
-
-    public void classCreator() {
-
-        Stage form = new Stage(); // Nouvelle fenêtre
-        form.setTitle("Créer une classe");
-
-        VBox vbox = new VBox();
-        vbox.setAlignment(Pos.TOP_LEFT);
-
-        HBox proprietes = new HBox();
-        proprietes.setPadding(new Insets(10));
-
-        HBox attributs = new HBox();
-        attributs.setPadding(new Insets(10));
-
-        HBox constructeurs = new HBox();
-        constructeurs.setPadding(new Insets(10));
-
-        HBox methodes = new HBox();
-        methodes.setPadding(new Insets(10));
-
-
-        Label title1 = new Label("Propriétés");
-        Label title2 = new Label("Attributs");
-        Label title3 = new Label("Constructeurs");
-        Label title4 = new Label("Méthodes");
-
-
-        Label nomClasse = new Label("Nom de la classe :");
-        nomClasse.setPadding(new Insets(5));
-        TextField className = new TextField();
-
-        proprietes.getChildren().addAll(nomClasse, className);
-
-
-        vbox.getChildren().addAll(title1, proprietes, title2, attributs, title3, constructeurs, title4, methodes);
-
-        // Création de la scène et attachement au Stage
-        Scene scene = new Scene(vbox, 300, 200); // Définir une taille pour la fenêtre
-        form.setScene(scene);
-
-        // Configurer la fenêtre comme modale
-        form.initModality(Modality.APPLICATION_MODAL); // Empêche l'interaction sur la fenêtre précédente
-
-        // Afficher la fenêtre
-        form.showAndWait(); // Pause jusqu'à la fermeture de cette fenêtre
     }
 
     /**

@@ -35,6 +35,22 @@ public class ModelClass implements Subject {
     private String type; // Type de la classe
 
 
+
+    public ModelClass() {
+        this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
+        this.name = "";
+        this.x = 0;
+        this.y = 0;
+        this.observerList = new ArrayList<>();
+        this.attributes = new ArrayList<>();
+        this.methods = new ArrayList<>();
+        this.inheritedClasses = new ArrayList<>();
+        this.extendedClass = null;
+        this.constructors = new ArrayList<>();
+        this.type = "";
+    }
+
+
     /**
      * Constructeur qui prend en paramètre le nom de la classe
      * @param n Nom de la classe
@@ -54,6 +70,19 @@ public class ModelClass implements Subject {
     }
 
 
+    public ModelClass(String n, ArrayList<Attribute> atts, ArrayList<Method> meths, ArrayList<Constructor> consts, String tpe) {
+        this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
+        this.name = n;
+        this.x = 0;
+        this.y = 0;
+        this.observerList = new ArrayList<>();
+        this.attributes = atts;
+        this.methods = meths;
+        this.inheritedClasses = new ArrayList<>();
+        this.extendedClass = null;
+        this.constructors = consts;
+        this.type = tpe;
+    }
 
 
 
@@ -208,6 +237,7 @@ public class ModelClass implements Subject {
         return constructors;
     }
     public void setId(int i) { this.id = i; }
+    public void setName(String name) { this.name = name; }
     public void setExtendedClass(ModelClass extendedClass) {
         this.extendedClass = extendedClass;
     }
