@@ -6,11 +6,19 @@ import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
+import java.io.FileNotFoundException;
+
 public class MenuBarHandler {
 
 
 
-    public MenuBar createMenuBar(Stage stage, ViewAllClasses view){
+    /**
+     * Méthode qui créé une menuBar
+     * @param stage Stage de la page JavaFX
+     * @param view Vue qui contient toutes les classes du diagrammes
+     * @return Un objet MenuBar
+     */
+    public MenuBar createMenuBar(Stage stage, ViewAllClasses view) {
 
 
         // Initialisation des menus principaux
@@ -30,8 +38,8 @@ public class MenuBarHandler {
             try {
                 Import.importClass(view);
             }
-            catch (ClassNotFoundException e) {
-                displayError("Erreur lors de l'importation de la classe ! (Classe non trouvée)");
+            catch (FileNotFoundException e) {
+                displayError("Erreur lors de l'importation de la classe !\nMessage : " + e.getMessage());
             }
         });
 
@@ -40,8 +48,8 @@ public class MenuBarHandler {
             try {
                 Import.importPackage(view);
             }
-            catch (ClassNotFoundException e) {
-                displayError("Erreur lors de l'importation du package ! (Classe non trouvée)");
+            catch (Exception e) {
+                displayError("Erreur lors de l'importation du package !\nMessage : " + e.getMessage());
             }
         });
 
@@ -78,7 +86,9 @@ public class MenuBarHandler {
 
         // Initialisation des items du menu "Edition"
         MenuItem addClassItem = new MenuItem("Créer une classe");
-        // TODO Ajouter l'action correspondante !
+        //addClassItem.setOnAction(actionEvent -> ModelClass.classCreator());
+
+
 
         MenuItem createPackageItem = new MenuItem("Créer un package");
         // TODO Ajouter l'action correspondante !
@@ -142,26 +152,58 @@ public class MenuBarHandler {
         removeMenu.getItems().addAll(removeAttributeItem, removeMethodItem, removeConstructorItem);
 
 
+        MenuItem hideAllClassAttributes = new MenuItem("Masquer les attributs des classes");
+        hideAllClassAttributes.setOnAction(actionEvent -> {
 
+            view.hideAttributes();
 
-        // Initialisation des items du menu "Affichage"
-        MenuItem displayAttributesAllClassesItem = new MenuItem("Afficher les attributs de toutes les classes");
-        // TODO Ajouter l'action correspondante !
+        });
 
-        MenuItem displayMethodsAllClassesItem = new MenuItem("Afficher les méthodes de toutes les classes");
-        // TODO Ajouter l'action correspondante !
+        MenuItem showAllClassAttributes = new MenuItem("Afficher les attributs des classes");
+        showAllClassAttributes.setOnAction(actionEvent -> {
 
+            view.showAttributes();
 
+        });
+
+        MenuItem hideAllClassMethods = new MenuItem("Masquer les méthodes des classes");
+        hideAllClassMethods.setOnAction(actionEvent -> {
+
+            view.hideMethods();
+
+        });
+
+        MenuItem showAllClassMethods = new MenuItem("Afficher les méthodes des classes");
+        showAllClassMethods.setOnAction(actionEvent -> {
+
+            view.showMethods();
+
+        });
+
+        MenuItem hideAllClassConstructors = new MenuItem("Masquer les constructeurs des classes");
+        hideAllClassConstructors.setOnAction(actionEvent -> {
+
+            view.hideConstructors();
+
+        });
+
+        MenuItem showAllClassConstructors = new MenuItem("Afficher les constructeurs des classes");
+        showAllClassConstructors.setOnAction(actionEvent -> {
+
+            view.showConstructors();
+
+        });
 
 
 
         // Ajout des sous menus aux menus principaux
         fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
         editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
-        showMenu.getItems().addAll(displayAttributesAllClassesItem, displayMethodsAllClassesItem);
+        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes, new SeparatorMenuItem(), showAllClassConstructors, hideAllClassConstructors, new SeparatorMenuItem(), showAllClassMethods, hideAllClassMethods);
+
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
 
-        // On retourne la menu bar
+        // On retourne le menu bar
         return menuBar;
     }
 
