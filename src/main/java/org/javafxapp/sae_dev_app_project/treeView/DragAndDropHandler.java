@@ -14,63 +14,71 @@ public class DragAndDropHandler {
 
     /**
      * Attributs
-     * view : Vue de toutes les classes
+     * targetView : Vue de toutes les classes
      */
-    private final ViewAllClasses view;
+    private final ViewAllClasses targetView;
 
     /**
      * Constructeur de la classe
-     * @param view Vue de toutes les classes
+     * @param targetView Vue de toutes les classes
      */
-    public DragAndDropHandler(ViewAllClasses view) {
-        this.view = view;
+    public DragAndDropHandler(ViewAllClasses targetView) {
+        this.targetView = targetView;
     }
 
     /**
      * Méthode qui initialise le drag and drop
-     * @param treeView Arbre des packages
+     * @param packageTree
      */
-    public void setupDragAndDrop(TreeView<PackageNode> treeView) {
-
-        // Drag and drop depuis l'arbre des packages
-        treeView.setOnDragDetected(event -> {
-            TreeItem<PackageNode> selectedItem = treeView.getSelectionModel().getSelectedItem();
-            // Si l'élément sélectionné est une feuille, on commence le drag and drop
-            if (selectedItem != null && selectedItem.isLeaf()) {
-                Dragboard dragboard = treeView.startDragAndDrop(TransferMode.COPY);
-                ClipboardContent content = new ClipboardContent();
-                content.putString(selectedItem.getValue().getName());
-                dragboard.setContent(content);
-                event.consume();
-            }
-        });
-
-        // Drag and drop sur la vue de toutes les classes
-        view.setOnDragOver(event -> {
-            // Si l'élément drag and drop n'est pas la vue et qu'il contient une chaîne de caractères, on accepte le transfert
-            if (event.getGestureSource() != view && event.getDragboard().hasString()) {
-                event.acceptTransferModes(TransferMode.COPY);
-            }
-            event.consume();
-        });
-
-        // Drag and drop sur la vue de toutes les classes
-        view.setOnDragDropped(event -> {
-            boolean success = false;
-            // Si l'élément drag and drop contient une chaîne de caractères, on récupère la classe correspondante
-            if (event.getDragboard().hasString()) {
-                String className = event.getDragboard().getString();
-                ModelClass modelClass = Import.getModelClass(view, className);
-                // Si la classe est non nulle, on l'ajoute à la vue
-                if (modelClass != null) {
-                    modelClass.addObserver(view);
-                    view.addClass(modelClass);
-                    success = true;
-                }
-            }
-            // On termine le drag and drop
-            event.setDropCompleted(success);
-            event.consume();
-        });
+    public void setup(TreeView<PackageNode> packageTree) {
+        packageTree.setOnDragDetected(event -> handleDragDetected(event, packageTree));
+        targetView.setOnDragOver(this::handleDragOver);
+        targetView.setOnDragDropped(this::handleDragDropped);
     }
+
+    /**
+     * Méthode qui gère le drag detected
+     * @param event
+     * @param packageTree
+     */
+    private void handleDragDetected(MouseEvent event, TreeView<PackageNode> packageTree) {
+        TreeItem<PackageNode> selectedItem = packageTree.getSelectionModel().getSelectedItem();
+        if (selectedItem != null && selectedItem.isLeaf()) {
+            Dragboard dragboard = packageTree.startDragAndDrop(TransferMode.COPY);
+            ClipboardContent content = new ClipboardContent();
+            content.putString(selectedItem.getValue().getName());
+            dragboard.setContent(content);
+            event.consume();
+        }
+    }
+
+    /**
+     * Méthode qui gère le drag over
+     * @param event
+     */
+    private void handleDragOver(DragEvent event) {
+        if (event.getGestureSource() != targetView && event.getDragboard().hasString()) {
+            event.acceptTransferModes(TransferMode.COPY);
+        }
+        event.consume();
+    }
+
+    /**
+     * Méthode qui gère le drag dropped
+     * @param event
+     */
+    private void handleDragDropped(DragEvent event) {
+        boolean success = false;
+        Dragboard dragboard = event.getDragboard();
+        if (dragboard.hasString()) {
+            String className = dragboard.getString();
+            ModelClass modelClass = new ModelClass(className); // Crée directement une classe pour simplifier
+            modelClass.addObserver(targetView);
+            targetView.addClass(modelClass);
+            success = true;
+        }
+        event.setDropCompleted(success);
+        event.consume();
+    }
+
 }

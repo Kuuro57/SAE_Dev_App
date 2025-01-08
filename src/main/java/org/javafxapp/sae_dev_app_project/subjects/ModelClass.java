@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
@@ -106,6 +107,10 @@ public class ModelClass implements Subject {
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1,1,0,1))));
         v.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, new CornerRadii(3), new Insets(0))));
         v.getChildren().add(nomClasse);
+        //marge dans le texte de la case classe avec la bordure (sans utilisr padding) en haut et en bas
+        nomClasse.setWrappingWidth(150);
+        nomClasse.setTextAlignment(TextAlignment.CENTER);
+
 
         // VBOX des attributs
         VBox vAttributs = new VBox();
@@ -424,6 +429,12 @@ public class ModelClass implements Subject {
 
         }
 
+    }
+
+    public void hideDetails() {
+        this.hideAllAttributes();
+        this.hideAllMethods();
+        this.hideConstructors();
     }
 
 
