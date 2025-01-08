@@ -1,4 +1,4 @@
-package org.javafxapp.sae_dev_app_project.menuBar;
+package org.javafxapp.sae_dev_app_project.menuHandler;
 
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -12,6 +12,12 @@ public class MenuBarHandler {
 
 
 
+    /**
+     * Méthode qui créé une menuBar
+     * @param stage Stage de la page JavaFX
+     * @param view Vue qui contient toutes les classes du diagrammes
+     * @return Un objet MenuBar
+     */
     public MenuBar createMenuBar(Stage stage, ViewAllClasses view) {
 
 

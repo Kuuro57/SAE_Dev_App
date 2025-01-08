@@ -9,8 +9,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import org.javafxapp.sae_dev_app_project.menuBar.MenuBarHandler;
-import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
+import org.javafxapp.sae_dev_app_project.menuHandler.MenuBarHandler;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 

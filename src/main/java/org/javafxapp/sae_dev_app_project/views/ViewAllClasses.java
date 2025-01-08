@@ -2,7 +2,10 @@ package org.javafxapp.sae_dev_app_project.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -12,6 +15,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
+import org.javafxapp.sae_dev_app_project.menuHandler.ContextMenuHandler;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
@@ -80,12 +84,24 @@ public class ViewAllClasses extends Pane implements Observer {
             // On récupère l'affichage de la classe
             VBox display = m.getDisplay();
 
+            // Initialisation du context menu
+            ContextMenu contextMenu = ContextMenuHandler.createClassContextMenu(this, m);
+
 
             // Action quand l'utilisateur appuie sur la classe
             display.setOnMousePressed(action -> {
 
-                // On sélectionne ce modèle
-                display.setBackground(new Background(new BackgroundFill(Color.DODGERBLUE, null, new Insets(0, 0, 0, 0))));
+                // Si l'utilisateur à fait un clique droit et que le context menu n'est pas affiché
+                if (action.getButton() == MouseButton.SECONDARY && !contextMenu.isShowing()) {
+                    // On affiche un nouveau context menu
+                    contextMenu.show(display, Side.RIGHT, 0, 0);
+                }
+
+                // Sinon si l'utilisateur à fait un clique gauche
+                else if (action.getButton() == MouseButton.PRIMARY) {
+                    // On sélectionne ce modèle
+                    display.setBackground(new Background(new BackgroundFill(Color.DODGERBLUE, null, new Insets(0, 0, 0, 0))));
+                }
 
             });
 
@@ -93,30 +109,34 @@ public class ViewAllClasses extends Pane implements Observer {
             // Action quand l'utilisateur relâche le clique
             display.setOnMouseReleased(action -> {
 
-                ModelClass model = this.allClassesList.get(Integer.parseInt(display.getId()));
+                // Si le bouton relâché est le clic gauche
+                if (action.getButton() == MouseButton.PRIMARY) {
 
-                // On désélectionne ce modèle
-                display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
+                    ModelClass model = this.allClassesList.get(Integer.parseInt(display.getId()));
 
-                // On récupère les coordonnées vis à vis de toute la page (pas seulement de la vue)
-                Node parent = display.getParent();
-                Point2D cooVBox = parent.sceneToLocal(action.getSceneX(), action.getSceneY()); // Transformation des coordonnées du clique pour que la VBox se positionne au bon endroit
-                int coo_x = (int) (cooVBox.getX() - display.getWidth() / 2);
-                int coo_y = (int) (cooVBox.getY() - display.getHeight() / 2);
+                    // On désélectionne ce modèle
+                    display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
 
-                // On change ses coordonnées
-                display.setLayoutX(coo_x);
-                display.setLayoutY(coo_y);
+                    // On récupère les coordonnées vis à vis de toute la page (pas seulement de la vue)
+                    Node parent = display.getParent();
+                    Point2D cooVBox = parent.sceneToLocal(action.getSceneX(), action.getSceneY()); // Transformation des coordonnées du clique pour que la VBox se positionne au bon endroit
+                    int coo_x = (int) (cooVBox.getX() - display.getWidth() / 2);
+                    int coo_y = (int) (cooVBox.getY() - display.getHeight() / 2);
 
-                // On change les coordonnées du modèle (pour que la classe soit au milieu des coordonées du clique)
-                model.setX(coo_x);
-                model.setY(coo_y);
+                    // On change ses coordonnées
+                    display.setLayoutX(coo_x);
+                    display.setLayoutY(coo_y);
 
-                // On met à jour les dépendances de cette classe
-                this.displayDependancies(m);
+                    // On change les coordonnées du modèle (pour que la classe soit au milieu des coordonées du clique)
+                    model.setX(coo_x);
+                    model.setY(coo_y);
 
-                // On met à jour la vue du diagramme
-                this.update();
+                    // On met à jour les dépendances de cette classe
+                    this.displayDependancies(m);
+
+                    // On met à jour la vue du diagramme
+                    this.update();
+                }
 
             });
 

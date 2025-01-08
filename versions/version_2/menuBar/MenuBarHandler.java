@@ -1,4 +1,4 @@
-package org.javafxapp.sae_dev_app_project.menuBar;
+package org.javafxapp.sae_dev_app_project.menuHandler;
 
 import javafx.scene.control.*;
 import javafx.stage.Stage;
