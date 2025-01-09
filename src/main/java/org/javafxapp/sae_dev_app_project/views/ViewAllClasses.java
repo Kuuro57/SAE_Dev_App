@@ -94,6 +94,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
     }
 
+
     /**
      * Methode qui attache les gestionnaires de souris à une VBox
      * @param display
@@ -167,7 +168,6 @@ public class ViewAllClasses extends Pane implements Observer {
             }
         });
     }
-
 
     /**
      * Méthode qui recharge tous les modèles de la vue
@@ -708,5 +708,3 @@ public class ViewAllClasses extends Pane implements Observer {
         return null; // Aucun VBox trouvé avec cet ID
     }
 }
-
-

@@ -23,6 +23,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.views.Observer;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class ModelClass implements Subject {
      * Méthode qui créé l'affichage de la classe
      * @return Objet de type VBox représentant une classe graphiquement
      */
-    public VBox getDisplay() {
+    public VBox getDisplay(ViewAllClasses viewAllClasses) {
 
         // Initialisation de la VBox et de son visuel
         VBox v = new VBox();
@@ -188,6 +189,7 @@ public class ModelClass implements Subject {
         for (Method m : this.methods) {
             if (!m.isHidden()) vMethods.getChildren().add(m.getDisplay());
         }
+
 
         // On ajoute les méthodes à la VBox
         v.getChildren().addAll(vAttributs, vMethods);
