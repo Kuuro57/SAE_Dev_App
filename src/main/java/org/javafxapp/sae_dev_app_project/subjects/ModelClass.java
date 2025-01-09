@@ -9,10 +9,10 @@ import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.views.Observer;
 
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 
 /**
@@ -181,7 +181,7 @@ public class ModelClass implements Subject {
         StringBuffer res = new StringBuffer();
 
         for(Parameter p : listParams){
-            res.append(p.getName() + " : " + Export.removePackageName(p.getType().getTypeName()) + ", ");
+            res.append(p.getName() + " : " + Export.removePackageName(p.getType()) + ", ");
         }
 
         Export.removeLastComa(res);

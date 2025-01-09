@@ -4,12 +4,12 @@ import javafx.scene.image.WritableImage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.*;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -115,7 +115,7 @@ public class Export {
             // Parcours des paramètres des méthodes
             for (Parameter param : c.getParameters()) {
                 // Ajout des paramètres
-                aff.append(removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(removePackageName(param.getType()) + " " + param.getName());
                 aff.append(", ");
             }
 
@@ -138,7 +138,7 @@ public class Export {
             // Parcours des paramètres des méthodes
             for (Parameter param : m.getParameters()) {
                 // Ajout des paramètres
-                aff.append(removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(removePackageName(param.getType()) + " " + param.getName());
                 aff.append(", ");
             }
 
@@ -466,7 +466,7 @@ public class Export {
             int index = txt.lastIndexOf(",");
             // On supprime cette virgule et l'espace qui suit
             txt.deleteCharAt(index);
-            txt.deleteCharAt(index);
+
         }
 
     }
