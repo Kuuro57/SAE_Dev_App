@@ -77,4 +77,9 @@ public class Constructor extends ClassComponent {
         return modifier + " " + name;
     }
 
+
+    public void addParameter(Parameter parameter) {
+        parameters.add(parameter);
+    }
+
 }

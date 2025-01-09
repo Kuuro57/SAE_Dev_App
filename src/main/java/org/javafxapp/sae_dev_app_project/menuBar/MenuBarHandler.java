@@ -83,7 +83,7 @@ public class MenuBarHandler {
         MenuItem addClassItem = new MenuItem("Créer une classe");
         addClassItem.setOnAction(actionEvent -> {
 
-            //ClassCreator.getInstance().classCreation(view);
+            ClassCreator.getInstance().classCreation(view);
 
         });
 

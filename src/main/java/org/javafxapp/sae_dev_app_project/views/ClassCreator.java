@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public class ClassCreator {
 
         // VBOX de prévisualisation
         ModelClass previs = new ModelClass(name, attributes, methods, constructors, type);
+
         VBox apercu = previs.getDisplay();
         square.getChildren().addAll(apercu, valid(form, view));
         square.setAlignment(Pos.CENTER);
@@ -229,9 +231,42 @@ public class ClassCreator {
 
         Button ajtConstParam = new Button("Ajouter un paramètre");
         ajtConstParam.setPadding(new Insets(5));
+        ajtConstParam.setOnAction(actionEvent -> {
+
+            if (!typeConstParam.getText().isEmpty() && !nomConstParam.getText().isEmpty()){
+
+                Parameter p = new Parameter(typeConstParam.getText(), nomConstParam.getText());
+
+                if (!constructors.isEmpty()) {
+
+                    Constructor c = constructors.getLast();
+                    c.addParameter(p);
+
+                } else {
+
+                    Constructor c = new Constructor(accesConst.getValue(), className.getText());
+                    c.addParameter(p);
+                    constructors.add(c);
+
+                }
+
+            }
+
+            updatePrevis();
+            typeConstParam.clear();
+            nomConstParam.clear();
+
+        });
 
         Button ajtConst = new Button("Ajouter un constructeur");
         ajtConst.setPadding(new Insets(5));
+        ajtConst.setOnAction(actionEvent -> {
+
+            Constructor c = new Constructor(accesConst.getValue(), className.getText());
+            constructors.add(c);
+            updatePrevis();
+
+        });
 
         hConstMod.getChildren().addAll(modifierConst, accesConst);
         hConstParams.getChildren().addAll(ajtParam, nomConstParam, typeConstParam, ajtConstParam);
@@ -348,6 +383,7 @@ public class ClassCreator {
         valider.setOnAction(actionEvent -> {
 
             ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
+            classe.setId(ModelClass.getNewId());
             classe.addObserver(view);
             form.close();
             view.addClass(classe);
