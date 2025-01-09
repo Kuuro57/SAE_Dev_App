@@ -69,20 +69,19 @@ public class ViewAllClasses extends Pane implements Observer {
     @Override
     public void update() {
 
-        // Si il y a des éléments sur le diagramme
-        if (!this.getChildren().isEmpty()) {
-            // On enlève tout le contenu du Pane
-            this.getChildren().clear();
-        }
+        // Si il y a des éléments sur le diagramme on enlève tout le contenu du Pane
+        if (!this.getChildren().isEmpty()) this.getChildren().clear();
 
         // On recharge toutes les classes
         this.reloadAllClasses();
 
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
-            VBox display = m.getDisplay();
-            attachMouseHandlers(display, m);
-            this.getChildren().add(display);
+            if (m.isVisible()) {
+                VBox display = m.getDisplay();
+                attachMouseHandlers(display, m);
+                this.getChildren().add(display);
+            }
         }
 
         // Une fois que toutes les VBox sont chargées et mises sur dans le GridPane, on affiche les dépendances
@@ -164,6 +163,9 @@ public class ViewAllClasses extends Pane implements Observer {
             newM.setX(m.getX());
             newM.setY(m.getY());
 
+            // On récupère son ancienne visibilité (caché ou non)
+            newM.setVisibility(m.isVisible());
+
             // On récupère les booléens hidden de l'ancien modèle
             // pour chaque attribut de la nouvelle classe, on regarde si l'attribut est caché ou non
             for (Attribute a : newM.getAttributes()) {
@@ -226,7 +228,7 @@ public class ViewAllClasses extends Pane implements Observer {
         for (Attribute a : m.getAttributes()) {
             if (a.getType() != null) {
                 for (ModelClass model : this.allClassesList) {
-                    if (model != null && model.getName() != null && a.getType().equals(model.getName())) {
+                    if (model != null && model.getName() != null && a.getType().equals(model.getName()) && model.isVisible()) {
                         this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
                     }
                 }
@@ -236,7 +238,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // On boucle sur les classes implémentées par cette classe
         for (ModelClass m_interface : m.getInheritedClasses()) {
-            if (m_interface != null && m_interface.getId() >= 0 && m_interface.getId() < this.allClassesList.size()) {
+            if (m_interface != null && m_interface.getId() >= 0 && m_interface.getId() < this.allClassesList.size() && m_interface.isVisible()) {
                 m_interface = this.allClassesList.get(m_interface.getId());
                 this.drawArrow(m, m_interface, "dotted", "empty", "");
             } else {
@@ -247,7 +249,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Si la classe hérite d'une classe
         ModelClass m_herit = m.getExtendedClass();
-        if (m_herit != null && m_herit.getId() >= 0 && m_herit.getId() < this.allClassesList.size()) {
+        if (m_herit != null && m_herit.getId() >= 0 && m_herit.getId() < this.allClassesList.size() && m_herit.isVisible()) {
             m_herit = this.allClassesList.get(m_herit.getId());
             this.drawArrow(m, m_herit, "full", "empty", "");
         }
@@ -585,6 +587,45 @@ public class ViewAllClasses extends Pane implements Observer {
         }
         return null;
     }
+
+
+
+    /**
+     * Méthode updateAttribute met à jour les attributs de la vue qui dépendent d'un modèel classe particulier
+     * @param model : ModelClass
+     */
+    public void updateDependentAttributes(ModelClass model) {
+        // parcours des autres models et leur attribut hidden
+
+        // si le type de l'attribut est le même que le nom de la classe
+        // on met hidden à false pour permettre le ré-affichage
+
+        for (ModelClass m : this.getAllClasses()) {
+            // parcours des attributs
+            for (Attribute a : m.getAttributes()) {
+                if (a.getType().equals(model.getName())){
+                    a.setHidden(false); // on ré-affiche
+                }
+            }
+        }
+
+        this.update();
+    }
+
+
+
+    /**
+     * Méthode qui réaffiche toutes les classes cachées du diagramme
+     */
+    public void showAllHiddenClasses() {
+        for (ModelClass m : this.allClassesList) {
+            m.setVisibility(true);
+        }
+        this.update();
+    }
+
+
+
 
     /*
      * ### GETTERS ###

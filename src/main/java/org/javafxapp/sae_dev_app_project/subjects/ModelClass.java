@@ -41,6 +41,7 @@ public class ModelClass implements Subject {
     private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
     private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
     private String type; // Type de la classe
+    private boolean isVisible;
 
 
     /**
@@ -59,6 +60,7 @@ public class ModelClass implements Subject {
         this.extendedClass = null;
         this.constructors = new ArrayList<>();
         this.type = "";
+        this.isVisible = true;
     }
 
 
@@ -263,6 +265,8 @@ public class ModelClass implements Subject {
     public void setExtendedClass(ModelClass extendedClass) {
         this.extendedClass = extendedClass;
     }
+    public void setVisibility(boolean b) { this.isVisible = b; }
+    public boolean isVisible() { return this.isVisible; }
 
 
 

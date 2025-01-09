@@ -154,44 +154,37 @@ public class MenuBarHandler {
 
         MenuItem hideAllClassAttributes = new MenuItem("Masquer les attributs des classes");
         hideAllClassAttributes.setOnAction(actionEvent -> {
-
             view.hideAttributes();
-
         });
 
         MenuItem showAllClassAttributes = new MenuItem("Afficher les attributs des classes");
         showAllClassAttributes.setOnAction(actionEvent -> {
-
             view.showAttributes();
-
         });
 
         MenuItem hideAllClassMethods = new MenuItem("Masquer les méthodes des classes");
         hideAllClassMethods.setOnAction(actionEvent -> {
-
             view.hideMethods();
-
         });
 
         MenuItem showAllClassMethods = new MenuItem("Afficher les méthodes des classes");
         showAllClassMethods.setOnAction(actionEvent -> {
-
             view.showMethods();
-
         });
 
         MenuItem hideAllClassConstructors = new MenuItem("Masquer les constructeurs des classes");
         hideAllClassConstructors.setOnAction(actionEvent -> {
-
             view.hideConstructors();
-
         });
 
         MenuItem showAllClassConstructors = new MenuItem("Afficher les constructeurs des classes");
         showAllClassConstructors.setOnAction(actionEvent -> {
-
             view.showConstructors();
+        });
 
+        MenuItem showAllClassesHiddenItem = new MenuItem("Réafficher les classes cachées");
+        showAllClassesHiddenItem.setOnAction(actionEvent -> {
+            view.showAllHiddenClasses();
         });
 
 
@@ -199,7 +192,7 @@ public class MenuBarHandler {
         // Ajout des sous menus aux menus principaux
         fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
         editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
-        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes, new SeparatorMenuItem(), showAllClassConstructors, hideAllClassConstructors, new SeparatorMenuItem(), showAllClassMethods, hideAllClassMethods);
+        showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes, new SeparatorMenuItem(), showAllClassConstructors, hideAllClassConstructors, new SeparatorMenuItem(), showAllClassMethods, hideAllClassMethods, new SeparatorMenuItem(), showAllClassesHiddenItem);
 
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
 

@@ -78,8 +78,16 @@ public class ContextMenuHandler {
             view.update();
         });
 
+        // Option : Masquer la classe
+        MenuItem hideClass = new MenuItem("Masquer la classe");
+        hideClass.setOnAction(actionEvent -> {
+            model.setVisibility(false);
+            view.updateDependentAttributes(model);
+        });
+
+
         // Structuration du menu contextuel : Ajout des sous-menus et options
-        contextMenu.getItems().addAll(attributeMenu, methodMenu, constructorMenu, new SeparatorMenuItem(), hideDetailsItem, resetAllItem);
+        contextMenu.getItems().addAll(attributeMenu, methodMenu, constructorMenu, new SeparatorMenuItem(), hideDetailsItem, resetAllItem, new SeparatorMenuItem(), hideClass);
 
         return contextMenu;
     }
