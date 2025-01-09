@@ -153,7 +153,6 @@ public class Export {
             aff.append("}\n");
 
         }
-
         // On ferme la classe et on retourne l'affichage
         aff.append("\n}");
 
@@ -202,8 +201,6 @@ public class Export {
 
 
     }
-
-
 
     /**
      * Méthode qui construit un fichier PlantUml à partir d'une liste de classes Java récupérée de la vue
@@ -317,8 +314,6 @@ public class Export {
         return null;
     }
 
-
-
     /**
      * Méthode qui récupère le code plantuml balisé d'une classe
      * @param modelClass La classe de type ModelClass que l'on veut traiter
@@ -345,7 +340,6 @@ public class Export {
 
         // Accolades
         aff.append("{\n");
-
 
         // ----------------------------- ATTRIBUTS ------------------------------- //
 
@@ -416,13 +410,8 @@ public class Export {
         if (m_extended != null) {
             aff.append(modelClass.getName() + " --> " + m_extended.getName() + "\n");
         }
-
-
-
         // On retourne l'affichage final
         return aff.append("\n").toString();
-
-
     }
 
     /**
@@ -528,14 +517,12 @@ public class Export {
      * @param txt La chaîne à traiter
      */
     public static void removeLastComa(StringBuffer txt) {
-
         // Si le texte contient une virgule
         if (txt.toString().contains(",")) {
             // On récupère l'index là où se trouve la dernière virgule
             int index = txt.lastIndexOf(",");
             // On supprime cette virgule et l'espace qui suit
             txt.deleteCharAt(index);
-
         }
 
     }
@@ -596,7 +583,6 @@ public class Export {
             }
 
         }
-
         // On retourne l'affichage final
         return aff.toString();
     }
