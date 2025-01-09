@@ -166,7 +166,7 @@ public class Import {
             }
 
             // on construit l'objet constructor
-            Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), constructeur.getName(), params);
+            Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), Export.removePackageName(constructeur.getName()), params);
             // on ajoute le constructeur à la liste des constructeurs
             modelClass.getConstructors().add(constructor);
         }
