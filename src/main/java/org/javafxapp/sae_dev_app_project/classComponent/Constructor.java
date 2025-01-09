@@ -5,7 +5,7 @@ import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
-import java.lang.reflect.Parameter;
+
 import java.util.ArrayList;
 
 
@@ -61,13 +61,7 @@ public class Constructor extends ClassComponent {
         // Si la méthode requiert des paramètres
         if (!this.getParameters().isEmpty()) {
 
-            // On ajoute les paramètres
-            for (Parameter parameter : this.getParameters()) {
-                parametres += parameter.getType().getSimpleName() + " " + parameter.getName() + ", ";
-            }
-
-            // On enlève la dernière virgule
-            parametres = parametres.substring(0, parametres.length() - 2);
+            parametres = ModelClass.displayParams(parameters);
 
         }
 
