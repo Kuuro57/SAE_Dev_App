@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -19,6 +20,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.views.Observer;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -82,7 +84,7 @@ public class ModelClass implements Subject {
      * Méthode qui créé l'affichage de la classe
      * @return Objet de type VBox représentant une classe graphiquement
      */
-    public VBox getDisplay() {
+    public VBox getDisplay(ViewAllClasses viewAllClasses) {
 
         // Initialisation de la VBox et de son visuel
         VBox v = new VBox();
@@ -128,66 +130,62 @@ public class ModelClass implements Subject {
         vMethods.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         vMethods.setPadding(new Insets(0, 3, 10, 3));
 
-        // Ajout des attributs à afficher
+        // Test pour savoir si il faut cacher certains attributs
         for (Attribute a : this.attributes) {
-
-            // si l'attribut n'est pas caché
-
+            // Si l'attribut n'est pas caché
             if (!a.isHidden()) {
-                // si le type de l'attribut est une classe déjà chargé
-                // on cache l'attribut
-                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
-                    if (c.getSimpleName().equals(a.getType())) {
+                // Si le nom de l'attribut est le même que le nom d'une classe affichée sur le diagramme
+                for (ModelClass m : viewAllClasses.getAllClasses()) {
+
+                    if (m.getName().equals(a.getType()) && m.isVisible()) {
+                        // On n'affiche pas l'attribut
                         a.setHidden(true);
+                        // cas des attribut de type collection avec un regex
                     }
+                    else if (a.getType().matches(".*<.*>")) {
+                        String[] type = a.getType().split("<");
+                        String[] type2 = type[1].split(">");
+                        for (ModelClass m2 : viewAllClasses.getAllClasses()) {
+                            if (m2.getName().equals(type2[0]) && m2.isVisible()) {
+                                a.setHidden(true);
+                            }
+                        }
+                    }}
+
                 }
-                // sinon on affiche l'attribut
-                vAttributs.getChildren().add(a.getDisplay());
+
+                // si l'attribut est de type collection et que la classe dont il vient n'est pas visible
+                // on passe l'attribut en visible
+                if (a.getType().matches(".*<.*>")) {
+                    String[] type = a.getType().split("<");
+                    String[] type2 = type[1].split(">");
+                    for (ModelClass m2 : viewAllClasses.getAllClasses()) {
+                        if (m2.name.equals(type2[0]) && !m2.isVisible) {
+                            a.setHidden(false);
+                        }
+                    }
+
             }
-
-
-
         }
 
-        // Ajout des constructeurs à afficher
+        // Ajout des attributs (seulement si ils ne sont pas masqués)
+        for (Attribute a : this.attributes) {
+            if (!a.isHidden()) vAttributs.getChildren().add(a.getDisplay());
+        }
+
+        // Ajout des constructeurs (seulement si ils ne sont pas masqués)
         for (Constructor c : this.constructors) {
-            // si le constructeur n'est pas caché
-
-            if (!c.isHidden()) {
-                // si le type de le constructeur est une classe déjà chargé
-                // on cache le constructeur
-                for (Class<?> classe : SingleClassLoader.LOADED_CLASSES) {
-                    if (classe.getSimpleName().equals(c.getName())) {
-                        c.setHidden(false);
-                    }
-                }
-                // sinon on affiche le constructeur
-                vMethods.getChildren().add(c.getDisplay());
-            }
+            if (!c.isHidden()) vMethods.getChildren().add(c.getDisplay());
         }
 
-        // On ajoute les attributs à la VBox
-        v.getChildren().add(vAttributs);
-
-        // Ajout des méthodes à afficher
+        // Ajout des méthodes (seulement si elles ne sont pas masquées)
         for (Method m : this.methods) {
-            // si la méthode n'est pas cachée
-
-            if (!m.isHidden()) {
-                // si le type de la méthode est une classe déjà chargé
-                // on cache la méthode
-                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
-                    if (c.getSimpleName().equals(m.getReturnType())) {
-                        m.setHidden(true);
-                    }
-                }
-                // sinon on affiche la méthode
-                vMethods.getChildren().add(m.getDisplay());
-            }
+            if (!m.isHidden()) vMethods.getChildren().add(m.getDisplay());
         }
+
 
         // On ajoute les méthodes à la VBox
-        v.getChildren().add(vMethods);
+        v.getChildren().addAll(vAttributs, vMethods);
 
         // On donne la bonne taille à la VBox
         v.autosize();
@@ -215,7 +213,7 @@ public class ModelClass implements Subject {
     }
 
 
-   @Override
+    @Override
     public void addObserver(Observer o) {
         if (!this.observerList.contains(o)) {
             this.observerList.add(o);

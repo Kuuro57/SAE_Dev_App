@@ -78,7 +78,7 @@ public class ViewAllClasses extends Pane implements Observer {
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
             if (m.isVisible()) {
-                VBox display = m.getDisplay();
+                VBox display = m.getDisplay(this);
                 attachMouseHandlers(display, m);
                 this.getChildren().add(display);
             }
@@ -229,8 +229,22 @@ public class ViewAllClasses extends Pane implements Observer {
             if (a.getType() != null) {
                 for (ModelClass model : this.allClassesList) {
                     if (model != null && model.getName() != null && a.getType().equals(model.getName())) {
-                        if (m.isVisible() && model.isVisible()) this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
-                    }
+                        if (m.isVisible() && model.isVisible()) {
+                            String modifier = Export.convertModifier(a.getModifier());
+                        this.drawArrow(m, model, "full", "simple",  modifier + " " + a.getName() + " : " + a.getType());
+                        //
+                        }
+
+                    } // si l'attribut est de type collection et d'une classe (regex)
+                    else if (a.getType().matches(".*<.*>")) {
+                        String[] typeArray = a.getType().split("<");
+                        String type = typeArray[1].substring(0, typeArray[1].length() - 1);
+                            if (model != null && model.getName() != null && type.equals(model.getName())) {
+                                if (m.isVisible() && model.isVisible()) {
+                                    String modifier = Export.convertModifier(a.getModifier());
+                                    this.drawArrow(m, model, "full", "simple", modifier + " " + a.getName() + " : " + a.getType());
+                            }
+                        } }
                 }
             }
         }
@@ -355,31 +369,43 @@ public class ViewAllClasses extends Pane implements Observer {
 
             case "simple":
                 System.out.println("hey");
-                // ligne gauche : part de la pointe de la flèche et va au coin 1 de la pointe
                 Line lineLeft = new Line(x2, y2, x3, y3);
                 lineLeft.setId(String.valueOf(m.getId()));
                 lineLeft.setStroke(Color.BLACK);
-                lineLeft.setStrokeWidth(1);
-                // ligne droite : part de la pointe de la flèche et va au coin 2 de la pointe
+                lineLeft.setStrokeWidth(1.0F);
                 Line lineRight = new Line(x2, y2, x4, y4);
                 lineRight.setId(String.valueOf(m.getId()));
                 lineRight.setStroke(Color.BLACK);
-                lineRight.setStrokeWidth(1);
-
-                // Si il y a un texte à afficher
+                lineRight.setStrokeWidth(1.0F);
                 if (!text.isEmpty()) {
-                    // On récupère les coordonnées du texte
-                    double xText = (x1 + x2) / 2;
-                    double yText = (y1 + y2) / 2;
+                    double xText = (x1 + x2) / (double)2.0F;
+                    double yText = (y1 + y2) / (double)2.0F + (double)10.0F;
+                    if (text.contains(":")) {
+                        String[] textArray = text.split(":");
+                        String modifier = textArray[0];
+                        if (text.contains(".")) {
+                            String[] textArray2 = text.split("\\.");
+                            String type = textArray2[textArray2.length - 1];
+                            text = modifier + "  : " + type;
+                            System.out.printf("text : %s\n", text);
+                        }
 
-                    // On affiche le texte
+                        System.out.printf("text : %s\n", text);
+                    }
+
                     Text textArrow = new Text(xText, yText, text);
                     textArrow.setId(String.valueOf(m.getId()));
                     this.getChildren().add(textArrow);
+                    if (text.matches(".*<.*>")) {
+                        double xText2 = x2 - (double)20.0F;
+                        double yText2 = y2 + (double)10.0F;
+                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1..*");
+                        textArrow2.setId(String.valueOf(m.getId()));
+                        this.getChildren().add(textArrow2);
+                    }
                 }
-                this.getChildren().addAll(line, lineLeft, lineRight); // ajout des lignes qui forment la flèche
 
-                break;
+                this.getChildren().addAll(line, lineLeft, lineRight);
         }
 
     }
@@ -405,8 +431,8 @@ public class ViewAllClasses extends Pane implements Observer {
         int nbDivision = 4;
 
         // On récupère l'affichage des VBox
-        VBox vbox1 = m1.getDisplay();
-        VBox vbox2 = m2.getDisplay();
+        VBox vbox1 = m1.getDisplay(this);
+        VBox vbox2 = m2.getDisplay(this);
 
         // On boucle sur les lignes de la première VBox (haut, milieu, bas)
         for (int i1 = 0; i1 < nbDivision + 1; i1++) {
