@@ -557,7 +557,7 @@ public class Export {
                     if (a.getType().equals(m.getName())) {
 
                         // On ajoute la dépendance à l'affichage final
-                        aff.append(modelClass.getName() + " \"1\" -- \"*\" " + m.getName() + " : " + a.getName() + "\n");
+                        aff.append(modelClass.getName() + " \"1\" -> \"*\" " + m.getName() + " : " + Export.convertModifier(a.getModifier()) + a.getName() + "\n");
 
                     }
 
