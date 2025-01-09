@@ -58,4 +58,8 @@ public class Method extends ClassComponent {
         return modifier + " " + returnType + " " + name + "(" + parameters.toString() + ")";
     }
 
+    public void addParameter(Parameter parameter) {
+        this.parameters.add(parameter);
+    }
+
 }

@@ -4,6 +4,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
+import org.javafxapp.sae_dev_app_project.views.ClassCreator;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.io.FileNotFoundException;
@@ -86,7 +87,7 @@ public class MenuBarHandler {
 
         // Initialisation des items du menu "Edition"
         MenuItem addClassItem = new MenuItem("Créer une classe");
-        //addClassItem.setOnAction(actionEvent -> ModelClass.classCreator());
+        addClassItem.setOnAction(actionEvent -> ClassCreator.getInstance(view).classCreation());
 
 
 

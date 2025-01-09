@@ -29,19 +29,32 @@ public class ClassCreator {
     private ArrayList<Method> methods = new ArrayList<>();
     private String type = "";
     private VBox square = new VBox();
+    private ModelClass previs = new ModelClass(name, attributes, methods, constructors, type);
+    private VBox apercu;
+    private ViewAllClasses view;
+    private Button valider = new Button("Valider");
 
-    private ClassCreator() {
+    // Singleton pour les éléments que l'on souhaite afficher une seule et unique fois à chaque chargement de la fenêtre
+    private ClassCreator(ViewAllClasses view) {
+
+        this.view = view;
+        apercu = previs.getDisplay();
+        square.getChildren().addAll(apercu, valider);
+        square.setAlignment(Pos.CENTER);
+        square.setMinWidth(150);
+        square.setSpacing(30);
 
     }
 
-    public static ClassCreator getInstance() {
+    public static ClassCreator getInstance(ViewAllClasses view) {
         if (instance == null) {
-            instance = new ClassCreator();
+            instance = new ClassCreator(view);
         }
         return instance;
     }
 
-    public void classCreation(ViewAllClasses view) {
+    // Méthode de création du formulaire avec tous les champs nécessaires
+    public void classCreation() {
 
         Stage form = new Stage(); // Nouvelle fenêtre
         form.setTitle("Créer une classe");
@@ -54,14 +67,18 @@ public class ClassCreator {
         vbox.setAlignment(Pos.TOP_LEFT);
         vbox.setSpacing(15);
 
-        // VBOX de prévisualisation
-        ModelClass previs = new ModelClass(name, attributes, methods, constructors, type);
+        // Bouton de création de la classe en l'état
+        valider.setPadding(new Insets(5));
+        valider.setStyle("-fx-font-size: 14px;");
+        valider.setOnAction(actionEvent -> {
 
-        VBox apercu = previs.getDisplay();
-        square.getChildren().addAll(apercu, valid(form, view));
-        square.setAlignment(Pos.CENTER);
-        square.setMinWidth(150);
-        square.setSpacing(30);
+            ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
+            classe.setId(ModelClass.getNewId());
+            classe.addObserver(view);
+            form.close();
+            view.addClass(classe);
+
+        });
 
         //Titres des encarts
         Label title1 = new Label("Propriétés");
@@ -268,9 +285,9 @@ public class ClassCreator {
 
         });
 
-        hConstMod.getChildren().addAll(modifierConst, accesConst);
+        hConstMod.getChildren().addAll(modifierConst, accesConst, ajtConst);
         hConstParams.getChildren().addAll(ajtParam, nomConstParam, typeConstParam, ajtConstParam);
-        constructeurs.getChildren().addAll(hConstMod, hConstParams, ajtConst);
+        constructeurs.getChildren().addAll(hConstMod, hConstParams);
 
 
 
@@ -333,9 +350,42 @@ public class ClassCreator {
 
         Button btnMethParam = new Button("Ajouter un paramètre");
         btnMethParam.setPadding(new Insets(5));
+        btnMethParam.setOnAction(actionEvent -> {
+
+            if (!typeConstParam.getText().isEmpty() && !nomConstParam.getText().isEmpty()){
+
+                Parameter p = new Parameter(typeConstParam.getText(), nomConstParam.getText());
+
+                if (!methods.isEmpty()) {
+
+                    Method m = methods.getLast();
+                    m.addParameter(p);
+
+                } else {
+
+                    Method m = new Method(accesMeth.getValue(), className.getText(), null, typeMeth.getText());
+                    m.addParameter(p);
+                    methods.add(m);
+
+                }
+
+            }
+
+            updatePrevis();
+            typeConstParam.clear();
+            nomConstParam.clear();
+
+        });
 
         Button btnMeth = new Button("Ajouter une méthode");
         btnMeth.setPadding(new Insets(5));
+        btnMeth.setOnAction(actionEvent -> {
+
+            Method m = new Method(accesMeth.getValue(), methName.getText(), null, typeMeth.getText());
+            methods.add(m);
+            updatePrevis();
+
+        });
 
 
         hMethName.getChildren().addAll(nomMeth, methName);
@@ -363,7 +413,7 @@ public class ClassCreator {
         form.showAndWait(); // Pause jusqu'à la fermeture de cette fenêtre
     }
 
-
+    // Méthode d'actualisation du rendu de prévisualisation
     public void updatePrevis(){
 
         square.getChildren().remove(0);
@@ -374,24 +424,6 @@ public class ClassCreator {
         square.setMinWidth(150);
         square.setSpacing(30);
 
-    }
-
-    public Button valid(Stage form, ViewAllClasses view){
-        Button valider = new Button("Valider");
-        valider.setPadding(new Insets(5));
-        valider.setStyle("-fx-font-size: 14px;");
-        valider.setOnAction(actionEvent -> {
-
-            ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
-            classe.setId(ModelClass.getNewId());
-            classe.addObserver(view);
-            form.close();
-            view.addClass(classe);
-            System.out.println(view.getAllClasses());
-
-        });
-
-        return valider;
     }
 
 }
