@@ -4,7 +4,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -20,7 +19,6 @@ import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.views.Observer;
-import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -84,7 +82,7 @@ public class ModelClass implements Subject {
      * Méthode qui créé l'affichage de la classe
      * @return Objet de type VBox représentant une classe graphiquement
      */
-    public VBox getDisplay(ViewAllClasses viewAllClasses) {
+    public VBox getDisplay() {
 
         // Initialisation de la VBox et de son visuel
         VBox v = new VBox();
@@ -130,17 +128,43 @@ public class ModelClass implements Subject {
         vMethods.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         vMethods.setPadding(new Insets(0, 3, 10, 3));
 
-        // Test pour savoir si il faut cacher certains attributs
+        // Ajout des attributs à afficher
         for (Attribute a : this.attributes) {
-            // Si l'attribut n'est pas caché
+
+            // si l'attribut n'est pas caché
+
             if (!a.isHidden()) {
                 // Si le nom de l'attribut est le même que le nom d'une classe affichée sur le diagramme
                 for (ModelClass m : viewAllClasses.getAllClasses()) {
+
                     if (m.getName().equals(a.getType()) && m.isVisible()) {
                         // On n'affiche pas l'attribut
                         a.setHidden(true);
+                        // cas des attribut de type collection avec un regex
                     }
+                    else if (a.getType().matches(".*<.*>")) {
+                        String[] type = a.getType().split("<");
+                        String[] type2 = type[1].split(">");
+                        for (ModelClass m2 : viewAllClasses.getAllClasses()) {
+                            if (m2.getName().equals(type2[0]) && m2.isVisible()) {
+                                a.setHidden(true);
+                            }
+                        }
+                    }}
+
                 }
+
+                // si l'attribut est de type collection et que la classe dont il vient n'est pas visible
+                // on passe l'attribut en visible
+                if (a.getType().matches(".*<.*>")) {
+                    String[] type = a.getType().split("<");
+                    String[] type2 = type[1].split(">");
+                    for (ModelClass m2 : viewAllClasses.getAllClasses()) {
+                        if (m2.name.equals(type2[0]) && !m2.isVisible) {
+                            a.setHidden(false);
+                        }
+                    }
+
             }
         }
 
@@ -158,7 +182,6 @@ public class ModelClass implements Subject {
         for (Method m : this.methods) {
             if (!m.isHidden()) vMethods.getChildren().add(m.getDisplay());
         }
-
 
         // On ajoute les méthodes à la VBox
         v.getChildren().addAll(vAttributs, vMethods);
