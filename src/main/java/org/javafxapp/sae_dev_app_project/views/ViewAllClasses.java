@@ -28,6 +28,11 @@ public class ViewAllClasses extends Pane implements Observer {
     // Attributs
     private ArrayList<ModelClass> allClassesList; // Liste qui contient toutes les classes sur le diagramme
     private VBox draggedBox;
+    private double initialMouseX;
+    private double initialMouseY;
+    private double offsetX; // Décalage en X entre la souris et le coin haut-gauche de la VBox
+    private double offsetY; // Décalage en Y entre la souris et le coin haut-gauche de la VBox
+    private Node parentNode; // Le conteneur parent de la boîte, pour calculer correctement les coordonnées
 
 
     /**
@@ -105,29 +110,39 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Lorsqu'on clique et commence à glisser une boîte
         display.setOnMousePressed(event -> {
-            this.draggedBox = display; // Enregistrer l'objet actuellement glissé
+            this.draggedBox = display; // Enregistrer la boîte active
+
+            // Capturer le parent pour calculer correctement les coordonnées locales
+            this.parentNode = display.getParent();
+
+            // Calculer le décalage entre la souris et le coin haut-gauche de la boîte
+            Point2D mouseInParent = parentNode.sceneToLocal(event.getSceneX(), event.getSceneY());
+            offsetX = mouseInParent.getX() - display.getLayoutX();
+            offsetY = mouseInParent.getY() - display.getLayoutY();
+
+            // Optionnel : Modifier l'apparence de la boîte pendant le clic (exemple : couleur grise)
             display.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
         });
 
         // Glissement direct (dragging)
         display.setOnMouseDragged(event -> {
-            Node parent = display.getParent();
-            Point2D mousePosition = parent.sceneToLocal(event.getSceneX(), event.getSceneY());
+            // Convertir la position de la souris dans le contexte local du parent
+            Point2D mouseInParent = parentNode.sceneToLocal(event.getSceneX(), event.getSceneY());
 
-            // Calcul des nouvelles coordonnées tout en respectant les limites du canevas
-            double newX = Math.max(0, Math.min(this.getWidth() - display.getWidth(), mousePosition.getX() - display.getWidth() / 2));
-            double newY = Math.max(0, Math.min(this.getHeight() - display.getHeight(), mousePosition.getY() - display.getHeight() / 2));
+            // Nouveaux calculs pour la position de la boîte, tenant compte des décalages
+            double newX = Math.max(0, Math.min(this.getWidth() - display.getWidth(), mouseInParent.getX() - offsetX));
+            double newY = Math.max(0, Math.min(this.getHeight() - display.getHeight(), mouseInParent.getY() - offsetY));
 
-            // Vérifier les collisions avant de modifier la position
+            // Vérifier les collisions avant de déplacer la boîte
             if (!hasCollision(display, newX, newY)) {
                 display.setLayoutX(newX);
                 display.setLayoutY(newY);
 
-                // Mise à jour logique dans le modèle
+                // Mise à jour logique dans le modèle lié à la boîte
                 m.setX((int) newX);
                 m.setY((int) newY);
 
-                // Mise à jour des dépendances
+                // Mise à jour des dépendances (lignes, flèches)
                 this.displayAllDependancies();
             }
         });
@@ -135,13 +150,19 @@ public class ViewAllClasses extends Pane implements Observer {
         // Relâcher la boîte après le glissement
         display.setOnMouseReleased(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
+                // Restaurer l'apparence normale de la boîte
                 display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
 
-                // Finalisation des mises à jour du modèle
+                // Réinitialiser les décalages et le parent
+                offsetX = 0;
+                offsetY = 0;
+                parentNode = null;
+
+                // Finaliser les coordonnées dans le modèle
                 m.setX((int) display.getLayoutX());
                 m.setY((int) display.getLayoutY());
 
-                // Rafraîchir les dépendances et la vue
+                // Rafraîchir la vue si nécessaire
                 this.update();
             }
         });
