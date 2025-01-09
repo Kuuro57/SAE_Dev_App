@@ -80,7 +80,6 @@ public class ViewAllClasses extends Pane implements Observer {
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
 
-
             // On récupère l'affichage de la classe
             VBox display = m.getDisplay();
 
@@ -149,14 +148,17 @@ public class ViewAllClasses extends Pane implements Observer {
             // On récupère un nouveau modèle
             ModelClass newM = Import.getModelClass(this, m.getName());
 
-            // On récupère son ancien ID et ses anciennes coordonnées
-            newM.setId(m.getId());
-            newM.setX(m.getX());
-            newM.setY(m.getY());
+            if (newM != null) {
 
-            // On remplace l'ancien modèle par le nouveau
-            this.allClassesList.set(m.getId(), newM);
+                // On récupère son ancien ID et ses anciennes coordonnées
+                newM.setId(m.getId());
+                newM.setX(m.getX());
+                newM.setY(m.getY());
 
+                // On remplace l'ancien modèle par le nouveau
+                this.allClassesList.set(m.getId(), newM);
+
+            }
         }
 
     }

@@ -40,7 +40,7 @@ public class ClassCreator {
         return instance;
     }
 
-    public void classCreation() {
+    public void classCreation(ViewAllClasses view) {
 
         Stage form = new Stage(); // Nouvelle fenêtre
         form.setTitle("Créer une classe");
@@ -56,7 +56,7 @@ public class ClassCreator {
         // VBOX de prévisualisation
         ModelClass previs = new ModelClass(name, attributes, methods, constructors, type);
         VBox apercu = previs.getDisplay();
-        square.getChildren().addAll(apercu, valid());
+        square.getChildren().addAll(apercu, valid(form, view));
         square.setAlignment(Pos.CENTER);
         square.setMinWidth(150);
         square.setSpacing(30);
@@ -101,12 +101,6 @@ public class ClassCreator {
 
         TextField className = new TextField();
         className.setPromptText("Nom");
-        className.setOnAction(actionEvent -> {
-
-            name = className.getText();
-            updatePrevis();
-
-        });
 
         Label typeClass = new Label("Type de la classe :");
         typeClass.setPadding(new Insets(5));
@@ -115,6 +109,7 @@ public class ClassCreator {
         classType.getItems().addAll("Class", "Interface", "Abstract");
         classType.setPromptText("Choisir");
         classType.setOnAction(actionEvent -> {
+            name = className.getText();
             type = classType.getValue().toLowerCase();
             updatePrevis();
         });
@@ -336,20 +331,29 @@ public class ClassCreator {
 
     public void updatePrevis(){
 
-        square.getChildren().clear();
+        square.getChildren().remove(0);
         ModelClass previs = new ModelClass(name, attributes, methods, constructors, type);
         VBox apercu = previs.getDisplay();
-        square.getChildren().addAll(apercu, valid());
+        square.getChildren().add(0, apercu);
         square.setAlignment(Pos.CENTER);
         square.setMinWidth(150);
         square.setSpacing(30);
 
     }
 
-    public Button valid(){
+    public Button valid(Stage form, ViewAllClasses view){
         Button valider = new Button("Valider");
         valider.setPadding(new Insets(5));
         valider.setStyle("-fx-font-size: 14px;");
+        valider.setOnAction(actionEvent -> {
+
+            ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
+            classe.addObserver(view);
+            form.close();
+            view.addClass(classe);
+            System.out.println(view.getAllClasses());
+
+        });
 
         return valider;
     }
