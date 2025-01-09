@@ -2,6 +2,7 @@ package org.javafxapp.sae_dev_app_project.classComponent;
 
 import javafx.scene.layout.HBox;
 
+
 /**
  * Classe qui représente les attributs communs des composants d'une classe
  */
@@ -14,6 +15,10 @@ public abstract class ClassComponent {
 
 
 
+    /**
+     * Méthode qui permet de créé l'affichage graphique du composant
+     * @return Une HBox représentant graphiquement l'affichage du composant
+     */
     public abstract HBox getDisplay();
 
 
@@ -23,11 +28,15 @@ public abstract class ClassComponent {
      */
     public String getName() { return name; }
     public String getModifier() { return modifier; }
-
     public boolean isHidden() {
         return hidden;
     }
 
+
+
+    /*
+     * ### SETTERS ###
+     */
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }

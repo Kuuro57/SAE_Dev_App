@@ -1,6 +1,5 @@
 package org.javafxapp.sae_dev_app_project.importExport;
 
-import com.sun.source.tree.Tree;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
@@ -16,30 +15,23 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.regex.Pattern;
 
 
+/**
+ * Classe qui contient toutes les méthodes concernant les imports des classes
+ */
 public class Import {
 
-    /**
-     * Attribut
-     * treeView : Arbre des packages
-     */
-    private static TreeView<PackageNode> treeView;
+    // Attributs
+    private static TreeView<PackageNode> treeView; // Arbre des packages
 
-    /**
-     * Méthode qui permet de récupérer l'arbre des packages
-     * @param treeView
-     */
-    public static void setTreeView(TreeView<PackageNode> treeView) {
-        Import.treeView = treeView;
-    }
+
 
     /**
      * Méthode qui récupère et met en forme toutes les informations d'une classe
+     * @param view Vue qui contient toutes les classes présentes sur le diagramme
      * @param nomClasse Nom de la classe dont on veut les informations
-     * @return Les informations de la classe
+     * @return Objet de type ModelClass qui représente la classe
      */
     public static ModelClass getModelClass(ViewAllClasses view, String nomClasse) {
 
@@ -70,12 +62,9 @@ public class Import {
         ModelClass modelClass = new ModelClass(clas.getSimpleName());
 
         // On lui donne un nouvel ID ou son ancien ID
-        if (sameId != -1) {
-            modelClass.setId(sameId);
-        }
-        else {
-            modelClass.setId(ModelClass.getNewId());
-        }
+        if (sameId != -1) modelClass.setId(sameId);
+        else modelClass.setId(ModelClass.getNewId());
+
 
         // Type de la classe (abstract, interface, class)
         int numModifClass = clas.getModifiers();
@@ -150,24 +139,21 @@ public class Import {
 
             // On ajoute l'attribut à la liste des attributs
             modelClass.getAttributes().add(attribute);
-
         }
+
 
         // On récupère le(s) constructeur(s) de cette classe
         for (java.lang.reflect.Constructor<?> constructeur : clas.getDeclaredConstructors()) {
-
             ArrayList<Parameter> params = new ArrayList<>();
 
             for (java.lang.reflect.Parameter p : constructeur.getParameters()) {
-
                 Parameter parm = new Parameter(p.getType().getTypeName(), p.getName());
                 params.add(parm);
-
             }
 
-            // on construit l'objet constructor
+            // On construit l'objet constructor
             Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), Export.removePackageName(constructeur.getName()), params);
-            // on ajoute le constructeur à la liste des constructeurs
+            // On ajoute le constructeur à la liste des constructeurs
             modelClass.getConstructors().add(constructor);
         }
 
@@ -180,11 +166,10 @@ public class Import {
 
             // On récupère la liste des paramètres de cette méthode
             ArrayList<Parameter> listParams = new ArrayList<>();
-            for (java.lang.reflect.Parameter param : methode.getParameters()) {
 
+            for (java.lang.reflect.Parameter param : methode.getParameters()) {
                 Parameter p = new Parameter(param.getType().getTypeName(), param.getName());
                 listParams.add(p);
-
             }
 
             // On construit l'objet Method
@@ -207,7 +192,6 @@ public class Import {
      */
     public static void importClass(ViewAllClasses view) throws FileNotFoundException {
 
-
         // On demande à l'utilisateur de choisir un fichier .class
         FileChooserHandler fileChooserHandler = new FileChooserHandler();
         File file = fileChooserHandler.openFileChooser();
@@ -227,17 +211,15 @@ public class Import {
             view.addClass(model);
 
         }
-        else {
-            throw new FileNotFoundException("Fichier non choisi");
-        }
+        else throw new FileNotFoundException("Fichier non choisi");
     }
+
 
 
     /**
      * Méthode qui importe toutes les classes d'un package
-     * @param view Vue qui comprend toutes les classes
      */
-    public static void importPackage(ViewAllClasses view) throws FileNotFoundException {
+    public static void importPackage() throws FileNotFoundException {
 
 
         // On demande à l'utilisateur de choisir un dossier où ce trouve les fichiers .class
@@ -276,13 +258,15 @@ public class Import {
 
     }
 
+
+
     /**
      * Méthode qui importe toutes les classes d'un package
      * @param className Nom de la classe à importer
      * @param packagePath Chemin du package
-     *
      */
     private static void addClassToTreeView(String className, String packagePath) {
+
         if (treeView == null) {
             System.err.println("Erreur : TreeView n'est pas initialisé !");
             return;
@@ -290,13 +274,13 @@ public class Import {
 
         // Initialiser le noeud racine si nécessaire
         if (treeView.getRoot() == null) {
-            treeView.setRoot(new TreeItem<>(new PackageNode("Elements importés", "")));
+            treeView.setRoot(new TreeItem<>(new PackageNode("Elements importés")));
             System.out.println("Création de la racine du TreeView...");
         }
 
         // Nom simple de la classe
         String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
-        TreeItem<PackageNode> classNode = new TreeItem<>(new PackageNode(simpleClassName, packagePath));
+        TreeItem<PackageNode> classNode = new TreeItem<>(new PackageNode(simpleClassName));
 
         // Nom du package
         String directoryName = new File(packagePath).getName();
@@ -311,7 +295,7 @@ public class Import {
         }
 
         if (packageNode == null) {
-            packageNode = new TreeItem<>(new PackageNode(directoryName, packagePath));
+            packageNode = new TreeItem<>(new PackageNode(directoryName));
             treeView.getRoot().getChildren().add(packageNode);
             System.out.println("Ajout du nouveau package : " + directoryName);
         }
@@ -320,4 +304,16 @@ public class Import {
         packageNode.getChildren().add(classNode);
         System.out.println("Ajout de la classe " + simpleClassName + " au package " + directoryName);
     }
+
+
+
+    /*
+     * ### SETTERS ###
+     */
+    public static void setTreeView(TreeView<PackageNode> treeView) {
+        Import.treeView = treeView;
+    }
+
+
+
 }

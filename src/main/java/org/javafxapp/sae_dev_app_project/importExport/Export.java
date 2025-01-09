@@ -11,7 +11,6 @@ import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -33,12 +32,12 @@ public class Export {
         File directory = fileChooserHandler.openRepositoryPath();
 
         String codeJava;
+
         try {
 
             // Boucle pour parcourir toutes les classes du diagramme dans la vue
             for (int i = 0; i < view.getAllClasses().size(); i++) {
-
-                String className = view.getAllClasses().get(i).getName(); // Supposons que `getName()` donne le nom de la classe
+                String className = view.getAllClasses().get(i).getName();
                 String fileName = className + ".java";
 
                 File file = new File(directory, fileName);
@@ -55,7 +54,6 @@ public class Export {
 
                 // Fermeture du fichier
                 bufferedWriter.close();
-
             }
 
         } catch (IOException e){
@@ -149,9 +147,8 @@ public class Export {
 
         }
 
-        // On ferme la classe
+        // On ferme la classe et on retourne l'affichage
         aff.append("\n}");
-
         return aff.toString();
 
     }
@@ -187,7 +184,7 @@ public class Export {
         }
 
         try {
-            // Enregistrer l'image au format PNG
+            // Enregistrement l'image au format PNG
             ImageIO.write(bufferedImage, "png", file);
         }
         catch (IOException e) {
@@ -416,6 +413,7 @@ public class Export {
     }
 
 
+
     /**
      * Méthode qui retire le package du nom
      * @param txt La chaîne à traiter
@@ -452,6 +450,7 @@ public class Export {
         }
 
     }
+
 
 
     /**
