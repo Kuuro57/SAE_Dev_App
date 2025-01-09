@@ -228,8 +228,8 @@ public class ViewAllClasses extends Pane implements Observer {
         for (Attribute a : m.getAttributes()) {
             if (a.getType() != null) {
                 for (ModelClass model : this.allClassesList) {
-                    if (model != null && model.getName() != null && a.getType().equals(model.getName()) && model.isVisible()) {
-                        this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
+                    if (model != null && model.getName() != null && a.getType().equals(model.getName())) {
+                        if (model.isVisible()) this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
                     }
                 }
             }
@@ -238,9 +238,9 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // On boucle sur les classes implémentées par cette classe
         for (ModelClass m_interface : m.getInheritedClasses()) {
-            if (m_interface != null && m_interface.getId() >= 0 && m_interface.getId() < this.allClassesList.size() && m_interface.isVisible()) {
+            if (m_interface != null && m_interface.getId() >= 0 && m_interface.getId() < this.allClassesList.size()) {
                 m_interface = this.allClassesList.get(m_interface.getId());
-                this.drawArrow(m, m_interface, "dotted", "empty", "");
+                if (m_interface.isVisible()) this.drawArrow(m, m_interface, "dotted", "empty", "");
             } else {
                 System.out.println("Classe non trouvée" + m_interface);
                 return;
@@ -249,9 +249,9 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Si la classe hérite d'une classe
         ModelClass m_herit = m.getExtendedClass();
-        if (m_herit != null && m_herit.getId() >= 0 && m_herit.getId() < this.allClassesList.size() && m_herit.isVisible()) {
+        if (m_herit != null && m_herit.getId() >= 0 && m_herit.getId() < this.allClassesList.size()) {
             m_herit = this.allClassesList.get(m_herit.getId());
-            this.drawArrow(m, m_herit, "full", "empty", "");
+            if (m_herit.isVisible()) this.drawArrow(m, m_herit, "full", "empty", "");
         }
 
     }
