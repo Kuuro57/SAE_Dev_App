@@ -61,7 +61,13 @@ public class Constructor extends ClassComponent {
         // Si la méthode requiert des paramètres
         if (!this.getParameters().isEmpty()) {
 
-            parametres = ModelClass.displayParams(parameters);
+            // On ajoute les paramètres
+            for (Parameter parameter : this.getParameters()) {
+                parametres += parameter.getType().getSimpleName() + " " + parameter.getName() + ", ";
+            }
+
+            // On enlève la dernière virgule
+            parametres = parametres.substring(0, parametres.length() - 2);
 
         }
 
@@ -80,4 +86,6 @@ public class Constructor extends ClassComponent {
         return modifier + " " + name;
     }
 
+    public void setParameters(ArrayList<Parameter> listParams) {
+    }
 }

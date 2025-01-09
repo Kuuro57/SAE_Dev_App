@@ -155,9 +155,13 @@ public class Import {
 
         // On récupère le(s) constructeur(s) de cette classe
         for (java.lang.reflect.Constructor<?> constructeur : clas.getDeclaredConstructors()) {
-            // on construit l'onjet constructor
+            // On construit l'objet Constructor
             Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), constructeur.getName());
-            // on ajoute le constructeur à la liste des constructeurs
+            // On récupère la liste des paramètres de ce constructeur
+            ArrayList<Parameter> listParams = new ArrayList<>(Arrays.asList(constructeur.getParameters()));
+            // On ajoute la liste des paramètres au constructeur
+            constructor.setParameters(listParams);
+            // On ajoute le constructeur à la liste des constructeurs
             modelClass.getConstructors().add(constructor);
         }
 
