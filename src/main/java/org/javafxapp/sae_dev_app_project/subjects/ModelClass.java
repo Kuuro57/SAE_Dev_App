@@ -5,7 +5,15 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.StrokeType;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
@@ -34,22 +42,6 @@ public class ModelClass implements Subject {
     private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
     private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
     private String type; // Type de la classe
-
-
-
-    public ModelClass() {
-        this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
-        this.name = "";
-        this.x = 0;
-        this.y = 0;
-        this.observerList = new ArrayList<>();
-        this.attributes = new ArrayList<>();
-        this.methods = new ArrayList<>();
-        this.inheritedClasses = new ArrayList<>();
-        this.extendedClass = null;
-        this.constructors = new ArrayList<>();
-        this.type = "";
-    }
 
 
     /**
@@ -106,6 +98,9 @@ public class ModelClass implements Subject {
 
         // Initialisation de la VBox et de son visuel
         VBox v = new VBox();
+        HBox hb = new HBox();
+        hb.setSpacing(5);
+        hb.setAlignment(Pos.CENTER);
 
         ArrayList<String> modifs = this.hashType();
         String modifierClass;
@@ -117,7 +112,9 @@ public class ModelClass implements Subject {
         }
 
         // Nom de la classe et Type de classe (abstract, interface, class)
-        Text nomClasse = new Text(modifierClass + " " + this.name);
+        Text nomClasse = new Text(this.name);
+        nomClasse.setFont(Font.font(14));
+        hb.getChildren().addAll(setIcon(), nomClasse);
 
         // On lui donnes les coordonnées
         v.setLayoutX(this.x);
@@ -128,7 +125,8 @@ public class ModelClass implements Subject {
         v.setAlignment(Pos.TOP_CENTER);
         v.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(1,1,0,1))));
         v.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, new CornerRadii(3), new Insets(0))));
-        v.getChildren().add(nomClasse);
+        v.getChildren().add(hb);
+
 
         // VBOX des attributs
         VBox vAttributs = new VBox();
@@ -332,20 +330,40 @@ public class ModelClass implements Subject {
 
 
     // Méthode qui crée l'icon correcpondant au type de classe
-    private Image setIcon() {
+    private Pane setIcon() {
 
-        switch(this.type){
+        StackPane pane = new StackPane();
+        Circle icon = new Circle();
+        icon.setRadius(10);
+        icon.setStrokeWidth(1.4);
 
-            case "Interface":
-                return new Image("");
+        Label label = new Label();
+        label.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
-            case "Abstract":
-                return new Image("");
+        if (type.contains("interface")) {
+            icon.setFill(Color.MEDIUMSEAGREEN);
+            icon.setStroke(Color.DARKGREEN);
+            label.setText("I");
+            label.setTextFill(Color.DARKGREEN);
+            pane.getChildren().addAll(icon, label);
 
-            default:
-                return new Image("");
+        } else if (type.contains("abstract")) {
+            icon.setFill(Color.rgb(255, 90, 94));
+            icon.setStroke(Color.DARKRED);
+            icon.getStrokeDashArray().setAll(4.0, 4.0);
+            label.setText("A");
+            label.setTextFill(Color.DARKRED);
+            pane.getChildren().addAll(icon, label);
+
+        } else {
+            icon.setFill(Color.DODGERBLUE);
+            icon.setStroke(Color.BLUE);
+            label.setText("C");
+            label.setTextFill(Color.BLUE);
+            pane.getChildren().addAll(icon, label);
+
         }
-
+        return pane;
     }
 
     // Décomposition du type de classe récupéré à l'import
@@ -448,6 +466,12 @@ public class ModelClass implements Subject {
 
         }
 
+    }
+
+    public void hideDetails() {
+        this.hideAllAttributes();
+        this.hideAllMethods();
+        this.hideConstructors();
     }
 
 

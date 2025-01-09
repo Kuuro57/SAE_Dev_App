@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.menuHandler.MenuBarHandler;
 import org.javafxapp.sae_dev_app_project.treeView.DragAndDropHandler;
 import org.javafxapp.sae_dev_app_project.treeView.PackageNode;
@@ -38,6 +39,7 @@ public class Main extends Application {
         column2.setPercentWidth(80);
         grid.getColumnConstraints().addAll(column1, column2);
 
+
         RowConstraints row1 = new RowConstraints();
         row1.setPercentHeight(5);
         RowConstraints row2 = new RowConstraints();
@@ -49,17 +51,19 @@ public class Main extends Application {
 
 
         // Configuration de la vue
-        graphicView.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        graphicView.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        graphicView.setMaxWidth(Double.MAX_VALUE);
+        graphicView.setMaxHeight(Double.MAX_VALUE);
         graphicView.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, new Insets(0, 0, 0, 0))));
         graphicView.getStyleClass().add("grid-cell");
 
         // Création du TreeView et la mettre a gauche
         PackageTreeView packageTreeView = new PackageTreeView();
-        TreeView<PackageNode> treeView = packageTreeView.createPackageTreeView();
 
+        packageTreeView.initialize(new DragAndDropHandler(graphicView));
+        TreeView<PackageNode> treeView = packageTreeView.getTreeView();
 
-        DragAndDropHandler dragAndDropHandler = new DragAndDropHandler(graphicView);
-        dragAndDropHandler.setupDragAndDrop(treeView);
+        Import.setTreeView(treeView);
 
 
         // Ajout du TreeView à la partie gauche du GridPane

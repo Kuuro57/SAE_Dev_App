@@ -2,8 +2,6 @@ package org.javafxapp.sae_dev_app_project.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Side;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
@@ -24,12 +22,9 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
-import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.menuHandler.ContextMenuHandler;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
-
 import java.util.ArrayList;
-import java.util.Set;
 
 
 /**
@@ -39,6 +34,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
     // Attributs
     private ArrayList<ModelClass> allClassesList; // Liste qui contient toutes les classes sur le diagramme
+    private VBox draggedBox;
 
 
     /**
@@ -74,98 +70,91 @@ public class ViewAllClasses extends Pane implements Observer {
         return false;
     }
 
-
+    /**
+     * Méthode update, elle permet de mettre à jour la vue
+     */
     @Override
     public void update() {
 
         // Si il y a des éléments sur le diagramme
         if (!this.getChildren().isEmpty()) {
-            // On enlève toutes les classes et dépendances présentes sur le diagramme
-            this.getChildren().remove(0, this.getChildren().size() - 1);
+            // On enlève tout le contenu du Pane
+            this.getChildren().clear();
         }
-
 
         // On recharge toutes les classes
         this.reloadAllClasses();
-
 
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
 
             // On récupère l'affichage de la classe
             VBox display = m.getDisplay();
-
-            // Initialisation du context menu
-            ContextMenu contextMenu = ContextMenuHandler.createClassContextMenu(this, m);
-
-
-            // Action quand l'utilisateur appuie sur la classe
-            display.setOnMousePressed(action -> {
-
-                // Si l'utilisateur à fait un clique droit et que le context menu n'est pas affiché
-                if (action.getButton() == MouseButton.SECONDARY && !contextMenu.isShowing()) {
-                    // On affiche un nouveau context menu
-                    contextMenu.show(display, Side.RIGHT, 0, 0);
-                }
-
-                // Sinon si l'utilisateur à fait un clique gauche
-                else if (action.getButton() == MouseButton.PRIMARY) {
-                    // On sélectionne ce modèle
-                    display.setBackground(new Background(new BackgroundFill(Color.DODGERBLUE, null, new Insets(0, 0, 0, 0))));
-                }
-
-            });
-
-
-            // Action quand l'utilisateur relâche le clique
-            display.setOnMouseReleased(action -> {
-
-                // Si le bouton relâché est le clic gauche
-                if (action.getButton() == MouseButton.PRIMARY) {
-
-                    ModelClass model = this.allClassesList.get(Integer.parseInt(display.getId()));
-
-                    // On désélectionne ce modèle
-                    display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
-
-                    // On récupère les coordonnées vis à vis de toute la page (pas seulement de la vue)
-                    Node parent = display.getParent();
-                    Point2D cooVBox = parent.sceneToLocal(action.getSceneX(), action.getSceneY()); // Transformation des coordonnées du clique pour que la VBox se positionne au bon endroit
-                    int coo_x = (int) (cooVBox.getX() - display.getWidth() / 2);
-                    int coo_y = (int) (cooVBox.getY() - display.getHeight() / 2);
-
-                    // On change ses coordonnées
-                    display.setLayoutX(coo_x);
-                    display.setLayoutY(coo_y);
-
-                    // On change les coordonnées du modèle (pour que la classe soit au milieu des coordonées du clique)
-                    model.setX(coo_x);
-                    model.setY(coo_y);
-
-                    // On met à jour les dépendances de cette classe
-                    this.displayDependancies(m);
-
-                    // On met à jour la vue du diagramme
-                    this.update();
-                }
-
-            });
-
-
-            System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") | id : " + m.getId());
-
-            // On l'ajoute sur le Pane
+            attachMouseHandlers(display, m);
             this.getChildren().add(display);
-
-
-
         }
-
 
         // Une fois que toutes les VBox sont chargées et mises sur dans le GridPane, on affiche les dépendances
         this.displayAllDependancies();
 
+    }
 
+    /**
+     * Methode qui attache les gestionnaires de souris à une VBox
+     * @param display
+     * @param m
+     */
+    private void attachMouseHandlers(VBox display, ModelClass m) {
+        // Gestionnaire de clic pour le menu contextuel
+        ContextMenu contextMenu = ContextMenuHandler.createClassContextMenu(this, m);
+        display.setOnMouseClicked(event -> {
+            if (event.getButton().equals(MouseButton.SECONDARY)) { // Clic droit
+                contextMenu.show(display, event.getScreenX(), event.getScreenY());
+            }
+        });
+
+        // Lorsqu'on clique et commence à glisser une boîte
+        display.setOnMousePressed(event -> {
+            this.draggedBox = display; // Enregistrer l'objet actuellement glissé
+            display.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
+        });
+
+        // Glissement direct (dragging)
+        display.setOnMouseDragged(event -> {
+            Node parent = display.getParent();
+            Point2D mousePosition = parent.sceneToLocal(event.getSceneX(), event.getSceneY());
+
+            // Calcul des nouvelles coordonnées tout en respectant les limites du canevas
+            double newX = Math.max(0, Math.min(this.getWidth() - display.getWidth(), mousePosition.getX() - display.getWidth() / 2));
+            double newY = Math.max(0, Math.min(this.getHeight() - display.getHeight(), mousePosition.getY() - display.getHeight() / 2));
+
+            // Vérifier les collisions avant de modifier la position
+            if (!hasCollision(display, newX, newY)) {
+                display.setLayoutX(newX);
+                display.setLayoutY(newY);
+
+                // Mise à jour logique dans le modèle
+                m.setX((int) newX);
+                m.setY((int) newY);
+
+                // Mise à jour des dépendances
+                this.displayAllDependancies();
+            }
+        });
+
+        // Relâcher la boîte après le glissement
+        display.setOnMouseReleased(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
+
+                // Finalisation des mises à jour du modèle
+                m.setX((int) display.getLayoutX());
+                m.setY((int) display.getLayoutY());
+
+                // Rafraîchir les dépendances et la vue
+                this.update();
+            }
+        });
     }
 
 
@@ -247,9 +236,11 @@ public class ViewAllClasses extends Pane implements Observer {
         // On boucle sur les attributs de la classe
         // si le type de l'attribut est une classe et que cette classe est dans la liste des classes alors on trace une flèche
         for (Attribute a : m.getAttributes()) {
-            for (ModelClass model : this.allClassesList) {
-                if (a.getType().equals(model.getName())) {
-                    this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
+            if (a.getType() != null) {
+                for (ModelClass model : this.allClassesList) {
+                    if (model != null && model.getName() != null && a.getType().equals(model.getName())) {
+                        this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
+                    }
                 }
             }
         }
@@ -257,20 +248,19 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // On boucle sur les classes implémentées par cette classe
         for (ModelClass m_interface : m.getInheritedClasses()) {
-            m_interface = this.allClassesList.get(m_interface.getId());
-            // On trace une ligne entre les deux classes
-            this.drawArrow(m, m_interface, "dotted", "empty", "");
+            if (m_interface != null && m_interface.getId() >= 0 && m_interface.getId() < this.allClassesList.size()) {
+                m_interface = this.allClassesList.get(m_interface.getId());
+                this.drawArrow(m, m_interface, "dotted", "empty", "");
+            } else {
+                System.out.println("Classe non trouvée" + m_interface);
+                return;
+            }
         }
 
         // Si la classe hérite d'une classe
         ModelClass m_herit = m.getExtendedClass();
-        if (m_herit != null) {
-
+        if (m_herit != null && m_herit.getId() >= 0 && m_herit.getId() < this.allClassesList.size()) {
             m_herit = this.allClassesList.get(m_herit.getId());
-
-            System.out.println(m.getName() + "(" + m.getX() + ", " + m.getY() + ") extend ->" + m_herit.getName() + "(" + m_herit.getX() + ", " + m_herit.getY() + ")");
-
-            // On trace une ligne entre les deux classes
             this.drawArrow(m, m_herit, "full", "empty", "");
         }
 
@@ -472,6 +462,49 @@ public class ViewAllClasses extends Pane implements Observer {
 
     }
 
+    /**
+     * Méthode qui vérifie s'il y a une collision entre deux boîtes
+     * @param currentBox
+     * @param newX
+     * @param newY
+     * @return
+     */
+    private boolean hasCollision(VBox currentBox, double newX, double newY) {
+        if (currentBox == null) {
+            return false; // Si la boîte en cours est null, aucune collision
+        }
+
+        // Récupérer les dimensions de `currentBox`
+        double currentWidth = currentBox.getWidth();
+        double currentHeight = currentBox.getHeight();
+
+        // Vérifier les collisions avec toutes les autres boîtes
+        for (ModelClass otherClass : this.allClassesList) {
+            VBox otherBox = this.getVBoxById(otherClass.getId());
+
+            // Vérification supplémentaire pour éviter la collision avec soi-même
+            if (otherBox == null || currentBox.getId().equals(otherBox.getId())) {
+                continue; // Passer si la boîte est elle-même ou introuvable
+            }
+
+            // Positions et dimensions de l'autre boîte
+            double otherX = otherBox.getLayoutX();
+            double otherY = otherBox.getLayoutY();
+            double otherWidth = otherBox.getWidth();
+            double otherHeight = otherBox.getHeight();
+
+            // Vérification des chevauchements (collision rectangulaire)
+            if (newX < otherX + otherWidth &&
+                    newX + currentWidth > otherX &&
+                    newY < otherY + otherHeight &&
+                    newY + currentHeight > otherY) {
+                return true; // Collision détectée
+            }
+        }
+
+        return false; // Pas de collision détectée
+    }
+
 
     public void hideAttributes(){
 
@@ -539,7 +572,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
     }
 
-
     /**
      * Méthode qui calcul la distance entre deux points
      * @param x1 Coordonnée x du premier point
@@ -551,8 +583,6 @@ public class ViewAllClasses extends Pane implements Observer {
     private double calculateDistance(double x1, double y1, double x2, double y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
-
-
 
     /**
      * Méthode qui cherche un ModelClass en fonction du nom
@@ -568,13 +598,31 @@ public class ViewAllClasses extends Pane implements Observer {
         return null;
     }
 
-
-
     /*
      * ### GETTERS ###
      */
     public ArrayList<ModelClass> getAllClasses () {
         return this.allClassesList;
+    }
+
+    /**
+     * Méthode qui retourne une VBox en fonction de son ID
+     * @param id
+     * @return
+     */
+    private VBox getVBoxById(int id) {
+        for (Node node : this.getChildren()) {
+            if (node instanceof VBox) {
+                VBox box = (VBox) node;
+
+                // Vérifier si cette boîte correspond à l'ID
+                if (box.getId() != null && Integer.parseInt(box.getId()) == id) {
+                    return box;
+                }
+            }
+        }
+
+        return null; // Aucun VBox trouvé avec cet ID
     }
 }
 

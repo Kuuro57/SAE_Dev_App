@@ -12,13 +12,13 @@ public class PackageTreeView {
      * Attributs
      * treeView : Arbre des packages
      */
-    private TreeView<PackageNode> treeView;
+    private final TreeView<PackageNode> treeView;
 
     /**
      * Constructeur de la classe
      */
     public PackageTreeView() {
-        treeView = new TreeView<>();
+        this.treeView = new TreeView<>();
     }
 
     /**
@@ -33,11 +33,8 @@ public class PackageTreeView {
      * Méthode qui crée l'arbre des packages
      * @return L'arbre des packages
      */
-    public TreeView<PackageNode> createPackageTreeView() {
-        // Création de l'arbre des packages
-        TreeView<PackageNode> treeView = new TreeView<>();
-        Import.setTreeView(treeView);
-        return treeView;
+    public void initialize(DragAndDropHandler dragHandler) {
+        dragHandler.setup(treeView);
     }
 
 }
