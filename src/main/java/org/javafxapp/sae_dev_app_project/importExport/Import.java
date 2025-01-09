@@ -135,7 +135,7 @@ public class Import {
             // On ajoute l'accessibilité de l'attribut (private, protected, public)
             int numModif = att.getModifiers();
             String nomModif = Modifier.toString(numModif);
-            Attribute attribute = new Attribute(nomModif, att.getGenericType().getTypeName(), att.getName());
+            Attribute attribute = new Attribute(nomModif, Export.removePackageName(att.getGenericType().getTypeName()), Export.removePackageName(att.getName()));
 
             // On ajoute l'attribut à la liste des attributs
             modelClass.getAttributes().add(attribute);

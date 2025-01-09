@@ -265,7 +265,7 @@ public class ViewAllClasses extends Pane implements Observer {
                     } // si l'attribut est de type collection et d'une classe (regex)
                     else if (a.getType().matches(".*<.*>")) {
                         String[] typeArray = a.getType().split("<");
-                        String type = typeArray[1].substring(0, typeArray[1].length() - 1);
+                        String type = Export.removePackageName(typeArray[1].substring(0, typeArray[1].length() - 1));
                         if (model != null && model.getName() != null && type.equals(model.getName())) {
                             if (m.isVisible() && model.isVisible()) {
                                 String modifier = Export.convertModifier(a.getModifier());
@@ -407,41 +407,38 @@ public class ViewAllClasses extends Pane implements Observer {
                 lineRight.setStroke(Color.BLACK);
                 lineRight.setStrokeWidth(1);
 
+
                 // Si il y a un texte à afficher
                 if (!text.isEmpty()) {
+                    // On calcul les coordonnées du texte
                     double xText = (x1 + x2) / (double)2.0F;
                     double yText = (y1 + y2) / (double)2.0F + (double)10.0F;
-                    if (text.contains(":")) {
-                        String[] textArray = text.split(":");
-                        String modifier = textArray[0];
-                        if (text.contains(".")) {
-                            String[] textArray2 = text.split("\\.");
-                            String type = textArray2[textArray2.length - 1];
-                            text = modifier + "  : " + type;
-                            System.out.printf("text : %s\n", text);
-                        }
 
-                        System.out.printf("text : %s\n", text);
-                    }
-
+                    // On affiche le texte à afficher
                     Text textArrow = new Text(xText, yText, text);
                     textArrow.setId(String.valueOf(m.getId()));
                     this.getChildren().add(textArrow);
-                    if (text.matches(".*<.*>")) {
-                        double xText2 = x2 - (double)20.0F;
-                        double yText2 = y2 + (double)10.0F;
-                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1..*");
-                        textArrow2.setId(String.valueOf(m.getId()));
-                        this.getChildren().add(textArrow2);
-                    }
-                    else {
-                        double xText2 = x2 - (double)20.0F;
-                        double yText2 = y2 + (double)10.0F;
-                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1");
-                        textArrow2.setId(String.valueOf(m.getId()));
-                        this.getChildren().add(textArrow2);
-                    }
                 }
+
+                // Si le texte contient "<>"
+                String card;
+                if (text.contains("<") && text.contains(">")) {
+                    // On affiche "1..*"
+                    card = "1..*";
+                }
+                // Sinon
+                else {
+                    // On affiche "1"
+                    card = "1";
+                }
+
+                // On affiche les/la cardinalitée(s) au bon endroit
+                double xText2 = x2 - (double)20.0F;
+                double yText2 = y2 + (double)10.0F;
+                Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, card);
+                textArrow2.setId(String.valueOf(m.getId()));
+                this.getChildren().add(textArrow2);
+
 
                 this.getChildren().addAll(line, lineLeft, lineRight);
                 break;
