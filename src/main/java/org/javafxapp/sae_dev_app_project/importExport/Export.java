@@ -4,12 +4,12 @@ import javafx.scene.image.WritableImage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -116,7 +116,7 @@ public class Export {
             // Parcours des paramètres des méthodes
             for (Parameter param : c.getParameters()) {
                 // Ajout des paramètres
-                aff.append(removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(removePackageName(param.getType()) + " " + param.getName());
                 aff.append(", ");
             }
 
@@ -139,7 +139,7 @@ public class Export {
             // Parcours des paramètres des méthodes
             for (Parameter param : m.getParameters()) {
                 // Ajout des paramètres
-                aff.append(removePackageName(param.getType().getTypeName()) + " " + param.getName());
+                aff.append(removePackageName(param.getType()) + " " + param.getName());
                 aff.append(", ");
             }
 
@@ -367,6 +367,12 @@ public class Export {
 
         StringBuffer res = new StringBuffer();
 
+        // Utilisé pour l'affichage en cas de -
+        if (access.contains("-")){
+            access = access.replace("-", "");
+            convertModifier(access);
+        }
+
         // Si l'attribut (ou la méthode) est private
         if (access.contains("private")) {
             // On commence par "- "
@@ -397,6 +403,12 @@ public class Export {
         if (access.contains("abstract")) {
             // On ajoute "{abstract} "
             res.append("{abstract} ");
+        }
+
+        //Si un attribut est final
+        if (access.contains("final")) {
+            // On ajoute "{final}"
+            res.append("{final} ");
         }
 
         // On retourne le résultat
@@ -454,7 +466,7 @@ public class Export {
             int index = txt.lastIndexOf(",");
             // On supprime cette virgule et l'espace qui suit
             txt.deleteCharAt(index);
-            txt.deleteCharAt(index);
+
         }
 
     }

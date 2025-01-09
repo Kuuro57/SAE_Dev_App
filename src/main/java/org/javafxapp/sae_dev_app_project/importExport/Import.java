@@ -6,6 +6,7 @@ import javafx.scene.control.TreeView;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
+import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.treeView.PackageNode;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
@@ -14,7 +15,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -155,8 +155,18 @@ public class Import {
 
         // On récupère le(s) constructeur(s) de cette classe
         for (java.lang.reflect.Constructor<?> constructeur : clas.getDeclaredConstructors()) {
-            // on construit l'onjet constructor
-            Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), constructeur.getName());
+
+            ArrayList<Parameter> params = new ArrayList<>();
+
+            for (java.lang.reflect.Parameter p : constructeur.getParameters()) {
+
+                Parameter parm = new Parameter(p.getType().getTypeName(), p.getName());
+                params.add(parm);
+
+            }
+
+            // on construit l'objet constructor
+            Constructor constructor = new Constructor(Modifier.toString(constructeur.getModifiers()), constructeur.getName(), params);
             // on ajoute le constructeur à la liste des constructeurs
             modelClass.getConstructors().add(constructor);
         }
@@ -169,7 +179,13 @@ public class Import {
             String nomModif = Modifier.toString(numModif);
 
             // On récupère la liste des paramètres de cette méthode
-            ArrayList<Parameter> listParams = new ArrayList<>(Arrays.asList(methode.getParameters()));
+            ArrayList<Parameter> listParams = new ArrayList<>();
+            for (java.lang.reflect.Parameter param : methode.getParameters()) {
+
+                Parameter p = new Parameter(param.getType().getTypeName(), param.getName());
+                listParams.add(p);
+
+            }
 
             // On construit l'objet Method
             Method method = new Method(nomModif, methode.getName(), listParams, methode.getReturnType().getTypeName());

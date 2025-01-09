@@ -3,9 +3,12 @@ package org.javafxapp.sae_dev_app_project.views;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -15,6 +18,11 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
+import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
+import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.menuHandler.ContextMenuHandler;
@@ -83,7 +91,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
-
 
             // On récupère l'affichage de la classe
             VBox display = m.getDisplay();
@@ -172,10 +179,12 @@ public class ViewAllClasses extends Pane implements Observer {
             // On récupère un nouveau modèle
             ModelClass newM = Import.getModelClass(this, m.getName());
 
-            // On récupère son ancien ID et ses anciennes coordonnées
-            newM.setId(m.getId());
-            newM.setX(m.getX());
-            newM.setY(m.getY());
+            if (newM != null) {
+
+                // On récupère son ancien ID et ses anciennes coordonnées
+                newM.setId(m.getId());
+                newM.setX(m.getX());
+                newM.setY(m.getY());
 
             // On récupère les booléens hidden de l'ancien modèle
             // pour chaque attribut de la nouvelle classe, on regarde si l'attribut est caché ou non
@@ -206,6 +215,7 @@ public class ViewAllClasses extends Pane implements Observer {
             // On remplace l'ancien modèle par le nouveau
             this.allClassesList.set(m.getId(), newM);
 
+            }
         }
 
     }
