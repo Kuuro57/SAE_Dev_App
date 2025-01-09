@@ -83,7 +83,7 @@ public class ViewAllClasses extends Pane implements Observer {
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
             if (m.isVisible()) {
-                VBox display = m.getDisplay();
+                VBox display = m.getDisplay(this);
                 attachMouseHandlers(display, m);
                 this.getChildren().add(display);
             }
@@ -426,8 +426,8 @@ public class ViewAllClasses extends Pane implements Observer {
         int nbDivision = 4;
 
         // On récupère l'affichage des VBox
-        VBox vbox1 = m1.getDisplay();
-        VBox vbox2 = m2.getDisplay();
+        VBox vbox1 = m1.getDisplay(this);
+        VBox vbox2 = m2.getDisplay(this);
 
         // On boucle sur les lignes de la première VBox (haut, milieu, bas)
         for (int i1 = 0; i1 < nbDivision + 1; i1++) {
