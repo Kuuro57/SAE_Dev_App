@@ -348,7 +348,7 @@ public class Export {
         // Classe héritée
         ModelClass m_extended = modelClass.getExtendedClass();
         if (m_extended != null) {
-            aff.append(modelClass.getName() + " --> " + m_extended.getName() + "\n");
+            aff.append(modelClass.getName() + " --|> " + m_extended.getName() + "\n");
         }
 
 
