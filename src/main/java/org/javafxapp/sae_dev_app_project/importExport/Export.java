@@ -431,7 +431,7 @@ public class Export {
             // On récupère la classe entre "<>"
             int indexDeb = txt.indexOf("<");
             int indexFin = txt.indexOf(">");
-            String classeUtilisee = txt.substring(indexDeb, indexFin);
+            String classeUtilisee = txt.substring(indexDeb + 1, indexFin);
 
             // On récupère le nom seul de la classe principale
             String[] res1 = classePrincipale.split("\\.");
