@@ -5,7 +5,6 @@ import javafx.scene.text.Text;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
-
 import java.util.ArrayList;
 
 
@@ -13,10 +12,6 @@ import java.util.ArrayList;
  * Classe qui représente un constructeur d'une classe
  */
 public class Constructor extends ClassComponent {
-
-    public ArrayList<Parameter> getParameters() {
-        return parameters;
-    }
 
     // Attributs
     private ArrayList<Parameter> parameters; // Liste des paramètres du constructeur
@@ -28,7 +23,6 @@ public class Constructor extends ClassComponent {
      * @param modifier Type d'accès du constructeur
      * @param name Nom du constructeur
      */
-
     public Constructor(String modifier, String name) {
         this.modifier = modifier;
         this.name = name;
@@ -55,22 +49,28 @@ public class Constructor extends ClassComponent {
 
     @Override
     public HBox getDisplay() {
+        // Initialisation de la HBox
         HBox hBox = new HBox();
         String parametres = "";
 
-        // Si la méthode requiert des paramètres
-        if (!this.getParameters().isEmpty()) {
+        // Si le constructeur requiert des paramètres, on récupère ses paramètres
+        if (!this.parameters.isEmpty()) parametres = ModelClass.displayParams(parameters);
 
-            parametres = ModelClass.displayParams(parameters);
-
-        }
-
-        // On affiche la méthode sur le diagramme de classe
+        // On créé l'affichage du constructeur
         Text nomConstructeur = new Text(Export.convertModifier(modifier) + name + "(" + parametres + ")");
 
+        // On l'ajoute à la HBox et on la renvoie
         hBox.getChildren().add(nomConstructeur);
-
         return hBox;
+    }
+
+
+
+    /*
+     * ### GETTERS ###
+     */
+    public ArrayList<Parameter> getParameters() {
+        return parameters;
     }
 
 
@@ -80,11 +80,4 @@ public class Constructor extends ClassComponent {
         return modifier + " " + name;
     }
 
-
-    public void addParameter(Parameter parameter) {
-        parameters.add(parameter);
-    }
-
-    public void setParameters(ArrayList<Parameter> listParams) {
-    }
 }

@@ -39,7 +39,6 @@ public class Main extends Application {
         column2.setPercentWidth(80);
         grid.getColumnConstraints().addAll(column1, column2);
 
-
         RowConstraints row1 = new RowConstraints();
         row1.setPercentHeight(5);
         RowConstraints row2 = new RowConstraints();

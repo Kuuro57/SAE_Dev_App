@@ -1,6 +1,5 @@
 package org.javafxapp.sae_dev_app_project.views;
 
-import org.javafxapp.sae_dev_app_project.subjects.Subject;
 
 /**
  * Classe qui représente un observeur

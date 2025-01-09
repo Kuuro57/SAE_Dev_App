@@ -7,12 +7,14 @@ import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 
 
 /**
- * Class qui représente un attribut d'une classe
+ * Classe qui représente un attribut d'une classe
  */
 public class Attribute extends ClassComponent {
 
     // Attributs
     private String type; // Type de l'attribut
+
+
 
     /**
      * Constructeur de la classe
@@ -24,12 +26,13 @@ public class Attribute extends ClassComponent {
         this.modifier = modifier;
         this.name = name;
         this.type = type;
-        this.hidden = false;
+        this.hidden = false; // Pas caché par défaut
     }
 
 
+
     /**
-     * Méthode qui retourne l'affichage de l'attribut dans l'interface, on a le modifier, le nom et le type
+     * Méthode qui retourne l'affichage de l'attribut dans l'interface
      * @return L'affichage de l'attribut dans l'interface
      */
     @Override
@@ -55,6 +58,8 @@ public class Attribute extends ClassComponent {
         return hBox;
     }
 
+
+
     /*
      * ### GETTERS ###
      */
@@ -62,9 +67,10 @@ public class Attribute extends ClassComponent {
         return type;
     }
 
+
+
     @Override
     public String toString() {
-        // modifier depuis ModelClass
         return Export.convertModifier(getModifier()) + " " + Export.removePackageName(getName()) + " : " + Export.removePackageName(getType());
     }
 

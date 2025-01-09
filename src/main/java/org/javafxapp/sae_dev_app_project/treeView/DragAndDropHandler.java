@@ -3,20 +3,19 @@ package org.javafxapp.sae_dev_app_project.treeView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.*;
-import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
+
 
 /**
  * Classe qui gère le drag and drop des classes depuis l'arbre des packages
  */
 public class DragAndDropHandler {
 
-    /**
-     * Attributs
-     * targetView : Vue de toutes les classes
-     */
-    private final ViewAllClasses targetView;
+    // Attributs
+    private final ViewAllClasses targetView; // Vue de toutes les classes
+
+
 
     /**
      * Constructeur de la classe
@@ -25,6 +24,8 @@ public class DragAndDropHandler {
     public DragAndDropHandler(ViewAllClasses targetView) {
         this.targetView = targetView;
     }
+
+
 
     /**
      * Méthode qui initialise le drag and drop
@@ -35,6 +36,8 @@ public class DragAndDropHandler {
         targetView.setOnDragOver(this::handleDragOver);
         targetView.setOnDragDropped(this::handleDragDropped);
     }
+
+
 
     /**
      * Méthode qui gère le drag detected
@@ -52,6 +55,8 @@ public class DragAndDropHandler {
         }
     }
 
+
+
     /**
      * Méthode qui gère le drag over
      * @param event
@@ -62,6 +67,8 @@ public class DragAndDropHandler {
         }
         event.consume();
     }
+
+
 
     /**
      * Méthode qui gère le drag dropped

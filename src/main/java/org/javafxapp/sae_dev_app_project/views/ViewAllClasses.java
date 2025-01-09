@@ -5,8 +5,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -16,11 +14,6 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
-import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
-import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
 import org.javafxapp.sae_dev_app_project.menuHandler.ContextMenuHandler;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
@@ -32,14 +25,13 @@ import java.util.ArrayList;
  */
 public class ViewAllClasses extends Pane implements Observer {
 
+
     // Attributs
     private ArrayList<ModelClass> allClassesList; // Liste qui contient toutes les classes sur le diagramme
-    private VBox draggedBox;
-    private double initialMouseX;
-    private double initialMouseY;
     private double offsetX; // Décalage en X entre la souris et le coin haut-gauche de la VBox
     private double offsetY; // Décalage en Y entre la souris et le coin haut-gauche de la VBox
     private Node parentNode; // Le conteneur parent de la boîte, pour calculer correctement les coordonnées
+
 
 
     /**
@@ -49,9 +41,10 @@ public class ViewAllClasses extends Pane implements Observer {
         this.allClassesList = new ArrayList<>(1000);
     }
 
+
+
     /**
      * Méthode qui ajoute une classe à la liste des classes représentées graphiquement
-     *
      * @param m Objet de type ModelClass que l'on veut ajouter à la liste
      * @return True si la classe à bien été ajoutée, false sinon
      */
@@ -66,7 +59,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
             // On notifie l'observeur que le modèle est ajouté à la liste
             m.notifyObservers();
-
             return true;
 
         }
@@ -74,6 +66,8 @@ public class ViewAllClasses extends Pane implements Observer {
         // Sinon on retourne false
         return false;
     }
+
+
 
     /**
      * Méthode update, elle permet de mettre à jour la vue
@@ -105,8 +99,8 @@ public class ViewAllClasses extends Pane implements Observer {
 
     /**
      * Methode qui attache les gestionnaires de souris à une VBox
-     * @param display
-     * @param m
+     * @param display VBox dont on veut ajouter les actions
+     * @param m Model de la classe correspondant à cette VBox
      */
     private void attachMouseHandlers(VBox display, ModelClass m) {
         // Gestionnaire de clic pour le menu contextuel
@@ -119,7 +113,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Lorsqu'on clique et commence à glisser une boîte
         display.setOnMousePressed(event -> {
-            this.draggedBox = display; // Enregistrer la boîte active
 
             // Capturer le parent pour calculer correctement les coordonnées locales
             this.parentNode = display.getParent();
@@ -130,7 +123,7 @@ public class ViewAllClasses extends Pane implements Observer {
             offsetY = mouseInParent.getY() - display.getLayoutY();
 
             // Optionnel : Modifier l'apparence de la boîte pendant le clic (exemple : couleur grise)
-            display.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
+            display.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
         });
 
         // Glissement direct (dragging)
@@ -160,7 +153,7 @@ public class ViewAllClasses extends Pane implements Observer {
         display.setOnMouseReleased(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 // Restaurer l'apparence normale de la boîte
-                display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
+                display.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, null, new Insets(0, 0, 0, 0))));
 
                 // Réinitialiser les décalages et le parent
                 offsetX = 0;
@@ -273,12 +266,13 @@ public class ViewAllClasses extends Pane implements Observer {
                     else if (a.getType().matches(".*<.*>")) {
                         String[] typeArray = a.getType().split("<");
                         String type = typeArray[1].substring(0, typeArray[1].length() - 1);
-                            if (model != null && model.getName() != null && type.equals(model.getName())) {
-                                if (m.isVisible() && model.isVisible()) {
-                                    String modifier = Export.convertModifier(a.getModifier());
-                                    this.drawArrow(m, model, "full", "simple", modifier + " " + a.getName() + " : " + a.getType());
+                        if (model != null && model.getName() != null && type.equals(model.getName())) {
+                            if (m.isVisible() && model.isVisible()) {
+                                String modifier = Export.convertModifier(a.getModifier());
+                                this.drawArrow(m, model, "full", "simple", modifier + " " + a.getName() + " : " + a.getType());
                             }
-                        } }
+                        }
+                    }
                 }
             }
         }
@@ -307,13 +301,12 @@ public class ViewAllClasses extends Pane implements Observer {
 
 
     /**
-     * Méthode qui déssine une flèche en fonction du type de flèche choisi
+     * Méthode qui dessine une flèche en fonction du type de flèche choisi
      * @param m Model de la classe où va partir la flèche
      * @param m2 Model de la classe où va arriver la flèche
      * @param typeOfLine Type de ligne
      * @param typeOfHead Type de la tête de la flèche
      * @param text Texte à afficher sur la flèche (null si pas de texte)
-     *
      */
     private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead, String text) {
 
@@ -457,6 +450,7 @@ public class ViewAllClasses extends Pane implements Observer {
     }
 
 
+
     /**
      * Méthode qui cherche les point les plus proches entre les deux classes
      * @param m1 ModelClass de la première classe
@@ -526,10 +520,10 @@ public class ViewAllClasses extends Pane implements Observer {
 
     /**
      * Méthode qui vérifie s'il y a une collision entre deux boîtes
-     * @param currentBox
-     * @param newX
-     * @param newY
-     * @return
+     * @param currentBox VBox dont on veut savoir si elle est en collision avec une autre ou non
+     * @param newX ???
+     * @param newY ???
+     * @return True si la VBox a une collision avec une autre, false sinon
      */
     private boolean hasCollision(VBox currentBox, double newX, double newY) {
         if (currentBox == null) {
@@ -568,71 +562,78 @@ public class ViewAllClasses extends Pane implements Observer {
     }
 
 
+
+    /**
+     * Méthode qui cache tous les attributs de toutes les classes sur le diagramme
+     */
     public void hideAttributes(){
-
         for(ModelClass m : allClassesList){
-
             m.hideAllAttributes();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui affiche tous les attributs de toutes les classes du diagramme
+     */
     public void showAttributes(){
-
         for(ModelClass m : allClassesList){
-
             m.showAllAttributes();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui cache toutes les méthodes de toutes les classes présentes sur le diagramme
+     */
     public void hideMethods(){
-
         for(ModelClass m : allClassesList){
-
             m.hideAllMethods();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui affiche toutes les méthodes de toutes les classes du diagramme
+     */
     public void showMethods(){
-
         for(ModelClass m : allClassesList){
-
             m.showAllMethods();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui cache tous les constructeurs de toutes les classes présentes sur le diagramme
+     */
     public void hideConstructors(){
-
         for(ModelClass m : allClassesList){
-
             m.hideConstructors();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui affiche tous les constructeurs de toutes les classes du diagramme
+     */
     public void showConstructors(){
-
         for(ModelClass m : allClassesList){
-
             m.showConstructors();
             update();
-
         }
-
     }
+
+
 
     /**
      * Méthode qui calcul la distance entre deux points
@@ -645,6 +646,8 @@ public class ViewAllClasses extends Pane implements Observer {
     private double calculateDistance(double x1, double y1, double x2, double y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
+
+
 
     /**
      * Méthode qui cherche un ModelClass en fonction du nom
@@ -664,7 +667,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
     /**
      * Méthode updateAttribute met à jour les attributs de la vue qui dépendent d'un modèel classe particulier
-     * @param model : ModelClass
+     * @param model Un ModelClass
      */
     public void updateDependentAttributes(ModelClass model) {
         // parcours des autres models et leur attribut hidden
@@ -698,18 +701,17 @@ public class ViewAllClasses extends Pane implements Observer {
 
 
 
-
     /*
      * ### GETTERS ###
      */
-    public ArrayList<ModelClass> getAllClasses () {
-        return this.allClassesList;
-    }
+    public ArrayList<ModelClass> getAllClasses () { return this.allClassesList; }
+
+
 
     /**
      * Méthode qui retourne une VBox en fonction de son ID
-     * @param id
-     * @return
+     * @param id Id de la VBox que l'on veut
+     * @return Une Vbox, null si elle n'est pas trouvée
      */
     private VBox getVBoxById(int id) {
         for (Node node : this.getChildren()) {
@@ -722,7 +724,7 @@ public class ViewAllClasses extends Pane implements Observer {
                 }
             }
         }
-
         return null; // Aucun VBox trouvé avec cet ID
     }
+
 }
