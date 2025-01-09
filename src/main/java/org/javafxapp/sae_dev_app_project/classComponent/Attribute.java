@@ -48,6 +48,8 @@ public class Attribute extends ClassComponent {
         // Ajout du type
         Text typeText = new Text(" : " + Export.removePackageName(type)); // remove package name pour enlever le nom des packages a chaque fois
 
+        System.out.printf("Attribute: %s\n", Export.removePackageName(type));
+
         hBox.getChildren().add(typeText);
 
         return hBox;

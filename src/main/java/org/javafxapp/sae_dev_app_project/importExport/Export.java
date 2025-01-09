@@ -10,7 +10,12 @@ import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
@@ -237,18 +242,79 @@ public class Export {
 
                 // Retour à la ligne
                 bufferedWriter.newLine();
+
+                // On ajoute les dépendances entre les classes
+                bufferedWriter.write(createDependanciesCardinalities(view, view.getAllClasses().get(i)));
             }
 
-            // On ajoute le "@enduml"
+            // Ajouter le "@enduml"
             bufferedWriter.write("@enduml");
 
             // Fermeture du fichier
             bufferedWriter.close();
 
-        } catch (IOException e){
+            // Supprimer les attributs des classes qui apparaissent dans les dépendances
+            removeAttributesInDependencies(file);
+
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    private static void removeAttributesInDependencies(File file) throws IOException {
+        // Lire le contenu du fichier existant
+        List<String> lines = Files.readAllLines(file.toPath());
+        List<String> modifiedLines = new ArrayList<>();
+
+        // Liste pour stocker les dépendances (nom des attributs utilisés dans les dépendances)
+        Set<String> dependencies = new HashSet<>();
+
+        // Extraire les noms des attributs dans les dépendances
+        for (String line : lines) {
+            if (line.contains("--") || line.contains("->") || line.contains("<-")) {
+                String[] parts = line.split("[:|\s]"); // Découper la ligne
+                for (String part : parts) {
+                    if (!part.isBlank() && !part.equals("--") && !part.equals("->") && !part.equals("<-")) {
+                        dependencies.add(part.trim());
+                    }
+                }
+            }
+        }
+
+        // Parcourir les lignes pour modifier les classes
+        boolean insideClass = false;
+        String currentClass = "";
+        for (String line : lines) {
+            if (line.startsWith("class ")) {
+                insideClass = true;
+                currentClass = line.split(" ")[1].trim();
+                modifiedLines.add(line);
+            } else if (insideClass && line.startsWith("}")) {
+                insideClass = false;
+                modifiedLines.add(line);
+            } else if (insideClass) {
+                // Vérifier si l'attribut est dans les dépendances
+                String attributeName = extractAttributeName(line);
+                if (attributeName == null || !dependencies.contains(attributeName)) {
+                    modifiedLines.add(line);
+                }
+            } else {
+                modifiedLines.add(line);
+            }
+        }
+
+        // Réécrire le fichier avec les modifications
+        Files.write(file.toPath(), modifiedLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    private static String extractAttributeName(String line) {
+        // Exemple: "String name" => retourne "name"
+        String[] parts = line.trim().split(" ");
+        if (parts.length >= 2) {
+            return parts[1].replace(";", "").trim();
+        }
+        return null;
     }
 
 
@@ -350,6 +416,7 @@ public class Export {
         if (m_extended != null) {
             aff.append(modelClass.getName() + " --> " + m_extended.getName() + "\n");
         }
+
 
 
         // On retourne l'affichage final
@@ -469,6 +536,67 @@ public class Export {
 
         }
 
+    }
+
+    /*
+    * méthode createDependanciesCardinalities méthodes qui permet de créer les dépendances entre les classes
+    * avec les cardinalités entre les classes, enlève également l'attribut du corps de la classe pour le mettre
+    * dans la dépendance
+    * @param view Vue contenant toutes les classes
+    * @param modelClass Modèle d'une classe
+    *
+    * @return String contenant les dépendances entre les classes
+    */
+
+    public static String createDependanciesCardinalities(ViewAllClasses view, ModelClass modelClass) {
+
+        // Initialisation de l'affichage final
+        StringBuffer aff = new StringBuffer();
+
+        // Parcours de toutes les classes
+        for (ModelClass m : view.getAllClasses()) {
+
+            // Si la classe actuelle est différente de la classe en cours
+            if (!m.equals(modelClass)) {
+
+                // On récupère les dépendances entre les classes
+                // càd si l'attribut de la classe actuelle est de type d'une classe de la liste
+                // boucle sur les attributs de la classe actuelle pour voir si le type de l'attribut est égal à la classe en cours
+                for (Attribute a : modelClass.getAttributes()) {
+
+                    // Si le type de l'attribut est égal à la classe en cours
+                    if (a.getType().equals(m.getName())) {
+
+                        // On ajoute la dépendance à l'affichage final
+                        aff.append(modelClass.getName() + " \"1\" -- \"*\" " + m.getName() + " : " + a.getName() + "\n");
+
+                    }
+
+                    // cas des attribut de type collection qui prennent en paramètre une classe de la liste (regex)
+                    // Si le type de l'attribut est de type collection
+                    if (Pattern.matches(".*<.*>", a.getType())) {
+
+                        // On récupère le type de la collection
+                        String type = a.getType().substring(a.getType().indexOf("<") + 1, a.getType().indexOf(">"));
+
+                        // Si le type de la collection est égal à la classe en cours
+                        if (type.equals(m.getName())) {
+
+                            // On ajoute la dépendance à l'affichage final
+                            aff.append(modelClass.getName() + " \"1\" -> \"*\" " + m.getName() + " : " + Export.convertModifier(a.getModifier()) + a.getName() + "\n");
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        // On retourne l'affichage final
+        return aff.toString();
     }
 
 
