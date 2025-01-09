@@ -130,8 +130,8 @@ public class Import {
 
         // On boucle sur les interfaces de cette classe
         for (Class<?> c : clas.getInterfaces()) {
-            // Si la classe est déjà chargée
-            if (SingleClassLoader.hasBeenLoaded(c.getSimpleName())) {
+            // Si la classe est déjà sur le modèle
+            if (view.findClassByName(c.getSimpleName()) != null) {
                 // On construit le modèle de l'interface
                 ModelClass modelInterface = Import.getModelClass(view, c.getSimpleName());
                 // On ajoute l'interface à la liste des interfaces
@@ -267,22 +267,26 @@ public class Import {
      *
      */
     private static void addClassToTreeView(String className, String packagePath) {
-        if (treeView == null) return;
-
-        // Si l'arbre est vide, on ajoute un noeud racine
-        if (treeView.getRoot() == null) {
-            treeView.setRoot(new TreeItem<>(new PackageNode("Elements importés", "")));
+        if (treeView == null) {
+            System.err.println("Erreur : TreeView n'est pas initialisé !");
+            return;
         }
 
-        // On récupère le nom simple de la classe
+        // Initialiser le noeud racine si nécessaire
+        if (treeView.getRoot() == null) {
+            treeView.setRoot(new TreeItem<>(new PackageNode("Elements importés", "")));
+            System.out.println("Création de la racine du TreeView...");
+        }
+
+        // Nom simple de la classe
         String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
         TreeItem<PackageNode> classNode = new TreeItem<>(new PackageNode(simpleClassName, packagePath));
 
-        // On récupère le nom du package
+        // Nom du package
         String directoryName = new File(packagePath).getName();
         TreeItem<PackageNode> packageNode = null;
 
-        // On parcourt les noeuds de l'arbre pour trouver le package
+        // Rechercher ou ajouter le package
         for (TreeItem<PackageNode> node : treeView.getRoot().getChildren()) {
             if (node.getValue().getName().equals(directoryName)) {
                 packageNode = node;
@@ -290,13 +294,14 @@ public class Import {
             }
         }
 
-        // Si le package n'existe pas, on le crée
         if (packageNode == null) {
             packageNode = new TreeItem<>(new PackageNode(directoryName, packagePath));
             treeView.getRoot().getChildren().add(packageNode);
+            System.out.println("Ajout du nouveau package : " + directoryName);
         }
 
-        // On ajoute la classe au package
+        // Ajouter la classe au package
         packageNode.getChildren().add(classNode);
+        System.out.println("Ajout de la classe " + simpleClassName + " au package " + directoryName);
     }
 }
