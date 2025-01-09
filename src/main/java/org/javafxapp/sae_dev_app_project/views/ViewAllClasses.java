@@ -35,6 +35,11 @@ public class ViewAllClasses extends Pane implements Observer {
     // Attributs
     private ArrayList<ModelClass> allClassesList; // Liste qui contient toutes les classes sur le diagramme
     private VBox draggedBox;
+    private double initialMouseX;
+    private double initialMouseY;
+    private double offsetX; // Décalage en X entre la souris et le coin haut-gauche de la VBox
+    private double offsetY; // Décalage en Y entre la souris et le coin haut-gauche de la VBox
+    private Node parentNode; // Le conteneur parent de la boîte, pour calculer correctement les coordonnées
 
 
     /**
@@ -76,28 +81,27 @@ public class ViewAllClasses extends Pane implements Observer {
     @Override
     public void update() {
 
-        // Si il y a des éléments sur le diagramme
-        if (!this.getChildren().isEmpty()) {
-            // On enlève tout le contenu du Pane
-            this.getChildren().clear();
-        }
+        // Si il y a des éléments sur le diagramme on enlève tout le contenu du Pane
+        if (!this.getChildren().isEmpty()) this.getChildren().clear();
 
         // On recharge toutes les classes
         this.reloadAllClasses();
 
         // On boucle sur la liste des classes
         for (ModelClass m : this.allClassesList) {
-
-            // On récupère l'affichage de la classe
-            VBox display = m.getDisplay();
-            attachMouseHandlers(display, m);
-            this.getChildren().add(display);
+            if (m.isVisible()) {
+                VBox display = m.getDisplay(this);
+                attachMouseHandlers(display, m);
+                this.getChildren().add(display);
+            }
         }
 
         // Une fois que toutes les VBox sont chargées et mises sur dans le GridPane, on affiche les dépendances
         this.displayAllDependancies();
 
     }
+
+
 
     /**
      * Methode qui attache les gestionnaires de souris à une VBox
@@ -115,29 +119,39 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Lorsqu'on clique et commence à glisser une boîte
         display.setOnMousePressed(event -> {
-            this.draggedBox = display; // Enregistrer l'objet actuellement glissé
+            this.draggedBox = display; // Enregistrer la boîte active
+
+            // Capturer le parent pour calculer correctement les coordonnées locales
+            this.parentNode = display.getParent();
+
+            // Calculer le décalage entre la souris et le coin haut-gauche de la boîte
+            Point2D mouseInParent = parentNode.sceneToLocal(event.getSceneX(), event.getSceneY());
+            offsetX = mouseInParent.getX() - display.getLayoutX();
+            offsetY = mouseInParent.getY() - display.getLayoutY();
+
+            // Optionnel : Modifier l'apparence de la boîte pendant le clic (exemple : couleur grise)
             display.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
         });
 
         // Glissement direct (dragging)
         display.setOnMouseDragged(event -> {
-            Node parent = display.getParent();
-            Point2D mousePosition = parent.sceneToLocal(event.getSceneX(), event.getSceneY());
+            // Convertir la position de la souris dans le contexte local du parent
+            Point2D mouseInParent = parentNode.sceneToLocal(event.getSceneX(), event.getSceneY());
 
-            // Calcul des nouvelles coordonnées tout en respectant les limites du canevas
-            double newX = Math.max(0, Math.min(this.getWidth() - display.getWidth(), mousePosition.getX() - display.getWidth() / 2));
-            double newY = Math.max(0, Math.min(this.getHeight() - display.getHeight(), mousePosition.getY() - display.getHeight() / 2));
+            // Nouveaux calculs pour la position de la boîte, tenant compte des décalages
+            double newX = Math.max(0, Math.min(this.getWidth() - display.getWidth(), mouseInParent.getX() - offsetX));
+            double newY = Math.max(0, Math.min(this.getHeight() - display.getHeight(), mouseInParent.getY() - offsetY));
 
-            // Vérifier les collisions avant de modifier la position
+            // Vérifier les collisions avant de déplacer la boîte
             if (!hasCollision(display, newX, newY)) {
                 display.setLayoutX(newX);
                 display.setLayoutY(newY);
 
-                // Mise à jour logique dans le modèle
+                // Mise à jour logique dans le modèle lié à la boîte
                 m.setX((int) newX);
                 m.setY((int) newY);
 
-                // Mise à jour des dépendances
+                // Mise à jour des dépendances (lignes, flèches)
                 this.displayAllDependancies();
             }
         });
@@ -145,17 +159,24 @@ public class ViewAllClasses extends Pane implements Observer {
         // Relâcher la boîte après le glissement
         display.setOnMouseReleased(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
+                // Restaurer l'apparence normale de la boîte
                 display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
 
-                // Finalisation des mises à jour du modèle
+                // Réinitialiser les décalages et le parent
+                offsetX = 0;
+                offsetY = 0;
+                parentNode = null;
+
+                // Finaliser les coordonnées dans le modèle
                 m.setX((int) display.getLayoutX());
                 m.setY((int) display.getLayoutY());
 
-                // Rafraîchir les dépendances et la vue
+                // Rafraîchir la vue si nécessaire
                 this.update();
             }
         });
     }
+
 
 
     /**
@@ -174,6 +195,9 @@ public class ViewAllClasses extends Pane implements Observer {
                 newM.setId(m.getId());
                 newM.setX(m.getX());
                 newM.setY(m.getY());
+
+            // On récupère son ancienne visibilité (caché ou non)
+            newM.setVisibility(m.isVisible());
 
             // On récupère les booléens hidden de l'ancien modèle
             // pour chaque attribut de la nouvelle classe, on regarde si l'attribut est caché ou non
@@ -239,8 +263,22 @@ public class ViewAllClasses extends Pane implements Observer {
             if (a.getType() != null) {
                 for (ModelClass model : this.allClassesList) {
                     if (model != null && model.getName() != null && a.getType().equals(model.getName())) {
-                        this.drawArrow(m, model, "full", "simple", Export.convertModifier(a.getModifier()) + " " + a.getName());
-                    }
+                        if (m.isVisible() && model.isVisible()) {
+                            String modifier = Export.convertModifier(a.getModifier());
+                        this.drawArrow(m, model, "full", "simple",  modifier + " " + a.getName() + " : " + a.getType());
+                        //
+                        }
+
+                    } // si l'attribut est de type collection et d'une classe (regex)
+                    else if (a.getType().matches(".*<.*>")) {
+                        String[] typeArray = a.getType().split("<");
+                        String type = typeArray[1].substring(0, typeArray[1].length() - 1);
+                            if (model != null && model.getName() != null && type.equals(model.getName())) {
+                                if (m.isVisible() && model.isVisible()) {
+                                    String modifier = Export.convertModifier(a.getModifier());
+                                    this.drawArrow(m, model, "full", "simple", modifier + " " + a.getName() + " : " + a.getType());
+                            }
+                        } }
                 }
             }
         }
@@ -250,7 +288,7 @@ public class ViewAllClasses extends Pane implements Observer {
         for (ModelClass m_interface : m.getInheritedClasses()) {
             if (m_interface != null && m_interface.getId() >= 0 && m_interface.getId() < this.allClassesList.size()) {
                 m_interface = this.allClassesList.get(m_interface.getId());
-                this.drawArrow(m, m_interface, "dotted", "empty", "");
+                if (m.isVisible() && m_interface.isVisible()) this.drawArrow(m, m_interface, "dotted", "empty", "");
             } else {
                 System.out.println("Classe non trouvée" + m_interface);
                 return;
@@ -261,7 +299,7 @@ public class ViewAllClasses extends Pane implements Observer {
         ModelClass m_herit = m.getExtendedClass();
         if (m_herit != null && m_herit.getId() >= 0 && m_herit.getId() < this.allClassesList.size()) {
             m_herit = this.allClassesList.get(m_herit.getId());
-            this.drawArrow(m, m_herit, "full", "empty", "");
+            if (m.isVisible() && m_herit.isVisible()) this.drawArrow(m, m_herit, "full", "empty", "");
         }
 
     }
@@ -378,17 +416,41 @@ public class ViewAllClasses extends Pane implements Observer {
 
                 // Si il y a un texte à afficher
                 if (!text.isEmpty()) {
-                    // On récupère les coordonnées du texte
-                    double xText = (x1 + x2) / 2;
-                    double yText = (y1 + y2) / 2;
+                    double xText = (x1 + x2) / (double)2.0F;
+                    double yText = (y1 + y2) / (double)2.0F + (double)10.0F;
+                    if (text.contains(":")) {
+                        String[] textArray = text.split(":");
+                        String modifier = textArray[0];
+                        if (text.contains(".")) {
+                            String[] textArray2 = text.split("\\.");
+                            String type = textArray2[textArray2.length - 1];
+                            text = modifier + "  : " + type;
+                            System.out.printf("text : %s\n", text);
+                        }
 
-                    // On affiche le texte
+                        System.out.printf("text : %s\n", text);
+                    }
+
                     Text textArrow = new Text(xText, yText, text);
                     textArrow.setId(String.valueOf(m.getId()));
                     this.getChildren().add(textArrow);
+                    if (text.matches(".*<.*>")) {
+                        double xText2 = x2 - (double)20.0F;
+                        double yText2 = y2 + (double)10.0F;
+                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1..*");
+                        textArrow2.setId(String.valueOf(m.getId()));
+                        this.getChildren().add(textArrow2);
+                    }
+                    else {
+                        double xText2 = x2 - (double)20.0F;
+                        double yText2 = y2 + (double)10.0F;
+                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1");
+                        textArrow2.setId(String.valueOf(m.getId()));
+                        this.getChildren().add(textArrow2);
+                    }
                 }
-                this.getChildren().addAll(line, lineLeft, lineRight); // ajout des lignes qui forment la flèche
 
+                this.getChildren().addAll(line, lineLeft, lineRight);
                 break;
         }
 
@@ -415,8 +477,8 @@ public class ViewAllClasses extends Pane implements Observer {
         int nbDivision = 4;
 
         // On récupère l'affichage des VBox
-        VBox vbox1 = m1.getDisplay();
-        VBox vbox2 = m2.getDisplay();
+        VBox vbox1 = m1.getDisplay(this);
+        VBox vbox2 = m2.getDisplay(this);
 
         // On boucle sur les lignes de la première VBox (haut, milieu, bas)
         for (int i1 = 0; i1 < nbDivision + 1; i1++) {
@@ -598,6 +660,45 @@ public class ViewAllClasses extends Pane implements Observer {
         return null;
     }
 
+
+
+    /**
+     * Méthode updateAttribute met à jour les attributs de la vue qui dépendent d'un modèel classe particulier
+     * @param model : ModelClass
+     */
+    public void updateDependentAttributes(ModelClass model) {
+        // parcours des autres models et leur attribut hidden
+
+        // si le type de l'attribut est le même que le nom de la classe
+        // on met hidden à false pour permettre le ré-affichage
+
+        for (ModelClass m : this.getAllClasses()) {
+            // parcours des attributs
+            for (Attribute a : m.getAttributes()) {
+                if (a.getType().equals(model.getName())){
+                    a.setHidden(false); // on ré-affiche
+                }
+            }
+        }
+
+        this.update();
+    }
+
+
+
+    /**
+     * Méthode qui réaffiche toutes les classes cachées du diagramme
+     */
+    public void showAllHiddenClasses() {
+        for (ModelClass m : this.allClassesList) {
+            m.setVisibility(true);
+        }
+        this.update();
+    }
+
+
+
+
     /*
      * ### GETTERS ###
      */
@@ -625,5 +726,3 @@ public class ViewAllClasses extends Pane implements Observer {
         return null; // Aucun VBox trouvé avec cet ID
     }
 }
-
-
