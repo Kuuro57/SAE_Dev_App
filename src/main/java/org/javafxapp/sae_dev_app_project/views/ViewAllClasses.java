@@ -129,7 +129,7 @@ public class ViewAllClasses extends Pane implements Observer {
                 m.setY((int) newY);
 
                 // Mise à jour des dépendances
-                this.displayDependancies(m);
+                this.displayAllDependancies();
             }
         });
 
