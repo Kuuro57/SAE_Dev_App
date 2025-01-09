@@ -23,6 +23,13 @@ public class Method extends ClassComponent {
         this.hidden = false;
     }
 
+    public Method(String modifier, String name, String returnType) {
+        this.modifier = modifier;
+        this.name = name;
+        this.returnType = returnType;
+        this.parameters = new ArrayList<>();
+        this.hidden = false;
+    }
 
 
     public String getReturnType() {

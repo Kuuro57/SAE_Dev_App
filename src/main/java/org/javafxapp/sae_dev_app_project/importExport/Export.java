@@ -367,12 +367,6 @@ public class Export {
 
         StringBuffer res = new StringBuffer();
 
-        // Utilisé pour l'affichage en cas de -
-        if (access.contains("-")){
-            access = access.replace("-", "");
-            convertModifier(access);
-        }
-
         // Si l'attribut (ou la méthode) est private
         if (access.contains("private")) {
             // On commence par "- "

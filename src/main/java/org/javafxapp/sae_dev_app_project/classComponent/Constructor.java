@@ -65,7 +65,7 @@ public class Constructor extends ClassComponent {
         }
 
         // On affiche la méthode sur le diagramme de classe
-        Text nomConstructeur = new Text(Export.convertModifier(modifier) + name + "(" + parametres + ")");
+        Text nomConstructeur = new Text(Export.convertModifier(modifier) + Export.removePackageName(name) + "(" + parametres + ")");
 
         hBox.getChildren().add(nomConstructeur);
 

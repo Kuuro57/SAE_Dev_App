@@ -15,6 +15,7 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 
 import java.util.ArrayList;
@@ -178,11 +179,11 @@ public class ClassCreator {
         accesMod.setPromptText("Choisir");
 
         ComboBox<String> staticMod = new ComboBox<>();
-        staticMod.getItems().addAll("static", "-");
+        staticMod.getItems().addAll("static", " ");
         staticMod.setPromptText("Choisir");
 
         ComboBox<String> finalMod = new ComboBox<>();
-        finalMod.getItems().addAll("final", "-");
+        finalMod.getItems().addAll("final", " ");
         finalMod.setPromptText("Choisir");
 
         Button ajtAtt = new Button("Ajouter l'attribut");
@@ -191,7 +192,7 @@ public class ClassCreator {
 
             if (!attName.getText().isEmpty() && !attType.getText().isEmpty()) {
                 Attribute a = new Attribute(
-                        accesMod.getValue() + staticMod.getValue() + finalMod.getValue(),
+                        accesMod.getValue() + " " + staticMod.getValue() + " " + finalMod.getValue(),
                         attType.getText(),
                         attName.getText()
                 );
@@ -334,7 +335,7 @@ public class ClassCreator {
         accesMeth.setPromptText("Choisir");
 
         ComboBox<String> staticMeth = new ComboBox<>();
-        staticMeth.getItems().addAll("static", "-");
+        staticMeth.getItems().addAll("static", " ");
         staticMeth.setPromptText("Choisir");
 
         Label ajtMethParam = new Label("Ajouter un paramètre :");
@@ -352,9 +353,9 @@ public class ClassCreator {
         btnMethParam.setPadding(new Insets(5));
         btnMethParam.setOnAction(actionEvent -> {
 
-            if (!typeConstParam.getText().isEmpty() && !nomConstParam.getText().isEmpty()){
+            if (!typeMethParam.getText().isEmpty() && !nomMethParam.getText().isEmpty()){
 
-                Parameter p = new Parameter(typeConstParam.getText(), nomConstParam.getText());
+                Parameter p = new Parameter(typeMethParam.getText(), nomMethParam.getText());
 
                 if (!methods.isEmpty()) {
 
@@ -362,8 +363,7 @@ public class ClassCreator {
                     m.addParameter(p);
 
                 } else {
-
-                    Method m = new Method(accesMeth.getValue(), className.getText(), null, typeMeth.getText());
+                    Method m = new Method(accesMeth.getValue() + " " + staticMeth.getValue(), methName.getText(), new ArrayList<Parameter>(), methType.getText());
                     m.addParameter(p);
                     methods.add(m);
 
@@ -372,8 +372,10 @@ public class ClassCreator {
             }
 
             updatePrevis();
-            typeConstParam.clear();
-            nomConstParam.clear();
+            typeMethParam.clear();
+            nomMethParam.clear();
+            methName.clear();
+            methType.clear();
 
         });
 
@@ -381,7 +383,7 @@ public class ClassCreator {
         btnMeth.setPadding(new Insets(5));
         btnMeth.setOnAction(actionEvent -> {
 
-            Method m = new Method(accesMeth.getValue(), methName.getText(), null, typeMeth.getText());
+            Method m = new Method(accesMeth.getValue() + " " + staticMeth.getValue(), methName.getText(), methType.getText());
             methods.add(m);
             updatePrevis();
 
