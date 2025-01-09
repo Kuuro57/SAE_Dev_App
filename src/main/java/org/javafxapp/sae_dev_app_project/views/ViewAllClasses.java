@@ -403,6 +403,13 @@ public class ViewAllClasses extends Pane implements Observer {
                         textArrow2.setId(String.valueOf(m.getId()));
                         this.getChildren().add(textArrow2);
                     }
+                    else {
+                        double xText2 = x2 - (double)20.0F;
+                        double yText2 = y2 + (double)10.0F;
+                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1");
+                        textArrow2.setId(String.valueOf(m.getId()));
+                        this.getChildren().add(textArrow2);
+                    }
                 }
 
                 this.getChildren().addAll(line, lineLeft, lineRight);
