@@ -73,84 +73,18 @@ public class MenuBarHandler {
         MenuItem exportPUMLCode = new MenuItem("Format code PlantUML");
         exportPUMLCode.setOnAction(actionEvent -> Export.exportInPUml(view));
 
-        MenuItem exportPUMLImage = new MenuItem("Format image PlantUML");
-        // TODO Ajouter l'action correspondante !
-
         MenuItem exportJavaTemplate = new MenuItem("Format squelette Java");
         exportJavaTemplate.setOnAction(actionEvent -> Export.exportInJava(view));
 
 
         // Ajout des items au menu correspondant
-        exportMenu.getItems().addAll(exportPNG, exportPUMLCode, exportPUMLImage, exportJavaTemplate);
+        exportMenu.getItems().addAll(exportPNG, exportPUMLCode, exportJavaTemplate);
 
 
 
         // Initialisation des items du menu "Edition"
         MenuItem addClassItem = new MenuItem("Créer une classe");
         addClassItem.setOnAction(actionEvent -> ClassCreator.getInstance(view).classCreation());
-
-
-
-        MenuItem createPackageItem = new MenuItem("Créer un package");
-        // TODO Ajouter l'action correspondante !
-
-
-
-        // Initialisation des items du menu "Edition>Ajouter"
-        Menu addMenu = new Menu("Ajouter");
-
-        MenuItem addDependenciesItem = new MenuItem("Dépendance");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem addAttributeItem = new MenuItem("Attribut");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem addMethodItem = new MenuItem("Méthode");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem addConstructorItem = new MenuItem("Constructeur");
-        // TODO Ajouter l'action correspondante !
-
-
-        // Ajout des items au menu correspondant
-        addMenu.getItems().addAll(addDependenciesItem, addAttributeItem, addMethodItem, addConstructorItem);
-
-
-
-        // Initialisation des items du menu "Edition>Modifier"
-        Menu modifyMenu = new Menu("Modifier");
-
-        MenuItem modifyAttributeItem = new MenuItem("Attribut");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem modifyMethodItem = new MenuItem("Méthode");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem modifyConstructorItem = new MenuItem("Constructeur");
-        // TODO Ajouter l'action correspondante !
-
-
-        // Ajout des items au menu correspondant
-        modifyMenu.getItems().addAll(modifyAttributeItem, modifyMethodItem, modifyConstructorItem);
-
-
-
-
-        // Initialisation des items du menu "Edition>Supprimer"
-        Menu removeMenu = new Menu("Supprimer");
-
-        MenuItem removeAttributeItem = new MenuItem("Attribut");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem removeMethodItem = new MenuItem("Méthode");
-        // TODO Ajouter l'action correspondante !
-
-        MenuItem removeConstructorItem = new MenuItem("Constructeur");
-        // TODO Ajouter l'action correspondante !
-
-
-        // Ajout des items au menu correspondant
-        removeMenu.getItems().addAll(removeAttributeItem, removeMethodItem, removeConstructorItem);
 
 
 
@@ -193,7 +127,7 @@ public class MenuBarHandler {
 
         // Ajout des sous menus aux menus principaux
         fileMenu.getItems().addAll(importMenu, exportMenu, exitItem);
-        editionMenu.getItems().addAll(addMenu, modifyMenu, removeMenu, new SeparatorMenuItem(), addClassItem, createPackageItem);
+        editionMenu.getItems().addAll(addClassItem);
         showMenu.getItems().addAll(showAllClassAttributes, hideAllClassAttributes, new SeparatorMenuItem(), showAllClassConstructors, hideAllClassConstructors, new SeparatorMenuItem(), showAllClassMethods, hideAllClassMethods, new SeparatorMenuItem(), showAllClassesHiddenItem);
 
         menuBar.getMenus().addAll(fileMenu, editionMenu, showMenu, helpMenu);
