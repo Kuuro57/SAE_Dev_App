@@ -1,0 +1,5 @@
+Itération 6 : Cette itération  est essentiellement un correction des bugs et petits détails manquant de l’application. La dernière fonctionnalité :  création de classe depuis l’application. Modification de l’export en PUML pour gérer les dépendances. Problème de gestion des flèches qui se superposent, nous n’avons pas eu le temps de trouver une solution. L’export en PUML prend en compte les associations mais n’enlève pas toujours l’attribut concerné.
+
+-Corrections de bugs.
+-Création de classe depuis l’application :
+-Export amélioré en PlantUML : prise en compte des dépendances
