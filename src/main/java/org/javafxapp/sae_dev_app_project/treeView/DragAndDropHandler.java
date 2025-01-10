@@ -80,11 +80,15 @@ public class DragAndDropHandler {
         if (dragboard.hasString()) {
             String className = dragboard.getString();
             ModelClass modelClass = new ModelClass(className); // Crée directement une classe pour simplifier
-            modelClass.setX((int) event.getX());
-            modelClass.setY((int) event.getY());
-            modelClass.addObserver(targetView);
-            targetView.addClass(modelClass);
-            success = true;
+
+            // Si la classe que l'on va poser n'est pas déjà sur le diagramme
+            if (targetView.findClassByName(modelClass.getName()) == null) {
+                modelClass.setX((int) event.getX());
+                modelClass.setY((int) event.getY());
+                modelClass.addObserver(targetView);
+                targetView.addClass(modelClass);
+                success = true;
+            }
         }
         event.setDropCompleted(success);
         event.consume();
