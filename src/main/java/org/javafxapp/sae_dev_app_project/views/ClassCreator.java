@@ -39,7 +39,7 @@ public class ClassCreator {
     private ClassCreator(ViewAllClasses view) {
 
         this.view = view;
-        apercu = previs.getDisplay();
+        apercu = previs.getDisplay(view);
         square.getChildren().addAll(apercu, valider);
         square.setAlignment(Pos.CENTER);
         square.setMinWidth(150);
@@ -418,7 +418,7 @@ public class ClassCreator {
     public void updatePrevis(){
 
         square.getChildren().remove(0);
-        VBox apercu = previs.getDisplay();
+        VBox apercu = previs.getDisplay(view);
         square.getChildren().add(0, apercu);
         square.setAlignment(Pos.CENTER);
         square.setMinWidth(150);
