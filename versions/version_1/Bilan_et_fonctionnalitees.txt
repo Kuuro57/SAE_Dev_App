@@ -1,9 +1,0 @@
-Itération 1 : Aucun problème particulier rencontré, toutes les fonctionnalités ont pu être implémentées dans les temps.
-
-Fonctionnalitées :
-
--Afficher une classe.
--Exporter au format PNG.
--Exporter au format squelette Java.
--Exporter en format code PlantUML.
--Charger un fichier Java.

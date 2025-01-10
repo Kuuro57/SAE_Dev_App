@@ -1,6 +1,0 @@
-Itération 2 : Problème avec le classloader qui ne parvient pas a chargé les classes demandés.  Le problème a été résolu après de longues heures de réflexion.
-
-Fonctionnalitées :
-
--Afficher les attributs.
--Afficher constructeurs et méthodes.

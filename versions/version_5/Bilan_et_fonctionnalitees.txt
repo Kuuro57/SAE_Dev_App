@@ -1,5 +1,0 @@
-Itération 5 : ajout de la gestion des cardinalités des dépendances et masquage des classes. Quelques difficultés sur la gestion des dépendances car il faut pouvoir identifier les attributs de types collections particuliers qui sont sur déjà affichés. 
-Fonctionnalitées :
-
--Ajout des cardinalités.
--Masquage des classes.

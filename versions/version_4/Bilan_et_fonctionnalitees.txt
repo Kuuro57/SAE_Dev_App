@@ -1,7 +1,0 @@
-Itération 4 : Dernière fonctionnalité essentielle : drag and drop des classes chargées.
-Quelques difficultés à intégrer la fonctionnalité dû à la gestion de l’import et la création des modèles résultants. 
-
-Fonctionnalitées :
-
--Masquer / Afficher méthodes, constructeurs, attributs.
--TreeView et Drag and Drop.
