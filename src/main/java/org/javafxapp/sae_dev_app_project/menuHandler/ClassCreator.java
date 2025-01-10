@@ -1,4 +1,4 @@
-package org.javafxapp.sae_dev_app_project.views;
+package org.javafxapp.sae_dev_app_project.menuHandler;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,8 +15,8 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
-import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.util.ArrayList;
 
@@ -73,28 +73,33 @@ public class ClassCreator {
         valider.setStyle("-fx-font-size: 14px;");
         valider.setOnAction(actionEvent -> {
 
-            ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
-            classe.setId(ModelClass.getNewId());
-            classe.addObserver(view);
-            view.addClass(classe);
-            form.close();
+            if(!name.isBlank()) {
+
+                ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
+                classe.setId(ModelClass.getNewId());
+                classe.addObserver(view);
+                classe.setVisibility(true);
+                view.addClass(classe);
+                form.close();
+
+            }
         });
 
         //Titres des encarts
         Label title1 = new Label("Propriétés");
-        title1.setPadding(new Insets(5));
+        title1.setPadding(new Insets(2));
         title1.setStyle("-fx-font-size: 16px;");
 
         Label title2 = new Label("Attributs");
-        title2.setPadding(new Insets(5));
+        title2.setPadding(new Insets(2));
         title2.setStyle("-fx-font-size: 16px;");
 
         Label title3 = new Label("Constructeurs");
-        title3.setPadding(new Insets(5));
+        title3.setPadding(new Insets(2));
         title3.setStyle("-fx-font-size: 16px;");
 
         Label title4 = new Label("Méthodes");
-        title4.setPadding(new Insets(5));
+        title4.setPadding(new Insets(2));
         title4.setStyle("-fx-font-size: 16px;");
 
 
@@ -105,24 +110,24 @@ public class ClassCreator {
 
         // Encart Propriétés de la classe
         VBox proprietes = new VBox();
-        proprietes.setPadding(new Insets(5));
+        proprietes.setPadding(new Insets(2));
 
         HBox hNameClass = new HBox();
-        hNameClass.setPadding(new Insets(5));
-        hNameClass.setSpacing(5);
+        hNameClass.setPadding(new Insets(2));
+        hNameClass.setSpacing(2);
 
         HBox hTypeClass = new HBox();
-        hTypeClass.setPadding(new Insets(5));
-        hTypeClass.setSpacing(5);
+        hTypeClass.setPadding(new Insets(2));
+        hTypeClass.setSpacing(2);
 
         Label nomClasse = new Label("Nom de la classe :");
-        nomClasse.setPadding(new Insets(5));
+        nomClasse.setPadding(new Insets(2));
 
         TextField className = new TextField();
         className.setPromptText("Nom");
 
         Label typeClass = new Label("Type de la classe :");
-        typeClass.setPadding(new Insets(5));
+        typeClass.setPadding(new Insets(2));
 
         ComboBox<String> classType = new ComboBox<>();
         classType.getItems().addAll("Class", "Interface", "Abstract");
@@ -146,32 +151,32 @@ public class ClassCreator {
 
         // Encart Attributs de la classe
         VBox attributs = new VBox();
-        attributs.setPadding(new Insets(5));
+        attributs.setPadding(new Insets(2));
 
         HBox hAttName = new HBox();
-        hAttName.setPadding(new Insets(5));
-        hAttName.setSpacing(5);
+        hAttName.setPadding(new Insets(2));
+        hAttName.setSpacing(2);
 
         HBox hAttType = new HBox();
-        hAttType.setPadding(new Insets(5));
-        hAttType.setSpacing(5);
+        hAttType.setPadding(new Insets(2));
+        hAttType.setSpacing(2);
 
         HBox hAttModifier = new HBox();
-        hAttModifier.setPadding(new Insets(5));
-        hAttModifier.setSpacing(5);
+        hAttModifier.setPadding(new Insets(2));
+        hAttModifier.setSpacing(2);
 
         Label nomAtt = new Label("Nom de la attribut :");
-        nomAtt.setPadding(new Insets(5));
+        nomAtt.setPadding(new Insets(2));
         TextField attName = new TextField();
         attName.setPromptText("Nom");
 
         Label typeAtt = new Label("Type de la attribut :");
-        typeAtt.setPadding(new Insets(5));
+        typeAtt.setPadding(new Insets(2));
         TextField attType = new TextField();
         attType.setPromptText("Type");
 
         Label modifier1 = new Label("Modifiers :");
-        modifier1.setPadding(new Insets(5));
+        modifier1.setPadding(new Insets(2));
 
         ComboBox<String> accesMod = new ComboBox<>();
         accesMod.getItems().addAll("public", "private", "protected");
@@ -186,7 +191,7 @@ public class ClassCreator {
         finalMod.setPromptText("Choisir");
 
         Button ajtAtt = new Button("Ajouter l'attribut");
-        ajtAtt.setPadding(new Insets(5));
+        ajtAtt.setPadding(new Insets(4));
         ajtAtt.setOnAction(actionEvent -> {
 
             if (!attName.getText().isEmpty() && !attType.getText().isEmpty()) {
@@ -218,36 +223,36 @@ public class ClassCreator {
 
         // Encart Constructeurs de la classe
         VBox constructeurs = new VBox();
-        constructeurs.setPadding(new Insets(5));
+        constructeurs.setPadding(new Insets(2));
 
         HBox hConstMod = new HBox();
-        hConstMod.setPadding(new Insets(5));
-        hConstMod.setSpacing(5);
+        hConstMod.setPadding(new Insets(2));
+        hConstMod.setSpacing(2);
 
         HBox hConstParams = new HBox();
-        hConstParams.setPadding(new Insets(5));
-        hConstParams.setSpacing(5);
+        hConstParams.setPadding(new Insets(2));
+        hConstParams.setSpacing(2);
 
         Label modifierConst = new Label("Modifiers :");
-        modifierConst.setPadding(new Insets(5));
+        modifierConst.setPadding(new Insets(2));
 
         ComboBox<String> accesConst = new ComboBox<>();
         accesConst.getItems().addAll("public", "private", "protected");
         accesConst.setPromptText("Choisir");
 
         Label ajtParam = new Label("Ajouter un paramètre :");
-        ajtParam.setPadding(new Insets(5));
+        ajtParam.setPadding(new Insets(2));
 
         TextField nomConstParam = new TextField();
         nomConstParam.setPromptText("Nom");
-        nomConstParam.setPadding(new Insets(5));
+        nomConstParam.setPadding(new Insets(2));
 
         TextField typeConstParam = new TextField();
         typeConstParam.setPromptText("Type");
-        typeConstParam.setPadding(new Insets(5));
+        typeConstParam.setPadding(new Insets(2));
 
         Button ajtConstParam = new Button("Ajouter un paramètre");
-        ajtConstParam.setPadding(new Insets(5));
+        ajtConstParam.setPadding(new Insets(4));
         ajtConstParam.setOnAction(actionEvent -> {
 
             if (!typeConstParam.getText().isEmpty() && !nomConstParam.getText().isEmpty()){
@@ -276,7 +281,7 @@ public class ClassCreator {
         });
 
         Button ajtConst = new Button("Ajouter un constructeur");
-        ajtConst.setPadding(new Insets(5));
+        ajtConst.setPadding(new Insets(4));
         ajtConst.setOnAction(actionEvent -> {
 
             Constructor c = new Constructor(accesConst.getValue(), className.getText());
@@ -298,36 +303,36 @@ public class ClassCreator {
 
         // Encart Méthodes de la classe
         VBox methodes = new VBox();
-        methodes.setPadding(new Insets(5));
+        methodes.setPadding(new Insets(2));
 
         HBox hMethName = new HBox();
-        hMethName.setPadding(new Insets(5));
-        hMethName.setSpacing(5);
+        hMethName.setPadding(new Insets(2));
+        hMethName.setSpacing(2);
 
         HBox hMethType = new HBox();
-        hMethType.setPadding(new Insets(5));
-        hMethType.setSpacing(5);
+        hMethType.setPadding(new Insets(2));
+        hMethType.setSpacing(2);
 
         HBox hMethMod = new HBox();
-        hMethMod.setPadding(new Insets(5));
-        hMethMod.setSpacing(5);
+        hMethMod.setPadding(new Insets(2));
+        hMethMod.setSpacing(2);
 
         HBox hMethParams = new HBox();
-        hMethParams.setPadding(new Insets(5));
-        hMethParams.setSpacing(5);
+        hMethParams.setPadding(new Insets(2));
+        hMethParams.setSpacing(2);
 
         Label nomMeth = new Label("Nom :");
-        nomMeth.setPadding(new Insets(5));
+        nomMeth.setPadding(new Insets(2));
         TextField methName = new TextField();
         methName.setPromptText("Nom");
 
         Label typeMeth = new Label("Type de retour :");
-        typeMeth.setPadding(new Insets(5));
+        typeMeth.setPadding(new Insets(2));
         TextField methType = new TextField();
         methType.setPromptText("Type / Void");
 
         Label modMeth = new Label("Modifiers :");
-        modMeth.setPadding(new Insets(5));
+        modMeth.setPadding(new Insets(2));
 
         ComboBox<String> accesMeth = new ComboBox<>();
         accesMeth.getItems().addAll("public", "private", "protected");
@@ -338,18 +343,18 @@ public class ClassCreator {
         staticMeth.setPromptText("Choisir");
 
         Label ajtMethParam = new Label("Ajouter un paramètre :");
-        ajtMethParam.setPadding(new Insets(5));
+        ajtMethParam.setPadding(new Insets(2));
 
         TextField nomMethParam = new TextField();
         nomMethParam.setPromptText("Nom");
-        nomMethParam.setPadding(new Insets(5));
+        nomMethParam.setPadding(new Insets(2));
 
         TextField typeMethParam = new TextField();
         typeMethParam.setPromptText("Type");
-        typeMethParam.setPadding(new Insets(5));
+        typeMethParam.setPadding(new Insets(2));
 
         Button btnMethParam = new Button("Ajouter un paramètre");
-        btnMethParam.setPadding(new Insets(5));
+        btnMethParam.setPadding(new Insets(4));
         btnMethParam.setOnAction(actionEvent -> {
 
             if (!typeMethParam.getText().isEmpty() && !nomMethParam.getText().isEmpty()){
@@ -379,7 +384,7 @@ public class ClassCreator {
         });
 
         Button btnMeth = new Button("Ajouter une méthode");
-        btnMeth.setPadding(new Insets(5));
+        btnMeth.setPadding(new Insets(4));
         btnMeth.setOnAction(actionEvent -> {
 
             Method m = new Method(accesMeth.getValue() + " " + staticMeth.getValue(), methName.getText(), methType.getText());
@@ -390,10 +395,10 @@ public class ClassCreator {
 
 
         hMethName.getChildren().addAll(nomMeth, methName);
-        hMethType.getChildren().addAll(typeMeth, methType);
+        hMethType.getChildren().addAll(typeMeth, methType, btnMeth);
         hMethMod.getChildren().addAll(modMeth, accesMeth, staticMeth);
         hMethParams.getChildren().addAll(ajtMethParam, nomMethParam, typeMethParam, btnMethParam);
-        methodes.getChildren().addAll(hMethName, hMethType, hMethMod, hMethParams, btnMeth);
+        methodes.getChildren().addAll(hMethName, hMethType, hMethMod, hMethParams);
 
         // --------------------------------------------- //
 
@@ -404,7 +409,8 @@ public class ClassCreator {
 
 
         // Création de la scène et attachement au Stage
-        Scene scene = new Scene(hbox); // Définir une taille pour la fenêtre
+        Scene scene = new Scene(hbox);// Définir une taille pour la fenêtre
+        form.setMinWidth(850);
         form.setScene(scene);
 
         // Configurer la fenêtre comme modale

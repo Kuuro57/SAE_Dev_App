@@ -7,4 +7,6 @@ module org.javafxapp.sae_dev_app_project {
 
     opens org.javafxapp.sae_dev_app_project to javafx.fxml;
     exports org.javafxapp.sae_dev_app_project;
+    exports org.javafxapp.sae_dev_app_project.menuHandler;
+    opens org.javafxapp.sae_dev_app_project.menuHandler to javafx.fxml;
 }
