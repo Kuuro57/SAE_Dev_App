@@ -1,0 +1,7 @@
+Itération 3 : Pas de problèmes particuliers renconter. Revu des fonctionnalités : nous avons supprimer la création d’une classe “from scratch” car elle n’est pas essentielle. 
+
+Fonctionnalitées :
+
+-Affichage des dépendances (flèches).
+-Cardinalités.
+-Exporter les dépendances.
