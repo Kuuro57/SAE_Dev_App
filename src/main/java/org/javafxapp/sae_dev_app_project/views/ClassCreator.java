@@ -76,9 +76,8 @@ public class ClassCreator {
             ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
             classe.setId(ModelClass.getNewId());
             classe.addObserver(view);
-            form.close();
             view.addClass(classe);
-
+            form.close();
         });
 
         //Titres des encarts
@@ -419,7 +418,6 @@ public class ClassCreator {
     public void updatePrevis(){
 
         square.getChildren().remove(0);
-        ModelClass previs = new ModelClass(name, attributes, methods, constructors, type);
         VBox apercu = previs.getDisplay();
         square.getChildren().add(0, apercu);
         square.setAlignment(Pos.CENTER);
