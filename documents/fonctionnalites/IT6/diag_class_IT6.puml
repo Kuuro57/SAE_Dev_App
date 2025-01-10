@@ -1,0 +1,259 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+package main {
+    class Main {
+        + Main(): 
+        + start(Stage): void
+        + main(String[]): void
+    }
+}
+
+package classComponent {
+    class Attribute {
+        + Attribute(String, String, String): 
+        - type: String
+        + toString(): String
+        display: HBox
+        type: String
+    }
+
+    class ClassComponent {
+        + ClassComponent(): 
+        # name: String
+        # modifier: String
+        # hidden: boolean
+        modifier: String
+        name: String
+        hidden: boolean
+        display: HBox
+    }
+
+    class Constructor {
+        + Constructor(String, String): 
+        + Constructor(String, String, ArrayList<Parameter>): 
+        - parameters: ArrayList<Parameter>
+        + addParameter(Parameter): void
+        + toString(): String
+        parameters: ArrayList<Parameter>
+        display: HBox
+    }
+
+    class Method {
+        + Method(String, String, String): 
+        + Method(String, String, ArrayList<Parameter>, String): 
+        - parameters: ArrayList<Parameter>
+        - returnType: String
+        + toString(): String
+        + addParameter(Parameter): void
+        returnType: String
+        parameters: ArrayList<Parameter>
+        display: HBox
+    }
+
+    class Parameter {
+        + Parameter(String, String): 
+        - name: String
+        - type: String
+        + toString(): String
+        name: String
+        type: String
+    }
+}
+
+package importExport {
+    class SingleClassLoader {
+        + SingleClassLoader(): 
+        + loadClassFromFile(File, File): Class<?>
+        + getClassForName(String): Class<?>?
+        + hasBeenLoaded(String): boolean
+    }
+
+    class Export {
+        + Export(): 
+        + convertModifier(String): String
+        + exportInJava(ViewAllClasses): void
+        + exportInPNG(ViewAllClasses): void
+        - removeAttributesInDependencies(File): void
+        + createDependanciesCardinalities(ViewAllClasses, ModelClass): String
+        + exportInPUml(ViewAllClasses): void
+        + removeLastComa(StringBuffer): void
+        - getJavaFrameCode(ModelClass): String
+        - getPUmlCode(ModelClass): String
+        + removePackageName(String): String
+        - extractAttributeName(String): String?
+    }
+
+    class FileChooserHandler {
+        + FileChooserHandler(): 
+        + openPackageChooser(): File
+        + openFileChooser(): File
+        + openRepositoryPath(): File
+        + openRepositoryPathAndFileNameChooser(String): File
+    }
+
+    class Import {
+        + Import(): 
+        - treeView: TreeView<PackageNode>
+        + importClass(ViewAllClasses): void
+        + getModelClass(ViewAllClasses, String): ModelClass?
+        + importPackage(): void
+        - addClassToTreeView(String, String): void
+        treeView: TreeView<PackageNode>
+    }
+}
+
+package menuHandler {
+    class ContextMenuHandler {
+        + ContextMenuHandler(): 
+        + createClassContextMenu(ViewAllClasses, ModelClass): ContextMenu
+    }
+
+    class MenuBarHandler {
+        + MenuBarHandler(): 
+        + createMenuBar(Stage, ViewAllClasses): MenuBar
+        - displayError(String): void
+    }
+}
+
+package subject {
+    class ModelClass {
+        + ModelClass(String, ArrayList<Attribute>, ArrayList<Method>, ArrayList<Constructor>, String): 
+        + ModelClass(String): 
+        - x: int
+        - isVisible: boolean
+        - extendedClass: ModelClass
+        - inheritedClasses: ArrayList<ModelClass>
+        - type: String
+        - id: int
+        - name: String
+        - attributes: ArrayList<Attribute>
+        - constructors: ArrayList<Constructor>
+        - y: int
+        - methods: ArrayList<Method>
+        + showConstructors(): void
+        + removeObserver(Observer): void
+        + hashType(): ArrayList<String>
+        + hideDetails(): void
+        + notifyObservers(): void
+        + hideConstructors(): void
+        + addObserver(Observer): void
+        + hideAllAttributes(): void
+        + displayParams(ArrayList<Parameter>): String
+        + getDisplay(ViewAllClasses): VBox
+        + toString(): String
+        - setIcon(): Pane
+        + hideAllMethods(): void
+        + showAllMethods(): void
+        + showAllAttributes(): void
+        type: String
+        constructors: ArrayList<Constructor>
+        inheritedClasses: ArrayList<ModelClass>
+        attributes: ArrayList<Attribute>
+        isVisible: boolean
+        newId: int
+        methods: ArrayList<Method>
+        name: String
+        visibility: boolean
+        extendedClass: ModelClass
+        id: int
+        x: int
+        y: int
+    }
+
+    interface Subject << interface >> {
+        + addObserver(Observer): void
+        + notifyObservers(): void
+        + removeObserver(Observer): void
+    }
+}
+
+package treeView {
+    class DragAndDropHandler {
+        + DragAndDropHandler(ViewAllClasses): 
+        + setup(TreeView<PackageNode>): void
+        - handleDragDetected(MouseEvent, TreeView<PackageNode>): void
+        - handleDragOver(DragEvent): void
+        - handleDragDropped(DragEvent): void
+    }
+
+    class PackageNode {
+        + PackageNode(String): 
+        - name: String
+        + toString(): String
+        name: String
+    }
+
+    class PackageTreeView {
+        + PackageTreeView(): 
+        - treeView: TreeView<PackageNode>
+        + initialize(DragAndDropHandler): void
+        treeView: TreeView<PackageNode>
+    }
+}
+
+package views {
+    class ClassCreator {
+        - ClassCreator(ViewAllClasses): 
+        + classCreation(): void
+        + updatePrevis(): void
+        + getInstance(ViewAllClasses): ClassCreator
+    }
+
+    interface Observer << interface >> {
+        + update(): void
+    }
+
+    class ViewAllClasses {
+        + ViewAllClasses(): 
+        - attachMouseHandlers(VBox, ModelClass): void
+        - displayDependancies(ModelClass): void
+        - drawArrow(ModelClass, ModelClass, String, String, String): void
+        + showAttributes(): void
+        + showAllHiddenClasses(): void
+        + addClass(ModelClass): boolean
+        + showConstructors(): void
+        - hasCollision(VBox, double, double): boolean
+        + findClassByName(String): ModelClass
+        + hideMethods(): void
+        - getVBoxById(int): VBox?
+        + update(): void
+        + showMethods(): void
+        + hideAttributes(): void
+        - reloadAllClasses(): void
+        - calculateDistance(double, double, double, double): double
+        - getNearestCoord(ModelClass, ModelClass): ArrayList<Double>
+        + hideConstructors(): void
+        - displayAllDependancies(): void
+        + updateDependentAttributes(ModelClass): void
+        allClasses: ArrayList<ModelClass>
+    }
+}
+
+' ### Dépendances ###
+
+Attribute           -[#000082,plain]-^  ClassComponent     
+ClassCreator       "1" *-[#595959,plain]-> "attributes\n*" Attribute          
+ClassCreator       "1" *-[#595959,plain]-> "constructors\n*" Constructor        
+ClassCreator       "1" *-[#595959,plain]-> "methods\n*" Method             
+ClassCreator       "1" *-[#595959,plain]-> "previs\n1" ModelClass         
+ClassCreator       "1" *-[#595959,plain]-> "view\n1" ViewAllClasses     
+Constructor         -[#000082,plain]-^  ClassComponent     
+Constructor        "1" *-[#595959,plain]-> "parameters\n*" Parameter          
+DragAndDropHandler "1" *-[#595959,plain]-> "targetView\n1" ViewAllClasses     
+Method              -[#000082,plain]-^  ClassComponent     
+Method             "1" *-[#595959,plain]-> "parameters\n*" Parameter          
+ModelClass         "1" *-[#595959,plain]-> "attributes\n*" Attribute          
+ModelClass         "1" *-[#595959,plain]-> "constructors\n*" Constructor        
+ModelClass         "1" *-[#595959,plain]-> "methods\n*" Method             
+ModelClass         "1" *-[#595959,plain]-> "observerList\n*" Observer           
+ModelClass          -[#008200,dashed]-^  Subject            
+ViewAllClasses     "1" *-[#595959,plain]-> "allClassesList\n*" ModelClass         
+ViewAllClasses      -[#008200,dashed]-^  Observer
+@enduml
