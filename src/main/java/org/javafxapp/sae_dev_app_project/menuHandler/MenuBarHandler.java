@@ -4,22 +4,25 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.importExport.Import;
+import org.javafxapp.sae_dev_app_project.views.ClassCreator;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.io.FileNotFoundException;
 
+
+/**
+ * Classe qui permet de créer le menu en haut de l'application
+ */
 public class MenuBarHandler {
 
 
-
     /**
-     * Méthode qui créé une menuBar
+     * Méthode qui créé un objet MenuBar
      * @param stage Stage de la page JavaFX
      * @param view Vue qui contient toutes les classes du diagrammes
      * @return Un objet MenuBar
      */
     public MenuBar createMenuBar(Stage stage, ViewAllClasses view) {
-
 
         // Initialisation des menus principaux
         MenuBar menuBar = new MenuBar();
@@ -27,7 +30,6 @@ public class MenuBarHandler {
         Menu editionMenu = new Menu("Edition");
         Menu showMenu = new Menu("Affichage");
         Menu helpMenu = new Menu("Aide");
-
 
 
         // Initialisation des items du menu "Fichier>Importer"
@@ -46,7 +48,7 @@ public class MenuBarHandler {
         MenuItem importPackageItem = new MenuItem("Importer un projet");
         importPackageItem.setOnAction(actionEvent -> {
             try {
-                Import.importPackage(view);
+                Import.importPackage();
             }
             catch (Exception e) {
                 displayError("Erreur lors de l'importation du package !\nMessage : " + e.getMessage());
@@ -59,7 +61,6 @@ public class MenuBarHandler {
 
         // Ajout des items au menu correspondant
         importMenu.getItems().addAll(importClassItem, importPackageItem);
-
 
 
 
@@ -86,7 +87,7 @@ public class MenuBarHandler {
 
         // Initialisation des items du menu "Edition"
         MenuItem addClassItem = new MenuItem("Créer une classe");
-        //addClassItem.setOnAction(actionEvent -> ModelClass.classCreator());
+        addClassItem.setOnAction(actionEvent -> ClassCreator.getInstance(view).classCreation());
 
 
 
@@ -150,6 +151,7 @@ public class MenuBarHandler {
 
         // Ajout des items au menu correspondant
         removeMenu.getItems().addAll(removeAttributeItem, removeMethodItem, removeConstructorItem);
+
 
 
         MenuItem hideAllClassAttributes = new MenuItem("Masquer les attributs des classes");

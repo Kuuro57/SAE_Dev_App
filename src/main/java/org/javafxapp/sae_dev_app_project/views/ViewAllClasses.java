@@ -25,14 +25,13 @@ import java.util.ArrayList;
  */
 public class ViewAllClasses extends Pane implements Observer {
 
+
     // Attributs
     private ArrayList<ModelClass> allClassesList; // Liste qui contient toutes les classes sur le diagramme
-    private VBox draggedBox;
-    private double initialMouseX;
-    private double initialMouseY;
     private double offsetX; // Décalage en X entre la souris et le coin haut-gauche de la VBox
     private double offsetY; // Décalage en Y entre la souris et le coin haut-gauche de la VBox
     private Node parentNode; // Le conteneur parent de la boîte, pour calculer correctement les coordonnées
+
 
 
     /**
@@ -42,9 +41,10 @@ public class ViewAllClasses extends Pane implements Observer {
         this.allClassesList = new ArrayList<>(1000);
     }
 
+
+
     /**
      * Méthode qui ajoute une classe à la liste des classes représentées graphiquement
-     *
      * @param m Objet de type ModelClass que l'on veut ajouter à la liste
      * @return True si la classe à bien été ajoutée, false sinon
      */
@@ -59,7 +59,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
             // On notifie l'observeur que le modèle est ajouté à la liste
             m.notifyObservers();
-
             return true;
 
         }
@@ -67,6 +66,8 @@ public class ViewAllClasses extends Pane implements Observer {
         // Sinon on retourne false
         return false;
     }
+
+
 
     /**
      * Méthode update, elle permet de mettre à jour la vue
@@ -95,10 +96,11 @@ public class ViewAllClasses extends Pane implements Observer {
     }
 
 
+
     /**
      * Methode qui attache les gestionnaires de souris à une VBox
-     * @param display
-     * @param m
+     * @param display VBox dont on veut ajouter les actions
+     * @param m Model de la classe correspondant à cette VBox
      */
     private void attachMouseHandlers(VBox display, ModelClass m) {
         // Gestionnaire de clic pour le menu contextuel
@@ -111,7 +113,6 @@ public class ViewAllClasses extends Pane implements Observer {
 
         // Lorsqu'on clique et commence à glisser une boîte
         display.setOnMousePressed(event -> {
-            this.draggedBox = display; // Enregistrer la boîte active
 
             // Capturer le parent pour calculer correctement les coordonnées locales
             this.parentNode = display.getParent();
@@ -122,7 +123,7 @@ public class ViewAllClasses extends Pane implements Observer {
             offsetY = mouseInParent.getY() - display.getLayoutY();
 
             // Optionnel : Modifier l'apparence de la boîte pendant le clic (exemple : couleur grise)
-            display.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, null, null)));
+            display.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
         });
 
         // Glissement direct (dragging)
@@ -152,7 +153,7 @@ public class ViewAllClasses extends Pane implements Observer {
         display.setOnMouseReleased(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 // Restaurer l'apparence normale de la boîte
-                display.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
+                display.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE, null, new Insets(0, 0, 0, 0))));
 
                 // Réinitialiser les décalages et le parent
                 offsetX = 0;
@@ -169,6 +170,8 @@ public class ViewAllClasses extends Pane implements Observer {
         });
     }
 
+
+
     /**
      * Méthode qui recharge tous les modèles de la vue
      */
@@ -179,10 +182,12 @@ public class ViewAllClasses extends Pane implements Observer {
             // On récupère un nouveau modèle
             ModelClass newM = Import.getModelClass(this, m.getName());
 
-            // On récupère son ancien ID et ses anciennes coordonnées
-            newM.setId(m.getId());
-            newM.setX(m.getX());
-            newM.setY(m.getY());
+            if (newM != null) {
+
+                // On récupère son ancien ID et ses anciennes coordonnées
+                newM.setId(m.getId());
+                newM.setX(m.getX());
+                newM.setY(m.getY());
 
             // On récupère son ancienne visibilité (caché ou non)
             newM.setVisibility(m.isVisible());
@@ -216,6 +221,7 @@ public class ViewAllClasses extends Pane implements Observer {
             // On remplace l'ancien modèle par le nouveau
             this.allClassesList.set(m.getId(), newM);
 
+            }
         }
 
     }
@@ -259,13 +265,14 @@ public class ViewAllClasses extends Pane implements Observer {
                     } // si l'attribut est de type collection et d'une classe (regex)
                     else if (a.getType().matches(".*<.*>")) {
                         String[] typeArray = a.getType().split("<");
-                        String type = typeArray[1].substring(0, typeArray[1].length() - 1);
-                            if (model != null && model.getName() != null && type.equals(model.getName())) {
-                                if (m.isVisible() && model.isVisible()) {
-                                    String modifier = Export.convertModifier(a.getModifier());
-                                    this.drawArrow(m, model, "full", "simple", modifier + " " + a.getName() + " : " + a.getType());
+                        String type = Export.removePackageName(typeArray[1].substring(0, typeArray[1].length() - 1));
+                        if (model != null && model.getName() != null && type.equals(model.getName())) {
+                            if (m.isVisible() && model.isVisible()) {
+                                String modifier = Export.convertModifier(a.getModifier());
+                                this.drawArrow(m, model, "full", "simple", modifier + " " + a.getName() + " : " + a.getType());
                             }
-                        } }
+                        }
+                    }
                 }
             }
         }
@@ -294,13 +301,12 @@ public class ViewAllClasses extends Pane implements Observer {
 
 
     /**
-     * Méthode qui déssine une flèche en fonction du type de flèche choisi
+     * Méthode qui dessine une flèche en fonction du type de flèche choisi
      * @param m Model de la classe où va partir la flèche
      * @param m2 Model de la classe où va arriver la flèche
      * @param typeOfLine Type de ligne
      * @param typeOfHead Type de la tête de la flèche
      * @param text Texte à afficher sur la flèche (null si pas de texte)
-     *
      */
     private void drawArrow(ModelClass m, ModelClass m2, String typeOfLine, String typeOfHead, String text) {
 
@@ -390,53 +396,56 @@ public class ViewAllClasses extends Pane implements Observer {
 
             case "simple":
                 System.out.println("hey");
+                // ligne gauche : part de la pointe de la flèche et va au coin 1 de la pointe
                 Line lineLeft = new Line(x2, y2, x3, y3);
                 lineLeft.setId(String.valueOf(m.getId()));
                 lineLeft.setStroke(Color.BLACK);
-                lineLeft.setStrokeWidth(1.0F);
+                lineLeft.setStrokeWidth(1);
+                // ligne droite : part de la pointe de la flèche et va au coin 2 de la pointe
                 Line lineRight = new Line(x2, y2, x4, y4);
                 lineRight.setId(String.valueOf(m.getId()));
                 lineRight.setStroke(Color.BLACK);
-                lineRight.setStrokeWidth(1.0F);
+                lineRight.setStrokeWidth(1);
+
+
+                // Si il y a un texte à afficher
                 if (!text.isEmpty()) {
+                    // On calcul les coordonnées du texte
                     double xText = (x1 + x2) / (double)2.0F;
                     double yText = (y1 + y2) / (double)2.0F + (double)10.0F;
-                    if (text.contains(":")) {
-                        String[] textArray = text.split(":");
-                        String modifier = textArray[0];
-                        if (text.contains(".")) {
-                            String[] textArray2 = text.split("\\.");
-                            String type = textArray2[textArray2.length - 1];
-                            text = modifier + "  : " + type;
-                            System.out.printf("text : %s\n", text);
-                        }
 
-                        System.out.printf("text : %s\n", text);
-                    }
-
+                    // On affiche le texte à afficher
                     Text textArrow = new Text(xText, yText, text);
                     textArrow.setId(String.valueOf(m.getId()));
                     this.getChildren().add(textArrow);
-                    if (text.matches(".*<.*>")) {
-                        double xText2 = x2 - (double)20.0F;
-                        double yText2 = y2 + (double)10.0F;
-                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1..*");
-                        textArrow2.setId(String.valueOf(m.getId()));
-                        this.getChildren().add(textArrow2);
-                    }
-                    else {
-                        double xText2 = x2 - (double)20.0F;
-                        double yText2 = y2 + (double)10.0F;
-                        Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, "1");
-                        textArrow2.setId(String.valueOf(m.getId()));
-                        this.getChildren().add(textArrow2);
-                    }
                 }
 
+                // Si le texte contient "<>"
+                String card;
+                if (text.contains("<") && text.contains(">")) {
+                    // On affiche "1..*"
+                    card = "1..*";
+                }
+                // Sinon
+                else {
+                    // On affiche "1"
+                    card = "1";
+                }
+
+                // On affiche les/la cardinalitée(s) au bon endroit
+                double xText2 = x2 - (double)20.0F;
+                double yText2 = y2 + (double)10.0F;
+                Text textArrow2 = new Text(xText2, yText2 + (double)10.0F, card);
+                textArrow2.setId(String.valueOf(m.getId()));
+                this.getChildren().add(textArrow2);
+
+
                 this.getChildren().addAll(line, lineLeft, lineRight);
+                break;
         }
 
     }
+
 
 
     /**
@@ -508,10 +517,10 @@ public class ViewAllClasses extends Pane implements Observer {
 
     /**
      * Méthode qui vérifie s'il y a une collision entre deux boîtes
-     * @param currentBox
-     * @param newX
-     * @param newY
-     * @return
+     * @param currentBox VBox dont on veut savoir si elle est en collision avec une autre ou non
+     * @param newX ???
+     * @param newY ???
+     * @return True si la VBox a une collision avec une autre, false sinon
      */
     private boolean hasCollision(VBox currentBox, double newX, double newY) {
         if (currentBox == null) {
@@ -550,71 +559,78 @@ public class ViewAllClasses extends Pane implements Observer {
     }
 
 
+
+    /**
+     * Méthode qui cache tous les attributs de toutes les classes sur le diagramme
+     */
     public void hideAttributes(){
-
         for(ModelClass m : allClassesList){
-
             m.hideAllAttributes();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui affiche tous les attributs de toutes les classes du diagramme
+     */
     public void showAttributes(){
-
         for(ModelClass m : allClassesList){
-
             m.showAllAttributes();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui cache toutes les méthodes de toutes les classes présentes sur le diagramme
+     */
     public void hideMethods(){
-
         for(ModelClass m : allClassesList){
-
             m.hideAllMethods();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui affiche toutes les méthodes de toutes les classes du diagramme
+     */
     public void showMethods(){
-
         for(ModelClass m : allClassesList){
-
             m.showAllMethods();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui cache tous les constructeurs de toutes les classes présentes sur le diagramme
+     */
     public void hideConstructors(){
-
         for(ModelClass m : allClassesList){
-
             m.hideConstructors();
             update();
-
         }
-
     }
 
+
+
+    /**
+     * Méthode qui affiche tous les constructeurs de toutes les classes du diagramme
+     */
     public void showConstructors(){
-
         for(ModelClass m : allClassesList){
-
             m.showConstructors();
             update();
-
         }
-
     }
+
+
 
     /**
      * Méthode qui calcul la distance entre deux points
@@ -627,6 +643,8 @@ public class ViewAllClasses extends Pane implements Observer {
     private double calculateDistance(double x1, double y1, double x2, double y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
+
+
 
     /**
      * Méthode qui cherche un ModelClass en fonction du nom
@@ -646,7 +664,7 @@ public class ViewAllClasses extends Pane implements Observer {
 
     /**
      * Méthode updateAttribute met à jour les attributs de la vue qui dépendent d'un modèel classe particulier
-     * @param model : ModelClass
+     * @param model Un ModelClass
      */
     public void updateDependentAttributes(ModelClass model) {
         // parcours des autres models et leur attribut hidden
@@ -680,18 +698,17 @@ public class ViewAllClasses extends Pane implements Observer {
 
 
 
-
     /*
      * ### GETTERS ###
      */
-    public ArrayList<ModelClass> getAllClasses () {
-        return this.allClassesList;
-    }
+    public ArrayList<ModelClass> getAllClasses () { return this.allClassesList; }
+
+
 
     /**
      * Méthode qui retourne une VBox en fonction de son ID
-     * @param id
-     * @return
+     * @param id Id de la VBox que l'on veut
+     * @return Une Vbox, null si elle n'est pas trouvée
      */
     private VBox getVBoxById(int id) {
         for (Node node : this.getChildren()) {
@@ -704,7 +721,7 @@ public class ViewAllClasses extends Pane implements Observer {
                 }
             }
         }
-
         return null; // Aucun VBox trouvé avec cet ID
     }
+
 }

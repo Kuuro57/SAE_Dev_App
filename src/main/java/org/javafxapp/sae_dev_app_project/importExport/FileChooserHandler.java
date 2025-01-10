@@ -5,6 +5,7 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 
+
 /**
  * Classe qui gère le choix de fichier
  */
@@ -14,14 +15,13 @@ public class FileChooserHandler {
     /**
      * Constructeur de la classe
      */
-    public FileChooserHandler() {
-    }
+    public FileChooserHandler() {}
 
 
 
     /**
      * Méthode qui ouvre un FileChooser pour choisir un fichier .class
-     * @return Objet de type
+     * @return Objet de type File qui contient le chemin choisi par l'utilisateur
      */
     public File openFileChooser() {
         // Création du FileChooser
@@ -34,12 +34,13 @@ public class FileChooserHandler {
 
         // Affichage de la fenêtre
         return fileChooser.showOpenDialog(null);
-
     }
+
+
 
     /**
      * Méthode qui ouvre un FileChooser pour choisir un fichier .class
-     * @return Objet de type
+     * @return Objet de type File qui contient le chemin choisi par l'utilisateur
      */
     public File openPackageChooser() {
         // Création du FileChooser
@@ -51,18 +52,18 @@ public class FileChooserHandler {
         packageChooser.setTitle("Choisir un package de fichier .class");
         // recupération de la listes des fichiers
         return packageChooser.showDialog(null);
-
-
     }
 
 
-    public File openRepositoryPath(){
 
+    /**
+     * Méthode qui ouvre un FileChooser pour choisir un répertoire
+     * @return Objet de type File qui contient le chemin choisi par l'utilisateur
+     */
+    public File openRepositoryPath(){
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Choisir un repertoire");
-
         return directoryChooser.showDialog(null);
-
     }
 
 
