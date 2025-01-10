@@ -1,4 +1,4 @@
-package org.javafxapp.sae_dev_app_project.menuHandler;
+package org.javafxapp.sae_dev_app_project.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,8 +15,8 @@ import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
+import org.javafxapp.sae_dev_app_project.importExport.Export;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
-import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.util.ArrayList;
 
@@ -44,6 +44,7 @@ public class ClassCreator {
         square.setAlignment(Pos.CENTER);
         square.setMinWidth(150);
         square.setSpacing(30);
+        previs.setVisibility(true);
 
     }
 
@@ -73,16 +74,13 @@ public class ClassCreator {
         valider.setStyle("-fx-font-size: 14px;");
         valider.setOnAction(actionEvent -> {
 
-            if(!name.isBlank()) {
+            ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
+            classe.setId(ModelClass.getNewId());
+            classe.addObserver(view);
+            classe.setVisibility(true);
+            view.addClass(classe);
+            form.close();
 
-                ModelClass classe = new ModelClass(name, attributes, methods, constructors, type);
-                classe.setId(ModelClass.getNewId());
-                classe.addObserver(view);
-                classe.setVisibility(true);
-                view.addClass(classe);
-                form.close();
-
-            }
         });
 
         //Titres des encarts
@@ -134,6 +132,7 @@ public class ClassCreator {
         classType.setPromptText("Choisir");
         classType.setOnAction(actionEvent -> {
             name = className.getText();
+            System.out.println(className.getText());
             type = classType.getValue().toLowerCase();
             updatePrevis();
         });
@@ -424,6 +423,7 @@ public class ClassCreator {
     public void updatePrevis(){
 
         square.getChildren().remove(0);
+        previs.setName(name);
         VBox apercu = previs.getDisplay(view);
         square.getChildren().add(0, apercu);
         square.setAlignment(Pos.CENTER);
