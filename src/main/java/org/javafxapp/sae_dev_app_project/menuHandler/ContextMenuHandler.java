@@ -7,13 +7,18 @@ import javafx.scene.control.Menu;
 import org.javafxapp.sae_dev_app_project.subjects.ModelClass;
 import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
+
+/**
+ * Classe qui représente le ContextMenu lors d'un clic droit sur une classe sur le diagramme
+ */
 public class ContextMenuHandler {
 
+
     /**
-     * Méthode qui crée et fait apparaître un menu contextuel convivial pour une classe
+     * Méthode qui crée et fait apparaître un menu contextuel pour gérer la classe
      * @param view Vue représentant la zone graphique du diagramme
      * @param model Le modèle associé à la classe
-     * @return Un menu contextuel convivial
+     * @return Objet de type ContextMenu
      */
     public static ContextMenu createClassContextMenu(ViewAllClasses view, ModelClass model) {
 
@@ -78,9 +83,18 @@ public class ContextMenuHandler {
             view.update();
         });
 
+        // Option : Masquer la classe
+        MenuItem hideClass = new MenuItem("Masquer la classe");
+        hideClass.setOnAction(actionEvent -> {
+            model.setVisibility(false);
+            view.updateDependentAttributes(model);
+        });
+
+
         // Structuration du menu contextuel : Ajout des sous-menus et options
-        contextMenu.getItems().addAll(attributeMenu, methodMenu, constructorMenu, new SeparatorMenuItem(), hideDetailsItem, resetAllItem);
+        contextMenu.getItems().addAll(attributeMenu, methodMenu, constructorMenu, new SeparatorMenuItem(), hideDetailsItem, resetAllItem, new SeparatorMenuItem(), hideClass);
 
         return contextMenu;
     }
+
 }

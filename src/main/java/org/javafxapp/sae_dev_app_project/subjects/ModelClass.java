@@ -3,27 +3,22 @@ package org.javafxapp.sae_dev_app_project.subjects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.javafxapp.sae_dev_app_project.classComponent.Attribute;
 import org.javafxapp.sae_dev_app_project.classComponent.Constructor;
 import org.javafxapp.sae_dev_app_project.classComponent.Method;
 import org.javafxapp.sae_dev_app_project.classComponent.Parameter;
 import org.javafxapp.sae_dev_app_project.importExport.Export;
-import org.javafxapp.sae_dev_app_project.importExport.SingleClassLoader;
 import org.javafxapp.sae_dev_app_project.views.Observer;
+import org.javafxapp.sae_dev_app_project.views.ViewAllClasses;
 
 import java.util.ArrayList;
+
 
 /**
  * Classe qui représente le modèle d'une classe
@@ -43,6 +38,8 @@ public class ModelClass implements Subject {
     private ArrayList<ModelClass> inheritedClasses; // Liste des classes implémentées par cette classe
     private ModelClass extendedClass; // Classe qui étend cette classe, null sinon
     private String type; // Type de la classe
+    private boolean isVisible; // Booléen qui permet de savoir si la classe doit être visible sur le diagramme ou non
+
 
 
     /**
@@ -61,9 +58,19 @@ public class ModelClass implements Subject {
         this.extendedClass = null;
         this.constructors = new ArrayList<>();
         this.type = "";
+        this.isVisible = true;
     }
 
 
+
+    /**
+     * Constructeur de la classe
+     * @param n Nom de la classe
+     * @param atts Liste des attributs de la classe
+     * @param meths Liste des méthodes de la classe
+     * @param consts Liste des constructeurs de la classe
+     * @param tpe Type de la classe
+     */
     public ModelClass(String n, ArrayList<Attribute> atts, ArrayList<Method> meths, ArrayList<Constructor> consts, String tpe) {
         this.id = -1; // Initialisation de l'id à -1 pour indiquer que le model n'a pas encore d'id
         this.name = n;
@@ -95,7 +102,7 @@ public class ModelClass implements Subject {
      * Méthode qui créé l'affichage de la classe
      * @return Objet de type VBox représentant une classe graphiquement
      */
-    public VBox getDisplay() {
+    public VBox getDisplay(ViewAllClasses viewAllClasses) {
 
         // Initialisation de la VBox et de son visuel
         VBox v = new VBox();
@@ -103,14 +110,6 @@ public class ModelClass implements Subject {
         hb.setSpacing(5);
         hb.setAlignment(Pos.CENTER);
 
-        ArrayList<String> modifs = this.hashType();
-        String modifierClass;
-
-        if (modifs.get(1) == null){
-            modifierClass = modifs.get(2);
-        } else {
-            modifierClass = "<" + modifs.get(1) + "> " +modifs.get(2);
-        }
 
         // Nom de la classe et Type de classe (abstract, interface, class)
         Text nomClasse = new Text(this.name);
@@ -143,73 +142,78 @@ public class ModelClass implements Subject {
         vMethods.setBackground(new Background(new BackgroundFill(Color.WHITE, null, new Insets(0, 0, 0, 0))));
         vMethods.setPadding(new Insets(0, 3, 10, 3));
 
+
         // Ajout des attributs à afficher
         for (Attribute a : this.attributes) {
 
-            // si l'attribut n'est pas caché
-
+            // Si l'attribut n'est pas caché
             if (!a.isHidden()) {
-                // si le type de l'attribut est une classe déjà chargé
-                // on cache l'attribut
-                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
-                    if (c.getSimpleName().equals(a.getType())) {
+                // Si le nom de l'attribut est le même que le nom d'une classe affichée sur le diagramme
+                for (ModelClass m : viewAllClasses.getAllClasses()) {
+                    if (m.getName().equals(a.getType()) && m.isVisible()) {
+                        // On cache l'attribut
                         a.setHidden(true);
                     }
+                    // Si l'attribut est une collection simple
+                    else if (a.getType().matches(".*<.*>")) {
+                        String[] type = a.getType().split("<");
+                        String[] type2 = type[1].split(">");
+                        // On regarde si le type entre <> est le même que le nom d'une classe affichée sur le diagramme
+                        for (ModelClass m2 : viewAllClasses.getAllClasses()) {
+                            if (m2.getName().equals(type2[0]) && m2.isVisible()) {
+                                // On cache l'attribut
+                                a.setHidden(true);
+                            }
+                        }
+                    }
                 }
-                // sinon on affiche l'attribut
-                vAttributs.getChildren().add(a.getDisplay());
             }
 
-
+            // Si l'attribut est de type collection et que la classe dont il vient n'est pas visible
+            // On passe l'attribut en visible
+            if (a.getType().matches(".*<.*>")) {
+                String[] type = a.getType().split("<");
+                String[] type2 = type[1].split(">");
+                for (ModelClass m2 : viewAllClasses.getAllClasses()) {
+                    if (m2.name.equals(type2[0]) && !m2.isVisible) {
+                        a.setHidden(false);
+                    }
+                }
+            }
 
         }
 
-        // Ajout des constructeurs à afficher
+
+
+        // Ajout des attributs (seulement si ils ne sont pas masqués)
+        for (Attribute a : this.attributes) {
+            if (!a.isHidden()) vAttributs.getChildren().add(a.getDisplay());
+        }
+
+        // Ajout des constructeurs (seulement si ils ne sont pas masqués)
         for (Constructor c : this.constructors) {
-            // si le constructeur n'est pas caché
-
-            if (!c.isHidden()) {
-                // si le type de le constructeur est une classe déjà chargé
-                // on cache le constructeur
-                for (Class<?> classe : SingleClassLoader.LOADED_CLASSES) {
-                    if (classe.getSimpleName().equals(c.getName())) {
-                        c.setHidden(false);
-                    }
-                }
-                // sinon on affiche le constructeur
-                vMethods.getChildren().add(c.getDisplay());
-            }
+            if (!c.isHidden()) vMethods.getChildren().add(c.getDisplay());
         }
 
-        // On ajoute les attributs à la VBox
-        v.getChildren().add(vAttributs);
-
-        // Ajout des méthodes à afficher
+        // Ajout des méthodes (seulement si elles ne sont pas masquées)
         for (Method m : this.methods) {
-            // si la méthode n'est pas cachée
-
-            if (!m.isHidden()) {
-                // si le type de la méthode est une classe déjà chargé
-                // on cache la méthode
-                for (Class<?> c : SingleClassLoader.LOADED_CLASSES) {
-                    if (c.getSimpleName().equals(m.getReturnType())) {
-                        m.setHidden(true);
-                    }
-                }
-                // sinon on affiche la méthode
-                vMethods.getChildren().add(m.getDisplay());
-            }
+            if (!m.isHidden()) vMethods.getChildren().add(m.getDisplay());
         }
+
+
 
         // On ajoute les méthodes à la VBox
-        v.getChildren().add(vMethods);
+        v.getChildren().addAll(vAttributs, vMethods);
 
         // On donne la bonne taille à la VBox
         v.autosize();
 
+        // On retourne la VBox
         return v;
 
     }
+
+
 
     /**
      * Méthode de traitement de la liste de paramètres d'une méthode pour changer l'affichage
@@ -217,7 +221,6 @@ public class ModelClass implements Subject {
      * @return L'affichage souhaité pour les paramètres des méthodes
      */
     public static String displayParams(ArrayList<Parameter> listParams){
-
         StringBuffer res = new StringBuffer();
 
         for(Parameter p : listParams){
@@ -226,8 +229,8 @@ public class ModelClass implements Subject {
 
         Export.removeLastComa(res);
         return res.toString();
-
     }
+
 
 
    @Override
@@ -252,42 +255,35 @@ public class ModelClass implements Subject {
 
 
     /*
-     * ### GETTERS / SETTER ###
+     * ### GETTERS ###
      */
     public int getId() { return id; }
     public String getName() { return name; }
     public int getX() {return x;}
     public int getY() {return y;}
+    public ArrayList<Attribute> getAttributes() { return attributes; }
+    public ArrayList<Method> getMethods() { return methods; }
+    public ArrayList<ModelClass> getInheritedClasses() { return inheritedClasses; }
+    public ModelClass getExtendedClass() { return extendedClass; }
+    public ArrayList<Constructor> getConstructors() { return constructors; }
+    public boolean isVisible() { return this.isVisible; }
+    public String getType() { return type; }
+
+
+
+    /*
+     * ### GETTERS ###
+     */
     public void setX(int x) { this.x = x; }
     public void setY(int y) { this.y = y; }
-    public ArrayList<Attribute> getAttributes() {
-        return attributes;
-    }
-    public ArrayList<Method> getMethods() {
-        return methods;
-    }
-    public ArrayList<ModelClass> getInheritedClasses() {
-        return inheritedClasses;
-    }
-    public void setInheritedClasses(ArrayList<ModelClass> l) { inheritedClasses = l; }
-    public ModelClass getExtendedClass() {
-        return extendedClass;
-    }
-    public ArrayList<Constructor> getConstructors() {
-        return constructors;
-    }
     public void setId(int i) { this.id = i; }
     public void setName(String name) { this.name = name; }
-    public void setExtendedClass(ModelClass extendedClass) {
-        this.extendedClass = extendedClass;
-    }
+    public void setExtendedClass(ModelClass extendedClass) { this.extendedClass = extendedClass; }
+    public void setVisibility(boolean b) { this.isVisible = b; }
+    public void setType(String type) { this.type = type; }
 
 
 
-    /**
-     * Méthode toString qui affiche toutes les informations de la classe
-     * @return String qui contient toutes les informations de la classe
-     */
     public String toString(){
         String str = "Nom : " + this.name + "\n";
         str += "Id : " + this.id + "\n";
@@ -320,17 +316,11 @@ public class ModelClass implements Subject {
     }
 
 
-    public void setType(String type) {
-        this.type = type;
-    }
 
-    public String getType() {
-        return type;
-    }
-
-
-
-    // Méthode qui crée l'icon correcpondant au type de classe
+    /**
+     * Méthode qui crée l'icon correcpondant au type de classe
+     * @return Objet de type Pane correspondant à l'affichage de l'icon
+     */
     private Pane setIcon() {
 
         StackPane pane = new StackPane();
@@ -365,9 +355,15 @@ public class ModelClass implements Subject {
 
         }
         return pane;
+
     }
 
-    // Décomposition du type de classe récupéré à l'import
+
+
+    /**
+     * Méthode qui décompose le type de la classe récupéré à l'import
+     * @return Une liste contenant les différents type
+     */
     public ArrayList<String> hashType(){
 
         String[] res = this.type.split(" ");
@@ -397,78 +393,63 @@ public class ModelClass implements Subject {
 
 
 
+    /**
+     * Méthode qui cache tous les attributs de la classe
+     */
     public void hideAllAttributes() {
-
-        if (!attributes.isEmpty()) {
-
-            for (Attribute a : attributes) {
-                a.setHidden(true);
-            }
-
-        }
-
+        for (Attribute a : attributes) a.setHidden(true);
     }
 
+
+
+    /**
+     * Méthode qui affiche tous les attributs de la classe
+     */
     public void showAllAttributes() {
-
-        if (!attributes.isEmpty()) {
-
-            for (Attribute a : attributes) {
-                a.setHidden(false);
-            }
-
-        }
-
+        for (Attribute a : attributes) a.setHidden(false);
     }
 
+
+
+    /**
+     * Méthode qui cache toutes les méthodes de la classe
+     */
     public void hideAllMethods() {
-
-        if (!methods.isEmpty()) {
-
-            for (Method m : methods) {
-                m.setHidden(true);
-            }
-
-        }
-
+        for (Method m : methods) m.setHidden(true);
     }
 
+
+
+    /**
+     * Méthode qui affiche toutes les méthodes de la classe
+     */
     public void showAllMethods() {
-
-        if (!methods.isEmpty()) {
-
-            for (Method m : methods) {
-                m.setHidden(false);
-            }
-
-        }
-
+        for (Method m : methods) m.setHidden(false);
     }
 
+
+
+    /**
+     * Méthode qui cache tous les constructeurs de la classe
+     */
     public void hideConstructors() {
-
-        if (!constructors.isEmpty()) {
-
-            for (Constructor c : constructors) {
-                c.setHidden(true);
-            }
-
-        }
-
+        for (Constructor c : constructors) c.setHidden(true);
     }
 
+
+
+    /**
+     * Méthode qui affiche tous les constructeurs de la classe
+     */
     public void showConstructors() {
-
-        if (!constructors.isEmpty()) {
-
-            for (Constructor c : constructors) {
-                c.setHidden(false);
-            }
-
-        }
-
+        for (Constructor c : constructors) c.setHidden(false);
     }
 
+
+
+    /**
+     * Méthode qui cache tous les attributs, méthodes et constructeurs de la classe
+     */
     public void hideDetails() {
         this.hideAllAttributes();
         this.hideAllMethods();

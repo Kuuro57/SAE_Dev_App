@@ -19,8 +19,7 @@ public class SingleClassLoader {
 
 
     /**
-     * Charge une classe depuis un fichier .class
-     *
+     * Méthode qui charge une classe depuis un fichier .class
      * @param file Fichier .class à charger
      * @param rootDirectory Répertoire racine des packages (dossier de base pour déterminer le package)
      * @return L'objet Class correspondant
@@ -84,10 +83,6 @@ public class SingleClassLoader {
 
 
     }
-
-
-
-
 
 
 
