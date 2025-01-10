@@ -202,6 +202,8 @@ public class Export {
 
     }
 
+
+
     /**
      * Méthode qui construit un fichier PlantUml à partir d'une liste de classes Java récupérée de la vue
      * @param view Vue qui contient la liste de toutes les classes
@@ -259,6 +261,14 @@ public class Export {
 
     }
 
+
+
+    /**
+     * Méthode qui enlève les attributs des classes lorsque l'attribut est sur une flèche depuis un
+     * code PlantUML
+     * @param file Fichier texte contenant le code PlantUML
+     * @throws IOException
+     */
     private static void removeAttributesInDependencies(File file) throws IOException {
         // Lire le contenu du fichier existant
         List<String> lines = Files.readAllLines(file.toPath());
@@ -305,6 +315,13 @@ public class Export {
         Files.write(file.toPath(), modifiedLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
+
+
+    /**
+     * Méthode qui extrait uniquement le nom de l'attribut
+     * @param line Ligne qui contient le type et le nom de l'attribut
+     * @return Le nom de l'attribut
+     */
     private static String extractAttributeName(String line) {
         // Exemple: "String name" => retourne "name"
         String[] parts = line.trim().split(" ");
@@ -313,6 +330,8 @@ public class Export {
         }
         return null;
     }
+
+
 
     /**
      * Méthode qui récupère le code plantuml balisé d'une classe
@@ -413,6 +432,8 @@ public class Export {
         // On retourne l'affichage final
         return aff.append("\n").toString();
     }
+
+
 
     /**
      * Méthode qui retourne le bon caractère pour représenter l'accès en UML (+, -, #, {abstract})
@@ -521,16 +542,16 @@ public class Export {
 
     }
 
-    /*
-    * méthode createDependanciesCardinalities méthodes qui permet de créer les dépendances entre les classes
+
+
+    /**
+    * Méthode createDependanciesCardinalities méthodes qui permet de créer les dépendances entre les classes
     * avec les cardinalités entre les classes, enlève également l'attribut du corps de la classe pour le mettre
     * dans la dépendance
     * @param view Vue contenant toutes les classes
     * @param modelClass Modèle d'une classe
-    *
     * @return String contenant les dépendances entre les classes
     */
-
     public static String createDependanciesCardinalities(ViewAllClasses view, ModelClass modelClass) {
 
         // Initialisation de l'affichage final
